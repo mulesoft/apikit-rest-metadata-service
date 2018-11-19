@@ -1,0 +1,14 @@
+{
+  "name": "Apikit Metadata service",
+  "minMuleVersion": "4.1.0",
+  "requiredProduct": "MULE",
+  "serviceProviderClassName": "org.mule.module.apikit.metadata.internal.MetadataServiceProvider",
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {}
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {}
+  }
+}
