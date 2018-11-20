@@ -34,6 +34,7 @@ import org.mule.amf.impl.DocumentParser;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.metadata.internal.utils.MetadataTypeWriter;
 import org.mule.metadata.json.api.JsonTypeLoader;
+import org.mule.raml.interfaces.model.api.ApiRef;
 
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -47,7 +48,7 @@ public class AmfTestCase {
   @Test
   public void endPointsRaml10() {
 
-    final WebApi apiModel = webApi("uri-params-in-raml10/api.raml");
+    final WebApi apiModel = webApi(resource("uri-params-in-raml10/api.raml"));
 
     final List<EndPoint> endPoints = apiModel.endPoints();
     assertThat("Number of EndPoints differs.", endPoints.size(), is(equalTo(4)));
@@ -73,7 +74,7 @@ public class AmfTestCase {
   @Test
   public void queryParamsRaml08() {
 
-    final WebApi apiModel = webApi("query-params-in-raml08/api.raml");
+    final WebApi apiModel = webApi(resource("query-params-in-raml08/api.raml"));
 
     final List<EndPoint> endPoints = apiModel.endPoints();
     endPoints.forEach(endPoint -> endPoint.operations().forEach(operation -> {
@@ -107,7 +108,7 @@ public class AmfTestCase {
   @Test
   public void jsonSchemaFromMultipartRaml08() {
 
-    final WebApi webApi = webApi("api-in-raml08/api.raml");
+    final WebApi webApi = webApi(resource("api-in-raml08/api.raml"));
 
     final Optional<Operation> op = findOperation(webApi, "/multipart", "post");
     assertThat(op.isPresent(), is(true));
@@ -133,7 +134,7 @@ public class AmfTestCase {
   @Test
   public void jsonSchemaFromFileRaml10() {
 
-    final WebApi apiModel = webApi("query-params-in-raml10/api.raml");
+    final WebApi apiModel = webApi(resource("query-params-in-raml10/api.raml"));
 
     final List<EndPoint> endPoints = apiModel.endPoints();
     endPoints.forEach(endPoint -> endPoint.operations().forEach(operation -> {
@@ -160,13 +161,13 @@ public class AmfTestCase {
 
     final URI uri =
         new URI("https://raw.githubusercontent.com/mulesoft/apikit/M4-1.x/mule-apikit-module/src/test/resources/org/mule/module/apikit/router-remote-raml/remote.raml");
-    webApi(uri);
+    webApi(uri.toString());
   }
 
   @Test
   public void queryParamsOrderRaml08() {
 
-    final WebApi webApi = webApi("sanity-test/api.raml");
+    final WebApi webApi = webApi(resource("sanity-test/api.raml"));
 
     final Optional<Operation> op = findOperation(webApi, "/clients", "get");
     assertThat(op.isPresent(), is(true));
@@ -182,7 +183,7 @@ public class AmfTestCase {
   @Test
   public void clientsMetadataRaml08() {
 
-    final WebApi webApi = webApi("sanity-test/api.raml");
+    final WebApi webApi = webApi(resource("sanity-test/api.raml"));
 
     final Optional<Operation> op = findOperation(webApi, "/clients", "get");
 
@@ -268,25 +269,20 @@ public class AmfTestCase {
     return list.stream().map(Object::toString).collect(Collectors.joining(","));
   }
 
-  private static WebApi webApi(final String resource) {
-    final URI uri = getUriFromResource(resource);
-    return webApi(uri);
-  }
-
-  private static WebApi webApi(final URI uri) {
-    final Parser parser = DocumentParser.getParserForApi(uri, DefaultEnvironment.apply());
-    final Document document = DocumentParser.parseFile(parser, uri, true);
+  private static WebApi webApi(final String path) {
+    final Parser parser = DocumentParser.getParserForApi(ApiRef.create(path), DefaultEnvironment.apply());
+    final Document document = DocumentParser.parseFile(parser, path, true);
     final WebApi webApi = DocumentParser.getWebApi(document);
     assertThat(webApi, notNullValue());
     return webApi;
   }
 
-  private static URI getUriFromResource(final String resource) {
+  private static String resource(final String resource) {
 
     final URL url = AmfTestCase.class.getResource(resource);
     try {
       final URI uri = url.toURI();
-      return uri;
+      return uri.toString();
     } catch (URISyntaxException e) {
       throw new RuntimeException("Error getting URI from resource" + resource, e);
     }

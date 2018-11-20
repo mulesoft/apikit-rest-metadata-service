@@ -13,8 +13,8 @@ import org.mule.runtime.apikit.metadata.api.Notifier;
 import org.mule.runtime.apikit.metadata.api.ResourceLoader;
 import org.mule.runtime.config.internal.model.ApplicationModel;
 
-import static org.mule.apikit.common.APISyncUtils.isExchangeModules;
-import static org.mule.apikit.common.APISyncUtils.toApiSyncResource;
+import static org.mule.raml.interfaces.common.APISyncUtils.isExchangeModules;
+import static org.mule.raml.interfaces.common.APISyncUtils.toApiSyncResource;
 
 /**
  * Builder for Metadata module

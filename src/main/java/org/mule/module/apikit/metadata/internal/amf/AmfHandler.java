@@ -6,18 +6,14 @@
  */
 package org.mule.module.apikit.metadata.internal.amf;
 
-import amf.client.environment.DefaultEnvironment;
-import amf.client.environment.Environment;
 import amf.client.model.domain.WebApi;
-import amf.client.remote.Content;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import org.apache.commons.io.IOUtils;
 import org.mule.amf.impl.ParserWrapperAmf;
-import org.mule.apikit.common.APISyncUtils;
 import org.mule.module.apikit.metadata.internal.model.MetadataResolver;
 import org.mule.module.apikit.metadata.internal.model.MetadataResolverFactory;
+import org.mule.raml.interfaces.model.api.ApiRef;
 import org.mule.runtime.apikit.metadata.api.Notifier;
 import org.mule.runtime.apikit.metadata.api.ResourceLoader;
 import org.mule.runtime.core.api.util.StringUtils;
@@ -41,7 +37,7 @@ public class AmfHandler implements MetadataResolverFactory {
     return getApi(apiDefinition).map(webApi -> new AmfWrapper(webApi, notifier));
   }
 
-  public Optional<WebApi> getApi(final String apiDefinition) {
+  Optional<WebApi> getApi(final String apiDefinition) {
 
     if (StringUtils.isEmpty(apiDefinition)) {
       notifier.error("API definition is undefined using AMF parser.");
@@ -51,19 +47,8 @@ public class AmfHandler implements MetadataResolverFactory {
     final ParserWrapperAmf parserWrapper;
 
     try {
-      if (APISyncUtils.isSyncProtocol(apiDefinition)) {
-        Environment environment = DefaultEnvironment.apply();
-        environment = environment.add(new ResourceLoaderWrapper(resourceLoader, apiDefinition));
-        parserWrapper = ParserWrapperAmf.create(apiDefinition, environment, true);
-      } else {
-
-        final URI uri = resourceLoader.getResource(apiDefinition);
-        if (uri == null) {
-          notifier.error(format("API definition '%s' not found using AMF parser.", apiDefinition));
-          return empty();
-        }
-        parserWrapper = ParserWrapperAmf.create(uri, true);
-      }
+      final ApiRef apiRef = ApiRef.create(apiDefinition, adaptResourceLoader(resourceLoader));
+      parserWrapper = ParserWrapperAmf.create(apiRef, true);
     } catch (Exception e) {
       notifier.error(format("Error reading API definition '%s' using AMF parser. Detail: %s", apiDefinition, e.getMessage()));
       return empty();
@@ -72,34 +57,18 @@ public class AmfHandler implements MetadataResolverFactory {
     return of(parserWrapper.getWebApi());
   }
 
-  private static class ResourceLoaderWrapper implements amf.client.resource.ResourceLoader {
+  private static org.mule.raml.interfaces.loader.ResourceLoader adaptResourceLoader(ResourceLoader resourceLoader) {
+    return new org.mule.raml.interfaces.loader.ResourceLoader() {
 
-    private final String rootName;
-    private final ResourceLoader resourceLoader;
-
-
-    public ResourceLoaderWrapper(final ResourceLoader resourceLoader, final String apiDefinition) {
-      this.resourceLoader = resourceLoader;
-      this.rootName = APISyncUtils.getFileName(apiDefinition);
-    }
-
-    @Override
-    public CompletableFuture<Content> fetch(String s) {
-      CompletableFuture<Content> future = new CompletableFuture<>();
-
-      try {
-        final URI uri = resourceLoader.getResource(s);
-        if (uri == null) {
-          future.completeExceptionally(new Exception("Failed to apply."));
-          return future;
-        }
-        final Content content = new Content(IOUtils.toString(uri), uri.toURL().toString());
-        future.complete(content);
-      } catch (Exception e) {
-        e.printStackTrace();
+      @Override
+      public URI getResource(final String path) {
+        return resourceLoader.getResource(path);
       }
-      return future;
-    }
+
+      public InputStream getResourceAsStream(String relativePath) {
+        return resourceLoader.getResourceAsStream(relativePath);
+      }
+    };
   }
 
 }

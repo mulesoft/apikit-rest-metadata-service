@@ -9,8 +9,8 @@ package org.mule.module.apikit.metadata.utils;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import org.mule.apikit.common.APISyncUtils;
 import org.mule.module.apikit.metadata.MetadataTestCase;
+import org.mule.raml.interfaces.common.APISyncUtils;
 import org.mule.runtime.apikit.metadata.api.ResourceLoader;
 
 public class TestResourceLoader implements ResourceLoader {

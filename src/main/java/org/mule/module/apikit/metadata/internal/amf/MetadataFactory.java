@@ -39,32 +39,31 @@ class MetadataFactory {
 
     Optional<MetadataType> metadataType = empty();
 
-    try {
-      if (shape instanceof AnyShape) {
-        final AnyShape anyShape = (AnyShape) shape;
+    if (shape instanceof AnyShape) {
+      final AnyShape anyShape = (AnyShape) shape;
 
-        final List<Example> examples = anyShape.examples();
-        final TypeLoader typeLoader = anyShape.isDefaultEmpty() && !examples.isEmpty()
-            ? createJsonExampleTypeLoader(examples.get(0).value().value()) : new JsonTypeLoader(anyShape.toJsonSchema());
+      final List<Example> examples = anyShape.examples();
+      final TypeLoader typeLoader = anyShape.isDefaultEmpty() && !examples.isEmpty()
+          ? createJsonExampleTypeLoader(examples.get(0).value().value()) : new JsonTypeLoader(anyShape.toJsonSchema());
 
-        metadataType = typeLoader.load(null);
-      }
-    } catch (final Throwable e) {
-      System.out.println("*** MetadataFactory error for " + shape.name() + " " + shape.getClass());
-      if (shape instanceof ScalarShape) {
-        final ScalarShape scalarShape = (ScalarShape) shape;
-        System.out.println("\t" + scalarShape.dataType().value());
-      } else if (shape instanceof FileShape) {
-        return stringMetadata();
-      } else if (shape instanceof ArrayShape) {
-        return arrayStringMetadata();
-      }
-
+      metadataType = typeLoader.load(null);
     }
+
     return metadataType.orElse(defaultMetadata());
   }
 
-  public static JsonExampleTypeLoader createJsonExampleTypeLoader(final String example) {
+  static MetadataType defaultMetadata(final Shape shape) {
+    if (shape instanceof FileShape)
+      return stringMetadata();
+
+    if (shape instanceof ArrayShape) {
+      return arrayStringMetadata();
+    }
+
+    return defaultMetadata();
+  }
+
+  private static JsonExampleTypeLoader createJsonExampleTypeLoader(final String example) {
     final JsonExampleTypeLoader typeLoader = new JsonExampleTypeLoader(example);
     typeLoader.setFieldRequirementDefault(false);
     return typeLoader;
@@ -74,7 +73,7 @@ class MetadataFactory {
   * Creates default metadata, that can be of any type
   * @return The newly created MetadataType
   */
-  public static MetadataType defaultMetadata() {
+  static MetadataType defaultMetadata() {
     return DEFAULT_METADATA;
   }
 
@@ -82,35 +81,35 @@ class MetadataFactory {
    * Creates metadata to describe an string type
    * @return The newly created MetadataType
    */
-  public static MetadataType stringMetadata() {
+  static MetadataType stringMetadata() {
     return STRING_METADATA;
   }
 
-  public static MetadataType arrayStringMetadata() {
+  static MetadataType arrayStringMetadata() {
     return ARRAY_STRING_METADATA;
   }
 
-  public static MetadataType booleanMetadada() {
+  static MetadataType booleanMetadada() {
     return BOOLEAN_METADATA;
   }
 
-  public static MetadataType numberMetadata() {
+  static MetadataType numberMetadata() {
     return NUMBER_METADATA;
   }
 
-  public static MetadataType integerMetadata() {
+  static MetadataType integerMetadata() {
     return INTEGER_METADATA;
   }
 
-  public static MetadataType dateTimeMetadata() {
+  static MetadataType dateTimeMetadata() {
     return DATE_TIME_METADATA;
   }
 
-  public static MetadataType objectMetadata() {
+  static MetadataType objectMetadata() {
     return create(MetadataFormat.JAVA).objectType().build();
   }
 
-  public static MetadataType binaryMetadata() {
+  static MetadataType binaryMetadata() {
     return create(MetadataFormat.JAVA).binaryType().build();
   }
 

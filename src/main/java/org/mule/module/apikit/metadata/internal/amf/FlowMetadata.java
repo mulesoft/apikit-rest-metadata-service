@@ -284,7 +284,7 @@ class FlowMetadata implements MetadataSource {
       notifier.warn(format("Error while trying to resolve metadata for parameter '%s'\nDetails: %s", parameter.name(),
                            e.getMessage()));
     }
-    return MetadataFactory.defaultMetadata();
+    return MetadataFactory.defaultMetadata(parameter.schema());
   }
 
   private MetadataType metadata(final Payload payload, ApiCoordinate coordinate,
@@ -294,7 +294,7 @@ class FlowMetadata implements MetadataSource {
     } catch (Exception e) {
       notifier.warn(format("Error while trying to resolve %s payload metadata for flow '%s'.\nDetails: %s", payloadDescription,
                            coordinate.getFlowName(), e.getMessage()));
-      return MetadataFactory.defaultMetadata();
+      return MetadataFactory.defaultMetadata(payload.schema());
     }
   }
 
