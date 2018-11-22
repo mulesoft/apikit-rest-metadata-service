@@ -162,7 +162,7 @@ public class MetadataModuleTestCase {
     final MockedApplicationModel.Builder builder = new MockedApplicationModel.Builder();
     builder.addConfig("apiKitSample", getClass().getClassLoader().getResourceAsStream(resourceName));
     final MockedApplicationModel mockedApplicationModel = builder.build();
-    return mockedApplicationModel.getApplicationModel();
+    return mockedApplicationModel.getMuleApplicationModel();
   }
 
 

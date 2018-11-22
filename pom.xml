@@ -5,7 +5,7 @@
     <parent>
        <groupId>org.mule.services</groupId>
         <artifactId>mule-core-services-parent</artifactId>
-        <version>1.1.5-SNAPSHOT</version>
+        <version>1.2.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -13,7 +13,7 @@
     <description>Mule service that allows get APIKit Metadata</description>
     
     <artifactId>mule-service-apikit-metadata</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.2.0-SNAPSHOT</version>
     <packaging>mule-service</packaging>
 
     <properties>
@@ -95,6 +95,13 @@
             <version>${apikit.version}</version>
         </dependency>
 
+        <!-- Force to use 1.18 -->
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.18</version>
+        </dependency>
+
         <!-- Test Dependencies -->
         <dependency>
             <groupId>junit</groupId>
@@ -126,6 +133,12 @@
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
+        <dependency>
+          <groupId>org.mule.runtime</groupId>
+          <artifactId>mule-module-dsl-api</artifactId>
+          <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <distributionManagement>

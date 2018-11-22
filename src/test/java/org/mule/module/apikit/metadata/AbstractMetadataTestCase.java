@@ -29,7 +29,6 @@ import org.mule.module.apikit.metadata.utils.TestResourceLoader;
 import org.mule.runtime.apikit.metadata.api.Metadata;
 import org.mule.runtime.config.internal.model.ApplicationModel;
 
-import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 
 public class AbstractMetadataTestCase {
@@ -57,7 +56,7 @@ public class AbstractMetadataTestCase {
     final MockedApplicationModel.Builder builder = new MockedApplicationModel.Builder();
     builder.addConfig("apiKitSample", app);
     final MockedApplicationModel mockedApplicationModel = builder.build();
-    return mockedApplicationModel.getApplicationModel();
+    return mockedApplicationModel.getMuleApplicationModel();
   }
 
   protected static List<Flow> findFlows(final File app) throws Exception {

@@ -6,65 +6,77 @@
  */
 package org.mule.module.apikit.metadata.utils;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptySet;
-import static org.mule.runtime.config.api.XmlConfigurationDocumentLoader.noValidationDocumentLoader;
-
-import org.mule.runtime.api.meta.model.ExtensionModel;
-import org.mule.runtime.config.api.dsl.model.ComponentBuildingDefinitionRegistry;
-import org.mule.runtime.config.api.dsl.model.ResourceProvider;
-import org.mule.runtime.config.api.dsl.processor.ArtifactConfig;
-import org.mule.runtime.config.api.dsl.processor.ConfigFile;
-import org.mule.runtime.config.api.dsl.processor.ConfigLine;
-import org.mule.runtime.config.api.dsl.processor.xml.XmlApplicationParser;
-import org.mule.runtime.config.internal.model.ApplicationModel;
-import org.mule.runtime.config.internal.model.ComponentModel;
-import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.registry.ServiceRegistry;
-import org.mule.runtime.core.api.registry.SpiServiceRegistry;
-import org.mule.runtime.dsl.api.component.ComponentBuildingDefinitionProvider;
-import org.mule.runtime.module.extension.internal.config.ExtensionBuildingDefinitionProvider;
-
 import com.google.common.base.Preconditions;
-
+import com.google.common.collect.ImmutableSet;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import org.apache.commons.io.IOUtils;
-import org.w3c.dom.Document;
+import org.mule.runtime.api.meta.model.ExtensionModel;
+import org.mule.runtime.config.api.dsl.model.ResourceProvider;
+import org.mule.runtime.config.api.dsl.processor.ArtifactConfig;
+import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.core.api.extension.RuntimeExtensionModelProvider;
+import org.mule.runtime.core.api.registry.SpiServiceRegistry;
+import org.mule.runtime.dsl.api.component.ComponentBuildingDefinitionProvider;
+import org.mule.runtime.dsl.api.xml.parser.ConfigFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class MockedApplicationModel implements ApplicationModelWrapper {
+import static java.lang.String.format;
+import static java.util.Collections.emptySet;
+import static org.mule.module.apikit.metadata.utils.MetadataProviderUtil.createComponentBuildingDefinitionRegistry;
+
+// THIS CLASS WAS COPIED FROM git@github.com:mulesoft/mule-datasense-api.git
+public class MockedApplicationModel implements ApplicationModel {
+
+  private static final transient Logger logger = LoggerFactory.getLogger(MockedApplicationModel.class);
 
   private final String name;
-  private ApplicationModel applicationModel;
-  private String typesData;
+  private final URI baseURI;
+  private org.mule.runtime.config.internal.model.ApplicationModel applicationModel;
+  private List<String> typesDataList;
 
   private MockedApplicationModel(String name,
-                                 ApplicationModel applicationModel,
-                                 String typesData) {
+                                 org.mule.runtime.config.internal.model.ApplicationModel applicationModel,
+                                 List<String> typesDataList, URI baseURI) {
     this.name = name;
     this.applicationModel = applicationModel;
-    this.typesData = typesData;
+    this.typesDataList = new ArrayList<>();
+    this.typesDataList.addAll(typesDataList);
+    this.baseURI = baseURI;
   }
 
   public String getName() {
     return name;
   }
 
-  public ApplicationModel getApplicationModel() {
+  @Override
+  public Optional<URI> findResource(String resource) {
+    if (baseURI == null) {
+      return Optional.empty();
+    }
+    return Optional.of(baseURI.resolve(resource));
+  }
+
+  public org.mule.runtime.config.internal.model.ApplicationModel getMuleApplicationModel() {
     return applicationModel;
   }
 
-  public static ApplicationModelWrapper load(String name, String content) throws Exception {
+  public static ApplicationModel load(String name, String content) throws Exception {
     return load(name, content, null);
   }
 
-  public static ApplicationModelWrapper load(String name, String content, String typesData) throws Exception {
+  public static ApplicationModel load(String name, String content, String typesData) throws Exception {
     Builder builder = new Builder();
     builder.addConfig(name, IOUtils.toInputStream(content));
     if (typesData != null) {
@@ -74,20 +86,19 @@ public class MockedApplicationModel implements ApplicationModelWrapper {
 
   }
 
-  public static ApplicationModelWrapper load(String name, File appDir) throws Exception {
+  public static ApplicationModel load(String name, File appDir) throws Exception {
     return load(name, appDir, null, null);
   }
 
-  public static ApplicationModelWrapper load(String name, File appDir, MuleContext muleContext) throws Exception {
+  public static ApplicationModel load(String name, File appDir, MuleContext muleContext) throws Exception {
     return load(name, appDir, null, muleContext);
   }
 
-  public static ApplicationModelWrapper load(String name, File appDir, File typesDataFile) throws Exception {
+  public static ApplicationModel load(String name, File appDir, File typesDataFile) throws Exception {
     return load(name, appDir, typesDataFile, null);
   }
 
-  public static ApplicationModelWrapper load(String name, File appDir, File typesDataFile, MuleContext muleContext)
-      throws Exception {
+  public static ApplicationModel load(String name, File appDir, File typesDataFile, MuleContext muleContext) throws Exception {
     Builder builder = new Builder();
     builder.addConfig(name, new File(appDir, name));
     if (typesDataFile != null) {
@@ -100,33 +111,31 @@ public class MockedApplicationModel implements ApplicationModelWrapper {
   }
 
   @Override
-  public ComponentModel findRootComponentModel() {
-    return getApplicationModel().getRootComponentModel();
+  public org.mule.runtime.config.internal.model.ComponentModel findRootComponentModel() {
+    return getMuleApplicationModel().getRootComponentModel();
   }
 
   @Override
-  public Optional<ComponentModel> findNamedComponent(String name) {
-    return getApplicationModel().findTopLevelNamedComponent(name);
+  public Optional<org.mule.runtime.config.internal.model.ComponentModel> findNamedComponent(String name) {
+    return getMuleApplicationModel().findTopLevelNamedComponent(name);
   }
 
-  @Override
-  public Optional<String> findTypesData() {
-    return Optional.ofNullable(typesData);
+  public List<String> findTypesDataList() {
+    return typesDataList;
   }
+
 
   public static class Builder {
 
-    private final SpiServiceRegistry serviceRegistry;
-    private final XmlApplicationParser xmlApplicationParser;
     private final ArtifactConfig.Builder artifactConfigBuilder;
     private ResourceProvider resourceProvider;
     private MuleContext muleContext;
-    private String typesData;
+    private List<String> typesDataList;
+    private URI baseURI;
 
     public Builder() {
       artifactConfigBuilder = new ArtifactConfig.Builder();
-      serviceRegistry = new SpiServiceRegistry();
-      xmlApplicationParser = new XmlApplicationParser(serviceRegistry, emptyList());
+      typesDataList = new ArrayList<>();
     }
 
     public Builder muleContext(MuleContext muleContext) {
@@ -143,7 +152,13 @@ public class MockedApplicationModel implements ApplicationModelWrapper {
 
     public Builder typesData(String typesData) {
       Preconditions.checkNotNull(typesData);
-      this.typesData = typesData;
+      typesDataList.add(typesData);
+      return this;
+    }
+
+    public Builder baseURI(URI baseURI) {
+      Preconditions.checkNotNull(baseURI);
+      this.baseURI = baseURI;
       return this;
     }
 
@@ -169,33 +184,12 @@ public class MockedApplicationModel implements ApplicationModelWrapper {
     public Builder addConfig(String configName, InputStream configData) {
       Preconditions.checkNotNull(configName);
       Preconditions.checkNotNull(configData);
-      artifactConfigBuilder.addConfigFile(new ConfigFile(configName, Collections.singletonList(loadConfigLines(configData)
-          .orElseThrow(() -> new IllegalArgumentException(String.format("Failed to parse %s.", configName))))));
+      artifactConfigBuilder.addConfigFile(new ConfigFile(configName, Collections.singletonList(
+                                                                                               MuleAppUtil
+                                                                                                   .loadConfigLines(configData)
+                                                                                                   .orElseThrow(() -> new IllegalArgumentException(format("Failed to parse %s.",
+                                                                                                                                                          configName))))));
       return this;
-    }
-
-    private Optional<ConfigLine> loadConfigLines(InputStream inputStream) {
-      Document document = noValidationDocumentLoader().loadDocument("config", inputStream);
-      return xmlApplicationParser.parse(document.getDocumentElement());
-    }
-
-    private static ComponentBuildingDefinitionRegistry createComponentBuildingDefinitionRegistry(
-                                                                                                 Set<ExtensionModel> extensionModels,
-                                                                                                 ClassLoader classLoader) {
-      ServiceRegistry serviceRegistry = new SpiServiceRegistry();
-      final ComponentBuildingDefinitionRegistry componentBuildingDefinitionRegistry =
-          new ComponentBuildingDefinitionRegistry();
-      serviceRegistry.lookupProviders(ComponentBuildingDefinitionProvider.class, classLoader)
-          .forEach(componentBuildingDefinitionProvider -> {
-            if (componentBuildingDefinitionProvider instanceof ExtensionBuildingDefinitionProvider) {
-              ((ExtensionBuildingDefinitionProvider) componentBuildingDefinitionProvider)
-                  .setExtensionModels(extensionModels);
-            }
-            componentBuildingDefinitionProvider.init();
-            componentBuildingDefinitionProvider.getComponentBuildingDefinitions()
-                .forEach(componentBuildingDefinitionRegistry::register);
-          });
-      return componentBuildingDefinitionRegistry;
     }
 
     private ResourceProvider getResourceProvider() {
@@ -208,18 +202,49 @@ public class MockedApplicationModel implements ApplicationModelWrapper {
       Set<ExtensionModel> extensionModels =
           Optional.ofNullable(muleContext).map(m -> m.getExtensionManager().getExtensions()).orElse(emptySet());
 
-      final ComponentBuildingDefinitionRegistry componentBuildingDefinitionRegistry =
-          createComponentBuildingDefinitionRegistry(extensionModels, muleContext != null ? muleContext.getClass().getClassLoader()
-              : Thread.currentThread().getContextClassLoader());
+      org.mule.runtime.config.internal.model.ApplicationModel toolingApplicationModel =
+          MuleAppUtil.loadApplicationModel(artifactConfigBuilder.build(), "",
+                                           ImmutableSet.<ExtensionModel>builder()
+                                               .addAll(extensionModels)
+                                               .addAll(discoverRuntimeExtensionModels())
+                                               .build(),
+                                           Optional
+                                               .of(createComponentBuildingDefinitionRegistry(extensionModels,
+                                                                                             ComponentBuildingDefinitionProvider.class
+                                                                                                 .getClassLoader())),
+                                           false,
+                                           getResourceProvider());
 
-      ApplicationModel applicationModel =
-          new ApplicationModel(artifactConfigBuilder.build(), null,
-                               extensionModels, Collections.emptyMap(),
-                               Optional.empty(),
-                               Optional.of(componentBuildingDefinitionRegistry),
-                               false,
-                               getResourceProvider());
-      return new MockedApplicationModel("", applicationModel, typesData);
+      logger.debug("Resolved locations for Tooling ApplicationModel:");
+      toolingApplicationModel
+          .executeOnEveryComponentTree(componentModel -> {
+            if (componentModel.getComponentLocation() != null) {
+              logger.debug(format("Location: %s (%s)", componentModel.getComponentLocation().getLocation(),
+                                  componentModel.getIdentifier()));
+            }
+          });
+
+      if (muleContext != null) {
+        logger.debug("Resolved locations from deployed application:");
+        muleContext.getConfigurationComponentLocator().findAllLocations().stream()
+            .forEach(componentLocation -> logger.debug(
+                                                       format("Location: %s (%s)", componentLocation.getLocation(),
+                                                              componentLocation.getComponentIdentifier())));
+      }
+
+      return new MockedApplicationModel("", toolingApplicationModel, typesDataList, baseURI);
     }
+
+    public Set<ExtensionModel> discoverRuntimeExtensionModels() {
+      final Set<ExtensionModel> extensionModels = new HashSet<>();
+
+      Collection<RuntimeExtensionModelProvider> runtimeExtensionModelProviders = new SpiServiceRegistry()
+          .lookupProviders(RuntimeExtensionModelProvider.class, Thread.currentThread().getContextClassLoader());
+      for (RuntimeExtensionModelProvider runtimeExtensionModelProvider : runtimeExtensionModelProviders) {
+        extensionModels.add(runtimeExtensionModelProvider.createExtensionModel());
+      }
+      return extensionModels;
+    }
+
   }
 }

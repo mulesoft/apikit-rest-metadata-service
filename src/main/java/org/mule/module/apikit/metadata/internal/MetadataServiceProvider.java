@@ -6,17 +6,14 @@
  */
 package org.mule.module.apikit.metadata.internal;
 
-import com.google.common.collect.Lists;
 import org.mule.runtime.api.service.ServiceDefinition;
 import org.mule.runtime.api.service.ServiceProvider;
 import org.mule.runtime.apikit.metadata.api.MetadataService;
 
-import java.util.List;
-
 public class MetadataServiceProvider implements ServiceProvider {
 
   @Override
-  public List<ServiceDefinition> providedServices() {
-    return Lists.newArrayList(new ServiceDefinition(MetadataService.class, new MetadataServiceImpl()));
+  public ServiceDefinition getServiceDefinition() {
+    return new ServiceDefinition(MetadataService.class, new MetadataServiceImpl());
   }
 }
