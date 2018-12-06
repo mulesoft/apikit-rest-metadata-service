@@ -22,19 +22,16 @@ import org.mule.metadata.internal.utils.MetadataTypeWriter;
 import org.mule.module.apikit.metadata.internal.MetadataBuilderImpl;
 import org.mule.module.apikit.metadata.internal.model.ApplicationModelWrapper;
 import org.mule.module.apikit.metadata.internal.model.Flow;
-import org.mule.module.apikit.metadata.utils.MetadataFixer;
 import org.mule.module.apikit.metadata.utils.MockedApplicationModel;
 import org.mule.module.apikit.metadata.utils.TestNotifier;
 import org.mule.module.apikit.metadata.utils.TestResourceLoader;
 import org.mule.runtime.apikit.metadata.api.Metadata;
 import org.mule.runtime.config.internal.model.ApplicationModel;
 
-import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 
 public class AbstractMetadataTestCase {
 
-  protected static final String AMF = "AMF";
   protected static final String RAML = "RAML";
 
   private static final PathMatcher API_MATCHER = FileSystems.getDefault().getPathMatcher("glob:app.xml");
@@ -100,8 +97,7 @@ public class AbstractMetadataTestCase {
   }
 
   protected static String metadataToString(String parser, final FunctionType functionType) {
-    final String result = new MetadataTypeWriter().toString(functionType);
-    return AMF.equals(parser) ? MetadataFixer.normalizeEnums(result) : result;
+    return new MetadataTypeWriter().toString(functionType);
   }
 
   protected File goldenFile(final Flow flow, final File app, final String parser) {

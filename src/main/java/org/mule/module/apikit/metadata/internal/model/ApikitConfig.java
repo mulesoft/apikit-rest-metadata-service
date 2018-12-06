@@ -6,16 +6,12 @@
  */
 package org.mule.module.apikit.metadata.internal.model;
 
-import java.util.List;
-import java.util.Optional;
-import org.mule.module.apikit.metadata.internal.amf.AmfHandler;
-import org.mule.module.apikit.metadata.internal.amf.AutoHandler;
 import org.mule.module.apikit.metadata.internal.raml.RamlHandler;
-import org.mule.raml.interfaces.ParserType;
 import org.mule.runtime.apikit.metadata.api.Notifier;
 import org.mule.runtime.apikit.metadata.api.ResourceLoader;
 
-import static org.mule.module.apikit.metadata.internal.MetadataBuilderImpl.MULE_APIKIT_PARSER;
+import java.util.List;
+import java.util.Optional;
 
 class ApikitConfig {
 
@@ -70,20 +66,9 @@ class ApikitConfig {
 
   private MetadataResolverFactory getMetadataResolverFactory() {
     if (metadataResolverFactory == null) {
-      final ParserType parserType = getParserType(parser);
-      metadataResolverFactory = ParserType.RAML.equals(parserType) ? new RamlHandler(resourceLoader, notifier)
-          : ParserType.AMF.equals(parserType) ? new AmfHandler(resourceLoader, notifier)
-              : new AutoHandler(resourceLoader, notifier);
+      metadataResolverFactory = new RamlHandler(resourceLoader, notifier);
     }
     return metadataResolverFactory;
   }
 
-  private static ParserType getParserType(final String parser) {
-    final String value = System.getProperty(MULE_APIKIT_PARSER, parser);
-    try {
-      return ParserType.valueOf(value);
-    } catch (final Exception ignore) {
-      return ParserType.AUTO;
-    }
-  }
 }

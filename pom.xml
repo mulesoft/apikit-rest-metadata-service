@@ -19,7 +19,7 @@
     <properties>
         <licensePath>LICENSE_HEADER.txt</licensePath>
         
-        <apikit.version>1.2.0-SNAPSHOT</apikit.version>
+        <apikit.version>1.1.11</apikit.version>
         <apikit.metadata.api.version>1.0.0-SNAPSHOT</apikit.metadata.api.version>
         <mule.app.plugins.maven.plugin.version>1.1.6-SNAPSHOT</mule.app.plugins.maven.plugin.version>
         
@@ -69,12 +69,6 @@
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-metadata-model-json</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.everit.json</groupId>
-                    <artifactId>org.everit.json.schema</artifactId>
-                </exclusion>
-            </exclusions>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -83,15 +77,20 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Apikit Dependencies -->
+        <dependency>
+            <groupId>org.mule.raml</groupId>
+            <artifactId>raml-parser-interface-impl-v1</artifactId>
+            <version>${apikit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.raml</groupId>
+            <artifactId>raml-parser-interface-impl-v2</artifactId>
+            <version>${apikit.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.mule.tools</groupId>
             <artifactId>mule-apikit-common</artifactId>
-            <version>${apikit.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mule.raml</groupId>
-            <artifactId>parser-service</artifactId>
             <version>${apikit.version}</version>
         </dependency>
 
