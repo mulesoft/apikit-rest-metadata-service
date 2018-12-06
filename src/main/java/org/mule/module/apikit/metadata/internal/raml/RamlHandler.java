@@ -42,7 +42,7 @@ public class RamlHandler implements MetadataResolverFactory {
     return getApi(apiDefinition).map(raml -> new RamlApiWrapper(raml, notifier));
   }
 
-  public Optional<IRaml> getApi(String uri) {
+  private Optional<IRaml> getApi(String uri) {
     try {
 
       if (StringUtils.isEmpty(uri)) {
