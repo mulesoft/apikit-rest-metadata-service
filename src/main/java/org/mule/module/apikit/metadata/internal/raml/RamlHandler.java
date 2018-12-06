@@ -62,7 +62,7 @@ public class RamlHandler implements MetadataResolverFactory {
       final Parseable parser = getParser(content);
 
       return of(parser.build(file, content));
-    } catch (Throwable e) {
+    } catch (Exception e) {
       notifier.error(format("Error reading RAML document '%s'. Detail: %s", uri, e.getMessage()));
     }
 
