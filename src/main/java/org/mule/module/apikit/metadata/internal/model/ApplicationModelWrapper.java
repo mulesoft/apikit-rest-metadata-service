@@ -30,7 +30,8 @@ import static org.mule.runtime.api.component.ComponentIdentifier.buildFromString
 public class ApplicationModelWrapper {
 
   private final static String PARAMETER_NAME = "name";
-  private final static String PARAMETER_API_DEFINITION = "raml";
+  private final static String PARAMETER_API_DEFINITION = "api";
+  private final static String PARAMETER_RAML_DEFINITION = "raml";
   private final static String PARAMETER_OUTPUT_HEADERS_VAR = "outboundHeadersMapName";
   private final static String PARAMETER_HTTP_STATUS_VAR = "httpStatusVarName";
   private final static String PARAMETER_PARSER = "parser";
@@ -98,7 +99,7 @@ public class ApplicationModelWrapper {
   private ApikitConfig createApikitConfig(final ComponentModel config) {
     final Map<String, String> parameters = config.getParameters();
     final String configName = parameters.get(PARAMETER_NAME);
-    final String apiDefinition = parameters.get(PARAMETER_API_DEFINITION);
+    final String apiDefinition = getApiDefinition(parameters);
     final String outputHeadersVarName = parameters.get(PARAMETER_OUTPUT_HEADERS_VAR);
     final String httpStatusVarName = parameters.get(PARAMETER_HTTP_STATUS_VAR);
     final String parser = parameters.get(PARAMETER_PARSER);
@@ -113,6 +114,15 @@ public class ApplicationModelWrapper {
 
     return new ApikitConfig(configName, apiDefinition, flowMappings, httpStatusVarName, outputHeadersVarName,
                             parser, resourceLoader, notifier);
+  }
+
+  private static String getApiDefinition(Map<String, String> parameters) {
+    if (parameters.containsKey(PARAMETER_API_DEFINITION)) {
+      return parameters.get(PARAMETER_API_DEFINITION);
+    } else if (parameters.containsKey(PARAMETER_RAML_DEFINITION)) {
+      return parameters.get(PARAMETER_RAML_DEFINITION);
+    }
+    return null;
   }
 
   public List<Flow> findFlows() {
