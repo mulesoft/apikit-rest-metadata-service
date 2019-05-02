@@ -6,9 +6,27 @@
  */
 package org.mule.module.apikit.metadata.internal.model;
 
+import java.util.Map;
+
+import com.google.common.collect.ImmutableMap;
+
 public class Flow {
 
-  private static final String PARAMETER_NAME = "name";
+  public static final String URL_RESOURCE_SEPARATOR = "/";
+
+  private static final ImmutableMap<String, String> specialCharacters = ImmutableMap.<String, String>builder()
+      .put(URL_RESOURCE_SEPARATOR, "\\")
+      .put("{", "(")
+      .put("}", ")")
+      .build();
+
+  public static String decode(String value) {
+    for (Map.Entry<String, String> entry : specialCharacters.entrySet()) {
+      value = value.replace(entry.getValue(), entry.getKey());
+    }
+
+    return value;
+  }
 
   private String name;
 

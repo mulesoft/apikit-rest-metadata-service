@@ -11,7 +11,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import static java.util.Optional.empty;
-import static org.mule.apikit.common.FlowName.FLOW_NAME_SEPARATOR;
 
 public class ApiCoordinateFactory {
 
@@ -23,7 +22,7 @@ public class ApiCoordinateFactory {
 
   public Optional<ApiCoordinate> fromFlowName(final String flowName) {
 
-    final String[] parts = org.mule.apikit.common.FlowName.decode(flowName).split(FLOW_NAME_SEPARATOR);
+    final String[] parts = Flow.decode(flowName).split(":");
 
     if (parts.length < 2 || parts.length > 4)
       return empty();
