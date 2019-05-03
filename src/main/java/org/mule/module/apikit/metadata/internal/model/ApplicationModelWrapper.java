@@ -7,10 +7,12 @@
 package org.mule.module.apikit.metadata.internal.model;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
 import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.apikit.metadata.api.Notifier;
 import org.mule.runtime.apikit.metadata.api.ResourceLoader;
@@ -24,7 +26,6 @@ import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
-import static org.mule.apikit.common.CollectionUtils.merge;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
 
 public class ApplicationModelWrapper {
@@ -69,7 +70,9 @@ public class ApplicationModelWrapper {
     final Map<String, ApiCoordinate> flowMappingCoordinates = createCoordinatesForMappingFlows(flows, coordsFactory);
 
     // Merging both results
-    return merge(asList(conventionCoordinates, flowMappingCoordinates));
+    Map<String, ApiCoordinate> result = new HashMap<>(conventionCoordinates);
+    result.putAll(flowMappingCoordinates);
+    return result;
   }
 
   private Map<String, ApikitConfig> loadConfigs() {
