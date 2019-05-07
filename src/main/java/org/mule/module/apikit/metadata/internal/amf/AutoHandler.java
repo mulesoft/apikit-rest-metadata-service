@@ -12,7 +12,7 @@ import org.mule.module.apikit.metadata.internal.model.MetadataResolver;
 import org.mule.module.apikit.metadata.internal.model.MetadataResolverFactory;
 import org.mule.module.apikit.metadata.internal.raml.RamlApiWrapper;
 import org.mule.module.apikit.metadata.internal.raml.RamlHandler;
-import org.mule.raml.interfaces.model.IRaml;
+import org.mule.apikit.model.ApiSpecification;
 import org.mule.runtime.apikit.metadata.api.Notifier;
 import org.mule.runtime.apikit.metadata.api.ResourceLoader;
 
@@ -35,7 +35,7 @@ public class AutoHandler implements MetadataResolverFactory {
 
     // Fallback
     final RamlHandler ramlHandler = new RamlHandler(resourceLoader, notifier);
-    final Optional<IRaml> iRaml = ramlHandler.getApi(apiDefinition);
+    final Optional<ApiSpecification> iRaml = ramlHandler.getApi(apiDefinition);
     return iRaml.map(raml -> new RamlApiWrapper(raml, notifier));
   }
 }

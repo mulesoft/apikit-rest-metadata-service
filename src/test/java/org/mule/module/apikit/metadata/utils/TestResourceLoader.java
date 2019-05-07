@@ -10,7 +10,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import org.mule.module.apikit.metadata.MetadataTestCase;
-import org.mule.raml.interfaces.common.APISyncUtils;
+import org.mule.apikit.common.ApiSyncUtils;
 import org.mule.runtime.apikit.metadata.api.ResourceLoader;
 
 public class TestResourceLoader implements ResourceLoader {
@@ -18,7 +18,7 @@ public class TestResourceLoader implements ResourceLoader {
   @Override
   public URI getResource(String relativePath) {
     try {
-      if (APISyncUtils.isSyncProtocol(relativePath))
+      if (ApiSyncUtils.isSyncProtocol(relativePath))
         relativePath = getTestPathForApiSync(relativePath);
 
       final URL resource = MetadataTestCase.class.getResource(relativePath);

@@ -34,7 +34,7 @@ import org.mule.amf.impl.DocumentParser;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.metadata.internal.utils.MetadataTypeWriter;
 import org.mule.metadata.json.api.JsonTypeLoader;
-import org.mule.raml.interfaces.model.api.ApiRef;
+import org.mule.apikit.model.api.ApiRef;
 
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.equalTo;

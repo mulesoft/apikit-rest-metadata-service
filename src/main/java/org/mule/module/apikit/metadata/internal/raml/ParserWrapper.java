@@ -11,11 +11,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
-import org.mule.raml.interfaces.model.IRaml;
+import org.mule.apikit.model.ApiSpecification;
 
 interface ParserWrapper {
 
-  IRaml build();
+  ApiSpecification build();
 
   static InputStream toInputStream(final URI uri) {
 

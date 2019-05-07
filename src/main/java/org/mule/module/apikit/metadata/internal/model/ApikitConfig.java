@@ -8,14 +8,17 @@ package org.mule.module.apikit.metadata.internal.model;
 
 import java.util.List;
 import java.util.Optional;
+
 import org.mule.module.apikit.metadata.internal.amf.AmfHandler;
 import org.mule.module.apikit.metadata.internal.amf.AutoHandler;
 import org.mule.module.apikit.metadata.internal.raml.RamlHandler;
-import org.mule.raml.interfaces.ParserType;
+import org.mule.apikit.ParserType;
+import org.mule.parser.service.ParserConfiguration;
 import org.mule.runtime.apikit.metadata.api.Notifier;
 import org.mule.runtime.apikit.metadata.api.ResourceLoader;
 
 import static org.mule.module.apikit.metadata.internal.MetadataBuilderImpl.MULE_APIKIT_PARSER;
+import static org.mule.parser.service.ParserConfiguration.RAML;
 
 class ApikitConfig {
 
@@ -29,7 +32,7 @@ class ApikitConfig {
   final private Notifier notifier;
 
   private MetadataResolverFactory metadataResolverFactory = null;
-  private Optional<MetadataResolver> metadataResolver = null;
+  private MetadataResolver metadataResolver;
 
   ApikitConfig(final String name, final String apiDefinition, List<FlowMapping> flowMappings,
                final String httpStatusVarName, final String outputHeadersVarName,
@@ -63,27 +66,31 @@ class ApikitConfig {
 
   public Optional<MetadataResolver> getMetadataResolver() {
     if (metadataResolver == null) {
-      metadataResolver = getMetadataResolverFactory().getMetadataResolver(apiDefinition);
+      getMetadataResolverFactory().getMetadataResolver(apiDefinition).ifPresent(resolver -> this.metadataResolver = resolver);
     }
-    return metadataResolver;
+    return Optional.ofNullable(metadataResolver);
   }
 
   private MetadataResolverFactory getMetadataResolverFactory() {
     if (metadataResolverFactory == null) {
-      final ParserType parserType = getParserType(parser);
-      metadataResolverFactory = ParserType.RAML.equals(parserType) ? new RamlHandler(resourceLoader, notifier)
-          : ParserType.AMF.equals(parserType) ? new AmfHandler(resourceLoader, notifier)
-              : new AutoHandler(resourceLoader, notifier);
+      ParserConfiguration parserType = getParserMode(parser);
+      switch (parserType) {
+        case RAML:
+          metadataResolverFactory = new RamlHandler(resourceLoader, notifier);
+          break;
+        case AMF:
+          metadataResolverFactory = new AmfHandler(resourceLoader, notifier);
+          break;
+        default:
+          metadataResolverFactory = new AutoHandler(resourceLoader, notifier);
+          break;
+      }
     }
     return metadataResolverFactory;
   }
 
-  private static ParserType getParserType(final String parser) {
-    final String value = System.getProperty(MULE_APIKIT_PARSER, parser);
-    try {
-      return ParserType.valueOf(value);
-    } catch (final Exception ignore) {
-      return ParserType.AUTO;
-    }
+  private static ParserConfiguration getParserMode(final String parser) {
+    String value = System.getProperty(MULE_APIKIT_PARSER, parser);
+    return value != null ? ParserConfiguration.valueOf(value) : ParserConfiguration.AUTO;
   }
 }
