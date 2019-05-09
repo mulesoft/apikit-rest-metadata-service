@@ -111,7 +111,7 @@ class MetadataFactory {
     final JsonTypeLoader jsonTypeLoader = new JsonTypeLoader(jsonSchema);
     final Optional<MetadataType> root = jsonTypeLoader.load(null);
 
-    // We didn't managed to parse the schema.
+    // We didn't managed to get the schema.
     return root.orElse(defaultMetadata());
   }
 
@@ -127,7 +127,7 @@ class MetadataFactory {
     jsonExampleTypeLoader.setFieldRequirementDefault(false);
     Optional<MetadataType> root = jsonExampleTypeLoader.load(null);
 
-    // We didn't managed to parse the schema.
+    // We didn't managed to get the schema.
     return root.orElse(defaultMetadata());
   }
 

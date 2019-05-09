@@ -94,7 +94,6 @@ public class AbstractMetadataTestCase {
         .withApplicationModel(applicationModel)
         .withResourceLoader(new TestResourceLoader())
         .withNotifier(new TestNotifier()).build();
-
     return metadata.getMetadataForFlow(flow.getName());
   }
 

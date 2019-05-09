@@ -13,7 +13,7 @@ import java.util.Optional;
 import org.mule.amf.impl.AMFParser;
 import org.mule.module.apikit.metadata.internal.model.MetadataResolver;
 import org.mule.module.apikit.metadata.internal.model.MetadataResolverFactory;
-import org.mule.apikit.model.api.ApiRef;
+import org.mule.apikit.model.api.ApiReference;
 import org.mule.runtime.apikit.metadata.api.Notifier;
 import org.mule.runtime.apikit.metadata.api.ResourceLoader;
 import org.mule.runtime.core.api.util.StringUtils;
@@ -45,8 +45,8 @@ public class AmfHandler implements MetadataResolverFactory {
     }
 
     try {
-      ApiRef apiRef = ApiRef.create(apiDefinition, adaptResourceLoader(resourceLoader));
-      AMFParser parserWrapper = AMFParser.create(apiRef, true);
+      ApiReference apiRef = ApiReference.create(apiDefinition, adaptResourceLoader(resourceLoader));
+      AMFParser parserWrapper = new AMFParser(apiRef, true);
       notifier.info(format("Metadata for API definition '%s' was generated using AMF parser.", apiDefinition));
       return of(parserWrapper.getWebApi());
     } catch (Exception e) {

@@ -17,7 +17,7 @@ class ParserService {
 
   private ParserWrapper parserWrapper;
 
-  ParserService(final String ramlPath, final ResourceLoader resourceLoader) {
+  ParserService(final String ramlPath, ResourceLoader resourceLoader) {
     parserWrapper = parserWrapper(ramlPath, resourceLoader);
   }
 

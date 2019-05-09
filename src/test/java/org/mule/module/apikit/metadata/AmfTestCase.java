@@ -34,7 +34,7 @@ import org.mule.amf.impl.DocumentParser;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.metadata.internal.utils.MetadataTypeWriter;
 import org.mule.metadata.json.api.JsonTypeLoader;
-import org.mule.apikit.model.api.ApiRef;
+import org.mule.apikit.model.api.ApiReference;
 
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -270,7 +270,7 @@ public class AmfTestCase {
   }
 
   private static WebApi webApi(final String path) {
-    final Parser parser = DocumentParser.getParserForApi(ApiRef.create(path), DefaultEnvironment.apply());
+    final Parser parser = DocumentParser.getParserForApi(ApiReference.create(path), DefaultEnvironment.apply());
     final Document document = DocumentParser.parseFile(parser, path, true);
     final WebApi webApi = DocumentParser.getWebApi(document);
     assertThat(webApi, notNullValue());

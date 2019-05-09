@@ -119,11 +119,7 @@ public class MetadataModuleTestCase {
     ApplicationModel applicationModel = createApplicationModel("org/mule/module/apikit/metadata/api-in-raml08/app.xml");
     assertThat(applicationModel, notNullValue());
 
-    final Metadata metadata = new MetadataBuilderImpl()
-        .withApplicationModel(applicationModel)
-        .withResourceLoader(resourceLoader)
-        .withNotifier(notifier)
-        .build();
+    final Metadata metadata = getMetadata(resourceLoader, notifier, applicationModel);
 
     assertNotifierMessages(notifier, 0, 0, 0, 0);
 
@@ -133,29 +129,38 @@ public class MetadataModuleTestCase {
 
   @Test
   public void testNotifyingOnlyErrorMessages() throws Exception {
-    final ResourceLoader resourceLoader = new TestResourceLoader();
-    final TestNotifier notifier = new TestNotifier();
+    ResourceLoader resourceLoader = new TestResourceLoader();
+    TestNotifier notifier = new TestNotifier();
 
-    final ApplicationModel model = createApplicationModel("org/mule/module/apikit/metadata/invalid-raml-file-location/app.xml");
+    ApplicationModel model = createApplicationModel("org/mule/module/apikit/metadata/invalid-raml-file-location/app.xml");
     assertThat(model, notNullValue());
 
-    final Metadata metadata = new MetadataBuilderImpl()
-        .withApplicationModel(model)
-        .withResourceLoader(resourceLoader)
-        .withNotifier(notifier)
-        .build();
+    Metadata metadata;
 
+    metadata = getMetadata(resourceLoader, notifier, model);
     assertNotifierMessages(notifier, 0, 0, 0, 0);
 
     metadata.getMetadataForFlow("get:\\flow1:router-config");
     assertNotifierMessages(notifier, 2, 0, 0, 0);
 
+    notifier = new TestNotifier();
+    metadata = getMetadata(resourceLoader, notifier, model);
     metadata.getMetadataForFlow("get:\\flow2:router-config");
     assertNotifierMessages(notifier, 2, 0, 0, 0);
 
+    notifier = new TestNotifier();
+    metadata = getMetadata(resourceLoader, notifier, model);
     metadata.getMetadataForFlow("get:\\flow3:router-config");
     assertNotifierMessages(notifier, 2, 0, 0, 0);
 
+  }
+
+  private Metadata getMetadata(ResourceLoader resourceLoader, TestNotifier notifier, ApplicationModel model) {
+    return new MetadataBuilderImpl()
+        .withApplicationModel(model)
+        .withResourceLoader(resourceLoader)
+        .withNotifier(notifier)
+        .build();
   }
 
   private ApplicationModel createApplicationModel(String resourceName) throws Exception {
