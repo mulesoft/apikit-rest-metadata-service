@@ -9,15 +9,15 @@ package org.mule.module.apikit.metadata.internal.raml;
 import java.io.IOException;
 import java.net.URI;
 import org.apache.commons.io.IOUtils;
-import org.mule.raml.implv2.ParserV2Utils;
-import org.mule.raml.interfaces.model.IRaml;
+import org.mule.apikit.implv2.ParserV2Utils;
+import org.mule.apikit.model.ApiSpecification;
 import org.mule.runtime.apikit.metadata.api.ResourceLoader;
 
 class ParserService {
 
   private ParserWrapper parserWrapper;
 
-  ParserService(final String ramlPath, final ResourceLoader resourceLoader) {
+  ParserService(final String ramlPath, ResourceLoader resourceLoader) {
     parserWrapper = parserWrapper(ramlPath, resourceLoader);
   }
 
@@ -42,7 +42,7 @@ class ParserService {
         : new ParserWrapperV1(ramlPath, content, resourceLoader);
   }
 
-  public IRaml build() {
+  public ApiSpecification build() {
     return parserWrapper.build();
   }
 }

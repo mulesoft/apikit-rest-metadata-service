@@ -7,9 +7,9 @@
 package org.mule.module.apikit.metadata.internal.raml;
 
 import java.net.URI;
-import org.mule.raml.implv1.ParserV1Utils;
-import org.mule.raml.implv1.loader.ApiSyncResourceLoader;
-import org.mule.raml.interfaces.model.IRaml;
+import org.mule.apikit.implv1.ParserV1Utils;
+import org.mule.apikit.implv1.loader.ApiSyncResourceLoader;
+import org.mule.apikit.model.ApiSpecification;
 
 import javax.annotation.Nullable;
 import java.io.InputStream;
@@ -28,11 +28,11 @@ class ParserWrapperV1 implements ParserWrapper {
   }
 
   @Override
-  public IRaml build() {
+  public ApiSpecification build() {
     return ParserV1Utils.build(content, new ApiSyncResourceLoader(ramlPath, adaptResourceLoader(resourceLoader)), ramlPath);
   }
 
-  private org.raml.parser.loader.ResourceLoader adaptResourceLoader(final ResourceLoader resourceLoader) {
+  private org.raml.parser.loader.ResourceLoader adaptResourceLoader(ResourceLoader resourceLoader) {
     return new org.raml.parser.loader.ResourceLoader() {
 
       @Nullable

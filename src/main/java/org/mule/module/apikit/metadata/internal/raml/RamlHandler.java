@@ -9,7 +9,7 @@ package org.mule.module.apikit.metadata.internal.raml;
 import java.util.Optional;
 import org.mule.module.apikit.metadata.internal.model.MetadataResolver;
 import org.mule.module.apikit.metadata.internal.model.MetadataResolverFactory;
-import org.mule.raml.interfaces.model.IRaml;
+import org.mule.apikit.model.ApiSpecification;
 import org.mule.runtime.apikit.metadata.api.Notifier;
 import org.mule.runtime.apikit.metadata.api.ResourceLoader;
 import org.mule.runtime.core.api.util.StringUtils;
@@ -33,7 +33,7 @@ public class RamlHandler implements MetadataResolverFactory {
     return getApi(apiDefinition).map(raml -> new RamlApiWrapper(raml, notifier));
   }
 
-  public Optional<IRaml> getApi(String uri) {
+  public Optional<ApiSpecification> getApi(String uri) {
     try {
 
       if (StringUtils.isEmpty(uri)) {

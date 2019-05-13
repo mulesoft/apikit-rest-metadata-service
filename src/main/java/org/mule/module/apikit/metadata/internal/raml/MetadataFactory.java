@@ -16,8 +16,8 @@ import org.mule.metadata.xml.api.ModelFactory;
 import org.mule.metadata.xml.api.SchemaCollector;
 import org.mule.metadata.xml.api.XmlTypeLoader;
 import org.mule.metadata.xml.api.utils.XmlSchemaUtils;
-import org.mule.raml.interfaces.model.IMimeType;
-import org.mule.raml.interfaces.model.parameter.IParameter;
+import org.mule.apikit.model.MimeType;
+import org.mule.apikit.model.parameter.Parameter;
 
 import javax.xml.namespace.QName;
 import java.util.List;
@@ -39,7 +39,7 @@ class MetadataFactory {
 
   private MetadataFactory() {}
 
-  public static MetadataType payloadMetadata(final RamlApiWrapper api, final @Nullable IMimeType body) {
+  public static MetadataType payloadMetadata(final RamlApiWrapper api, final @Nullable MimeType body) {
     if (body == null) {
       return MetadataFactory.defaultMetadata();
     }
@@ -62,7 +62,7 @@ class MetadataFactory {
     }
   }
 
-  private static String resolveSchema(RamlApiWrapper api, IMimeType body) {
+  private static String resolveSchema(RamlApiWrapper api, MimeType body) {
     String schema = body.getSchema();
 
     // As body.getSchema() can return the name of the schema, null or
@@ -76,7 +76,7 @@ class MetadataFactory {
     return schema;
   }
 
-  private static MetadataType formMetadata(Map<String, List<IParameter>> formParameters) {
+  private static MetadataType formMetadata(Map<String, List<Parameter>> formParameters) {
     return MetadataFactory.fromFormMetadata(formParameters);
   }
 
@@ -111,7 +111,7 @@ class MetadataFactory {
     final JsonTypeLoader jsonTypeLoader = new JsonTypeLoader(jsonSchema);
     final Optional<MetadataType> root = jsonTypeLoader.load(null);
 
-    // We didn't managed to parse the schema.
+    // We didn't managed to get the schema.
     return root.orElse(defaultMetadata());
   }
 
@@ -127,7 +127,7 @@ class MetadataFactory {
     jsonExampleTypeLoader.setFieldRequirementDefault(false);
     Optional<MetadataType> root = jsonExampleTypeLoader.load(null);
 
-    // We didn't managed to parse the schema.
+    // We didn't managed to get the schema.
     return root.orElse(defaultMetadata());
   }
 
@@ -157,10 +157,10 @@ class MetadataFactory {
     return metadata.orElse(defaultMetadata());
   }
 
-  public static MetadataType fromFormMetadata(Map<String, List<IParameter>> formParameters) {
+  public static MetadataType fromFormMetadata(Map<String, List<Parameter>> formParameters) {
     final ObjectTypeBuilder parameters = create(MetadataFormat.JAVA).objectType();
 
-    for (Map.Entry<String, List<IParameter>> entry : formParameters.entrySet()) {
+    for (Map.Entry<String, List<Parameter>> entry : formParameters.entrySet()) {
       parameters.addField()
           .key(entry.getKey())
           .value().anyType();

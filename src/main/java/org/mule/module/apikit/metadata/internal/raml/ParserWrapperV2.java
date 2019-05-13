@@ -9,9 +9,9 @@ package org.mule.module.apikit.metadata.internal.raml;
 import java.io.InputStream;
 import java.net.URI;
 import javax.annotation.Nullable;
-import org.mule.raml.implv2.ParserV2Utils;
-import org.mule.raml.implv2.loader.ApiSyncResourceLoader;
-import org.mule.raml.interfaces.model.IRaml;
+import org.mule.apikit.implv2.ParserV2Utils;
+import org.mule.apikit.implv2.loader.ApiSyncResourceLoader;
+import org.mule.apikit.model.ApiSpecification;
 import org.mule.runtime.apikit.metadata.api.ResourceLoader;
 
 class ParserWrapperV2 implements ParserWrapper {
@@ -27,7 +27,7 @@ class ParserWrapperV2 implements ParserWrapper {
   }
 
   @Override
-  public IRaml build() {
+  public ApiSpecification build() {
     return ParserV2Utils.build(new ApiSyncResourceLoader(ramlPath, adaptResourceLoader(resourceLoader)), ramlPath, content);
   }
 

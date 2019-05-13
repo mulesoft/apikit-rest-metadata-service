@@ -187,7 +187,7 @@ public class MockedApplicationModel implements ApplicationModel {
       artifactConfigBuilder.addConfigFile(new ConfigFile(configName, Collections.singletonList(
                                                                                                MuleAppUtil
                                                                                                    .loadConfigLines(configData)
-                                                                                                   .orElseThrow(() -> new IllegalArgumentException(format("Failed to parse %s.",
+                                                                                                   .orElseThrow(() -> new IllegalArgumentException(format("Failed to get %s.",
                                                                                                                                                           configName))))));
       return this;
     }

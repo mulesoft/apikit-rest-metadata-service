@@ -6,6 +6,7 @@
  */
 package org.mule.module.apikit.metadata.internal.raml;
 
+import org.mule.apikit.model.parameter.Parameter;
 import org.mule.metadata.api.builder.BaseTypeBuilder;
 import org.mule.metadata.api.builder.FunctionTypeBuilder;
 import org.mule.metadata.api.builder.ObjectTypeBuilder;
@@ -20,10 +21,9 @@ import org.mule.metadata.message.api.MuleEventMetadataTypeBuilder;
 import org.mule.module.apikit.metadata.internal.model.ApiCoordinate;
 import org.mule.module.apikit.metadata.internal.model.CertificateFields;
 import org.mule.module.apikit.metadata.internal.model.HttpRequestAttributesFields;
-import org.mule.raml.interfaces.model.IAction;
-import org.mule.raml.interfaces.model.IMimeType;
-import org.mule.raml.interfaces.model.IResponse;
-import org.mule.raml.interfaces.model.parameter.IParameter;
+import org.mule.apikit.model.Action;
+import org.mule.apikit.model.MimeType;
+import org.mule.apikit.model.Response;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -40,16 +40,16 @@ public class FlowMetadata implements MetadataSource {
 
   private static final String PARAMETER_INPUT_METADATA = "inputMetadata";
 
-  final private IAction action;
+  final private Action action;
   final private ApiCoordinate coordinate;
-  final private Map<String, IParameter> baseUriParameters;
+  final private Map<String, Parameter> baseUriParameters;
   final private String httpStatusVar;
   final private String outboundHeadersVar;
   final private RamlApiWrapper api;
   final private Notifier notifier;
 
-  public FlowMetadata(final RamlApiWrapper api, final IAction action, final ApiCoordinate coordinate,
-                      final Map<String, IParameter> baseUriParameters,
+  public FlowMetadata(final RamlApiWrapper api, final Action action, final ApiCoordinate coordinate,
+                      final Map<String, Parameter> baseUriParameters,
                       final String httpStatusVar,
                       final String outboundHeadersVar, Notifier notifier) {
     this.api = api;
@@ -76,8 +76,8 @@ public class FlowMetadata implements MetadataSource {
     return of(function);
   }
 
-  private MuleEventMetadataType inputMetadata(final IAction action, final ApiCoordinate coordinate,
-                                              final Map<String, IParameter> baseUriParameters) {
+  private MuleEventMetadataType inputMetadata(final Action action, final ApiCoordinate coordinate,
+                                              final Map<String, Parameter> baseUriParameters) {
     final MessageMetadataType message = new MessageMetadataTypeBuilder()
         .payload(getInputPayload(action, coordinate))
         .attributes(getInputAttributes(action, baseUriParameters)).build();
@@ -85,7 +85,7 @@ public class FlowMetadata implements MetadataSource {
     return new MuleEventMetadataTypeBuilder().message(message).build();
   }
 
-  private MuleEventMetadataType outputMetadata(final IAction action, final ApiCoordinate coordinate,
+  private MuleEventMetadataType outputMetadata(final Action action, final ApiCoordinate coordinate,
                                                final String outboundHeadersVar,
                                                String httpStatusVar) {
     final MessageMetadataType message = new MessageMetadataTypeBuilder()
@@ -96,8 +96,8 @@ public class FlowMetadata implements MetadataSource {
         .addVariable(httpStatusVar, MetadataFactory.stringMetadata()).build();
   }
 
-  private ObjectTypeBuilder getOutputHeaders(final IAction action) {
-    final Map<String, IParameter> headers = findFirstResponse(action).map(IResponse::getHeaders).orElse(emptyMap());
+  private ObjectTypeBuilder getOutputHeaders(final Action action) {
+    final Map<String, Parameter> headers = findFirstResponse(action).map(Response::getHeaders).orElse(emptyMap());
 
     final ObjectTypeBuilder builder = BaseTypeBuilder.create(MetadataFormat.JAVA).objectType();
 
@@ -107,8 +107,8 @@ public class FlowMetadata implements MetadataSource {
     return builder;
   }
 
-  private Optional<IResponse> findFirstResponse(final IAction action) {
-    final Optional<IResponse> response = getResponse(action, "200");
+  private Optional<Response> findFirstResponse(final Action action) {
+    final Optional<Response> response = getResponse(action, "200");
 
     if (response.isPresent())
       return response;
@@ -119,11 +119,11 @@ public class FlowMetadata implements MetadataSource {
         .findFirst();
   }
 
-  private Optional<IResponse> getResponse(final IAction action, final String statusCode) {
-    return Optional.ofNullable(action.getResponses().get(statusCode)).filter(IResponse::hasBody);
+  private Optional<Response> getResponse(final Action action, final String statusCode) {
+    return Optional.ofNullable(action.getResponses().get(statusCode)).filter(Response::hasBody);
   }
 
-  private ObjectTypeBuilder getQueryParameters(IAction action) {
+  private ObjectTypeBuilder getQueryParameters(Action action) {
     final ObjectTypeBuilder builder = BaseTypeBuilder.create(MetadataFormat.JAVA).objectType();
 
     action.getQueryParameters().forEach(
@@ -133,7 +133,7 @@ public class FlowMetadata implements MetadataSource {
     return builder;
   }
 
-  private ObjectTypeBuilder getInputHeaders(final IAction action) {
+  private ObjectTypeBuilder getInputHeaders(final Action action) {
     final ObjectTypeBuilder builder = BaseTypeBuilder.create(MetadataFormat.JAVA).objectType();
 
     action.getHeaders().forEach(
@@ -143,7 +143,7 @@ public class FlowMetadata implements MetadataSource {
     return builder;
   }
 
-  private ObjectType getInputAttributes(final IAction action, final Map<String, IParameter> baseUriParameters) {
+  private ObjectType getInputAttributes(final Action action, final Map<String, Parameter> baseUriParameters) {
 
     final ObjectTypeBuilder builder = BaseTypeBuilder.create(MetadataFormat.JAVA).objectType();
     builder.addField()
@@ -216,7 +216,7 @@ public class FlowMetadata implements MetadataSource {
     return builder.build();
   }
 
-  private ObjectTypeBuilder getUriParameters(final IAction action, Map<String, IParameter> baseUriParameters) {
+  private ObjectTypeBuilder getUriParameters(final Action action, Map<String, Parameter> baseUriParameters) {
     final ObjectTypeBuilder builder = BaseTypeBuilder.create(MetadataFormat.JAVA).objectType();
 
     baseUriParameters.forEach((name, parameter) -> builder.addField().key(name).value(parameter.getMetadata())
@@ -228,12 +228,12 @@ public class FlowMetadata implements MetadataSource {
     return builder;
   }
 
-  private MetadataType getOutputPayload(final IAction action, final ApiCoordinate coordinate) {
-    final Optional<Collection<IMimeType>> mimeTypes = findFirstResponse(action)
+  private MetadataType getOutputPayload(final Action action, final ApiCoordinate coordinate) {
+    final Optional<Collection<MimeType>> mimeTypes = findFirstResponse(action)
         .map(response -> response.getBody().values());
 
     @Nullable
-    final IMimeType mimeType;
+    final MimeType mimeType;
     if (mimeTypes.isPresent()) {
       mimeType = mimeTypes.get().stream().findFirst().orElse(null);
     } else {
@@ -243,9 +243,9 @@ public class FlowMetadata implements MetadataSource {
     return loadIOPayloadMetadata(mimeType, coordinate, api, "output");
   }
 
-  private MetadataType getInputPayload(final IAction action, final ApiCoordinate coordinate) {
+  private MetadataType getInputPayload(final Action action, final ApiCoordinate coordinate) {
     @Nullable
-    IMimeType mimeType = null;
+    MimeType mimeType = null;
 
     if (action.hasBody()) {
       if (action.getBody().size() == 1) {
@@ -258,7 +258,7 @@ public class FlowMetadata implements MetadataSource {
     return loadIOPayloadMetadata(mimeType, coordinate, api, "input");
   }
 
-  private MetadataType loadIOPayloadMetadata(final IMimeType mimeType, final ApiCoordinate coordinate, final RamlApiWrapper api,
+  private MetadataType loadIOPayloadMetadata(final MimeType mimeType, final ApiCoordinate coordinate, final RamlApiWrapper api,
                                              final String payloadDescription) {
     try {
       return MetadataFactory.payloadMetadata(api, mimeType);
