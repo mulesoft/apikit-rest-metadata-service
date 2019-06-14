@@ -1,0 +1,46 @@
+%type _:Java = (inputMetadata:{
+  "message" : @typeId("value" : "org.mule.runtime.api.message.Message") {
+    "payload" : Any, 
+    "attributes" : {
+      "clientCertificate"? : {
+        "publicKey"? : {
+
+        }, 
+        "type"? : String, 
+        "encoded"? : Binary
+      }, 
+      "headers" : {
+        "api_key" : String
+      }, 
+      "listenerPath" : String, 
+      "method" : String, 
+      "queryParams" : {
+
+      }, 
+      "queryString" : String, 
+      "relativePath" : String, 
+      "remoteAddress" : String, 
+      "requestPath" : String, 
+      "requestUri" : String, 
+      "scheme" : String, 
+      "uriParams" : {
+        "petId" : @range("from" : -9.223372036854776E18, "to" : 9.223372036854776E18) Number
+      }, 
+      "version" : String, 
+      "localAddress" : String
+    }
+  }, 
+  "variables" : {
+
+  }
+}) -> {
+  "message" : @typeId("value" : "org.mule.runtime.api.message.Message") {
+    "payload" : Any
+  }, 
+  "variables" : {
+    "outboundHeaders" : {
+
+    }, 
+    "httpStatus" : String
+  }
+}
