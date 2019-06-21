@@ -93,6 +93,28 @@
             <groupId>org.mule.raml</groupId>
             <artifactId>parser-service</artifactId>
             <version>${apikit.version}</version>
+            <exclusions>
+                <!-- TODO: DELETE WHEN PARSER-SERVICE BUNDLES NEW VERSIONS OF THIS LIBS -->
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.module</groupId>
+                    <artifactId>jackson-module-jsonSchema</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- TODO: DELETE WHEN PARSER-SERVICE BUNDLES NEW VERSIONS OF THIS LIBS -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.9.9</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jsonSchema</artifactId>
+            <version>2.9.9</version>
         </dependency>
 
         <!-- Force to use 1.18 -->
