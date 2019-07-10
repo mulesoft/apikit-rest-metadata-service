@@ -6,18 +6,19 @@
  */
 package org.mule.module.apikit.metadata.internal.model;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.util.Optional.empty;
+
 import org.mule.metadata.api.model.FunctionType;
 import org.mule.runtime.apikit.metadata.api.Metadata;
 import org.mule.runtime.apikit.metadata.api.MetadataSource;
 import org.mule.runtime.apikit.metadata.api.Notifier;
 import org.mule.runtime.apikit.metadata.api.ResourceLoader;
-import org.mule.runtime.config.internal.model.ApplicationModel;
+import org.mule.runtime.ast.api.ArtifactAst;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static java.util.Optional.empty;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 public class MetadataModel implements Metadata {
 
@@ -25,7 +26,7 @@ public class MetadataModel implements Metadata {
   private final Map<String, String> httpStatus; // [{config -> http status var name}]
   private final Map<String, String> outboundHeaders; // [{config -> output header map name}]
 
-  public MetadataModel(final ApplicationModel model, final ResourceLoader loader, final Notifier notifier) {
+  public MetadataModel(final ArtifactAst model, final ResourceLoader loader, final Notifier notifier) {
     this.applicationModel = new ApplicationModelWrapper(model, loader, notifier);
     this.httpStatus = loadHttpStatusVars(applicationModel);
     this.outboundHeaders = loadOutboundHeaders(applicationModel);
@@ -38,6 +39,7 @@ public class MetadataModel implements Metadata {
    * @param flowName Name of the flow
    * @return The Metadata
    */
+  @Override
   public Optional<FunctionType> getMetadataForFlow(final String flowName) {
     // Getting the RAML Coordinate for the specified flowName
     final Optional<ApiCoordinate> coordinate = applicationModel.getApiCoordinate(flowName);

@@ -6,15 +6,15 @@
  */
 package org.mule.module.apikit.metadata.internal;
 
+import static org.mule.apikit.common.ApiSyncUtils.isExchangeModules;
+import static org.mule.apikit.common.ApiSyncUtils.toApiSyncResource;
+
 import org.mule.module.apikit.metadata.internal.model.MetadataModel;
 import org.mule.runtime.apikit.metadata.api.Metadata;
 import org.mule.runtime.apikit.metadata.api.MetadataBuilder;
 import org.mule.runtime.apikit.metadata.api.Notifier;
 import org.mule.runtime.apikit.metadata.api.ResourceLoader;
-import org.mule.runtime.config.internal.model.ApplicationModel;
-
-import static org.mule.apikit.common.ApiSyncUtils.isExchangeModules;
-import static org.mule.apikit.common.ApiSyncUtils.toApiSyncResource;
+import org.mule.runtime.ast.api.ArtifactAst;
 
 /**
  * Builder for Metadata module
@@ -22,7 +22,7 @@ import static org.mule.apikit.common.ApiSyncUtils.toApiSyncResource;
 public class MetadataBuilderImpl implements MetadataBuilder {
 
   private ResourceLoader resourceLoader;
-  private ApplicationModel applicationModel;
+  private ArtifactAst applicationModel;
   private Notifier notifier;
 
   public static final String MULE_APIKIT_PARSER = "mule.apikit.parser";
@@ -31,21 +31,25 @@ public class MetadataBuilderImpl implements MetadataBuilder {
 
   }
 
+  @Override
   public MetadataBuilderImpl withResourceLoader(final ResourceLoader resourceLoader) {
     this.resourceLoader = resourceLoader;
     return this;
   }
 
-  public MetadataBuilderImpl withApplicationModel(final ApplicationModel applicationModel) {
+  @Override
+  public MetadataBuilderImpl withApplicationModel(final ArtifactAst applicationModel) {
     this.applicationModel = applicationModel;
     return this;
   }
 
+  @Override
   public MetadataBuilderImpl withNotifier(final Notifier notifier) {
     this.notifier = notifier;
     return this;
   }
 
+  @Override
   public Metadata build() {
     return new MetadataModel(applicationModel, doMagic(resourceLoader), notifier);
   }

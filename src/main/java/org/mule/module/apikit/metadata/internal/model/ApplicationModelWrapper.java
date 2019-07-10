@@ -6,20 +6,6 @@
  */
 package org.mule.module.apikit.metadata.internal.model;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
-import org.mule.runtime.api.component.ComponentIdentifier;
-import org.mule.runtime.apikit.metadata.api.Notifier;
-import org.mule.runtime.apikit.metadata.api.ResourceLoader;
-import org.mule.runtime.config.internal.model.ApplicationModel;
-import org.mule.runtime.config.internal.model.ComponentModel;
-
-import static java.util.Arrays.asList;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
@@ -27,6 +13,19 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
+
+import org.mule.runtime.api.component.ComponentIdentifier;
+import org.mule.runtime.apikit.metadata.api.Notifier;
+import org.mule.runtime.apikit.metadata.api.ResourceLoader;
+import org.mule.runtime.ast.api.ArtifactAst;
+import org.mule.runtime.ast.api.ComponentAst;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 public class ApplicationModelWrapper {
 
@@ -45,14 +44,14 @@ public class ApplicationModelWrapper {
   private static final ComponentIdentifier FLOW = buildFromStringRepresentation("flow");
   private static final ComponentIdentifier APIKIT_CONFIG = buildFromStringRepresentation("apikit:config");
 
-  private final ApplicationModel applicationModel;
+  private final ArtifactAst applicationModel;
   private final ResourceLoader resourceLoader;
   private final Notifier notifier;
 
-  private Map<String, ApikitConfig> configMap;
-  private Map<String, ApiCoordinate> metadataFlows;
+  private final Map<String, ApikitConfig> configMap;
+  private final Map<String, ApiCoordinate> metadataFlows;
 
-  public ApplicationModelWrapper(final ApplicationModel applicationModel, final ResourceLoader loader, final Notifier notifier) {
+  public ApplicationModelWrapper(final ArtifactAst applicationModel, final ResourceLoader loader, final Notifier notifier) {
     this.applicationModel = applicationModel;
     this.resourceLoader = loader;
     this.notifier = notifier;
@@ -76,7 +75,7 @@ public class ApplicationModelWrapper {
   }
 
   private Map<String, ApikitConfig> loadConfigs() {
-    return applicationModel.getRootComponentModel().getInnerComponents().stream()
+    return applicationModel.topLevelComponentsStream()
         .filter(ApplicationModelWrapper::isApikitConfig)
         .map(this::createApikitConfig)
         .collect(toMap(ApikitConfig::getName, identity()));
@@ -99,18 +98,18 @@ public class ApplicationModelWrapper {
         .collect(toMap(ApiCoordinate::getFlowName, identity()));
   }
 
-  private ApikitConfig createApikitConfig(final ComponentModel config) {
-    final Map<String, String> parameters = config.getParameters();
-    final String configName = parameters.get(PARAMETER_NAME);
-    final String apiDefinition = getApiDefinition(parameters);
-    final String outputHeadersVarName = parameters.get(PARAMETER_OUTPUT_HEADERS_VAR);
-    final String httpStatusVarName = parameters.get(PARAMETER_HTTP_STATUS_VAR);
-    final String parser = parameters.get(PARAMETER_PARSER);
+  private ApikitConfig createApikitConfig(final ComponentAst config) {
+    final String configName = config.getRawParameterValue(PARAMETER_NAME).orElse(null);
+    final String apiDefinition = getApiDefinition(config);
+    final String outputHeadersVarName = config.getRawParameterValue(PARAMETER_OUTPUT_HEADERS_VAR).orElse(null);
+    final String httpStatusVarName = config.getRawParameterValue(PARAMETER_HTTP_STATUS_VAR).orElse(null);
+    final String parser = config.getRawParameterValue(PARAMETER_PARSER).orElse(null);
 
-    final List<FlowMapping> flowMappings = config.getInnerComponents()
-        .stream()
+    final List<FlowMapping> flowMappings = config.recursiveStream()
+        .filter(config.directChildrenPredicate())
         .filter(cfg -> ApikitElementIdentifiers.isFlowMappings(cfg.getIdentifier()))
-        .flatMap(flowMappingsElement -> flowMappingsElement.getInnerComponents().stream())
+        .flatMap(flowMappingsElement -> flowMappingsElement.recursiveStream()
+            .filter(flowMappingsElement.directChildrenPredicate()))
         .filter(flowMapping -> ApikitElementIdentifiers.isFlowMapping(flowMapping.getIdentifier()))
         .map(unwrappedFlowMapping -> createFlowMapping(configName, unwrappedFlowMapping))
         .collect(toList());
@@ -119,29 +118,24 @@ public class ApplicationModelWrapper {
                             parser, resourceLoader, notifier);
   }
 
-  private static String getApiDefinition(Map<String, String> parameters) {
-    if (parameters.containsKey(PARAMETER_API_DEFINITION)) {
-      return parameters.get(PARAMETER_API_DEFINITION);
-    } else if (parameters.containsKey(PARAMETER_RAML_DEFINITION)) {
-      return parameters.get(PARAMETER_RAML_DEFINITION);
-    }
-    return null;
+  private static String getApiDefinition(ComponentAst config) {
+    return config.getRawParameterValue(PARAMETER_API_DEFINITION)
+        .orElseGet(() -> config.getRawParameterValue(PARAMETER_RAML_DEFINITION).orElse(null));
   }
 
   public List<Flow> findFlows() {
     return findFlows(applicationModel);
   }
 
-  public static List<Flow> findFlows(final ApplicationModel applicationModel) {
-    return applicationModel.getRootComponentModel().getInnerComponents().stream()
+  public static List<Flow> findFlows(final ArtifactAst applicationModel) {
+    return applicationModel.topLevelComponentsStream()
         .filter(ApplicationModelWrapper::isFlow)
         .map(ApplicationModelWrapper::createFlow)
         .collect(toList());
   }
 
-  private static Flow createFlow(ComponentModel componentModel) {
-    final Map<String, String> parameters = componentModel.getParameters();
-    final String flowName = parameters.get(PARAMETER_NAME);
+  private static Flow createFlow(ComponentAst componentModel) {
+    final String flowName = componentModel.getRawParameterValue(PARAMETER_NAME).orElse(null);
     return new Flow(flowName);
   }
 
@@ -170,21 +164,19 @@ public class ApplicationModelWrapper {
   }
 
 
-  private static boolean isFlow(final ComponentModel component) {
+  private static boolean isFlow(final ComponentAst component) {
     return component.getIdentifier().equals(FLOW);
   }
 
-  private static boolean isApikitConfig(final ComponentModel component) {
+  private static boolean isApikitConfig(final ComponentAst component) {
     return component.getIdentifier().equals(APIKIT_CONFIG);
   }
 
-  private static FlowMapping createFlowMapping(final String configName, final ComponentModel component) {
-    final Map<String, String> flowMappingParameters = component.getParameters();
-
-    final String resource = flowMappingParameters.get(PARAMETER_RESOURCE);
-    final String action = flowMappingParameters.get(PARAMETER_ACTION);
-    final String contentType = flowMappingParameters.get(PARAMETER_CONTENT_TYPE);
-    final String flowRef = flowMappingParameters.get(PARAMETER_FLOW_REF);
+  private static FlowMapping createFlowMapping(final String configName, final ComponentAst component) {
+    final String resource = component.getRawParameterValue(PARAMETER_RESOURCE).orElse(null);
+    final String action = component.getRawParameterValue(PARAMETER_ACTION).orElse(null);
+    final String contentType = component.getRawParameterValue(PARAMETER_CONTENT_TYPE).orElse(null);
+    final String flowRef = component.getRawParameterValue(PARAMETER_FLOW_REF).orElse(null);
 
     return new FlowMapping(configName, resource, action, contentType, flowRef);
   }
