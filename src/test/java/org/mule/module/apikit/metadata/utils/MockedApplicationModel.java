@@ -6,8 +6,21 @@
  */
 package org.mule.module.apikit.metadata.utils;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableSet;
+import static java.lang.String.format;
+import static java.util.Collections.emptySet;
+import static org.mule.module.apikit.metadata.utils.MetadataProviderUtil.createComponentBuildingDefinitionRegistry;
+
+import org.mule.runtime.api.meta.model.ExtensionModel;
+import org.mule.runtime.ast.api.ArtifactAst;
+import org.mule.runtime.ast.api.ComponentAst;
+import org.mule.runtime.config.api.dsl.model.ResourceProvider;
+import org.mule.runtime.config.api.dsl.processor.ArtifactConfig;
+import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.core.api.extension.RuntimeExtensionModelProvider;
+import org.mule.runtime.core.api.registry.SpiServiceRegistry;
+import org.mule.runtime.dsl.api.component.ComponentBuildingDefinitionProvider;
+import org.mule.runtime.dsl.api.xml.parser.ConfigFile;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,21 +33,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
 import org.apache.commons.io.IOUtils;
-import org.mule.runtime.api.meta.model.ExtensionModel;
-import org.mule.runtime.config.api.dsl.model.ResourceProvider;
-import org.mule.runtime.config.api.dsl.processor.ArtifactConfig;
-import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.extension.RuntimeExtensionModelProvider;
-import org.mule.runtime.core.api.registry.SpiServiceRegistry;
-import org.mule.runtime.dsl.api.component.ComponentBuildingDefinitionProvider;
-import org.mule.runtime.dsl.api.xml.parser.ConfigFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static java.lang.String.format;
-import static java.util.Collections.emptySet;
-import static org.mule.module.apikit.metadata.utils.MetadataProviderUtil.createComponentBuildingDefinitionRegistry;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
 
 // THIS CLASS WAS COPIED FROM git@github.com:mulesoft/mule-datasense-api.git
 public class MockedApplicationModel implements ApplicationModel {
@@ -43,11 +48,11 @@ public class MockedApplicationModel implements ApplicationModel {
 
   private final String name;
   private final URI baseURI;
-  private org.mule.runtime.config.internal.model.ApplicationModel applicationModel;
-  private List<String> typesDataList;
+  private final ArtifactAst applicationModel;
+  private final List<String> typesDataList;
 
   private MockedApplicationModel(String name,
-                                 org.mule.runtime.config.internal.model.ApplicationModel applicationModel,
+                                 ArtifactAst applicationModel,
                                  List<String> typesDataList, URI baseURI) {
     this.name = name;
     this.applicationModel = applicationModel;
@@ -68,7 +73,8 @@ public class MockedApplicationModel implements ApplicationModel {
     return Optional.of(baseURI.resolve(resource));
   }
 
-  public org.mule.runtime.config.internal.model.ApplicationModel getMuleApplicationModel() {
+  @Override
+  public ArtifactAst getMuleApplicationModel() {
     return applicationModel;
   }
 
@@ -111,15 +117,13 @@ public class MockedApplicationModel implements ApplicationModel {
   }
 
   @Override
-  public org.mule.runtime.config.internal.model.ComponentModel findRootComponentModel() {
-    return getMuleApplicationModel().getRootComponentModel();
+  public Optional<ComponentAst> findNamedComponent(String name) {
+    return getMuleApplicationModel().topLevelComponentsStream()
+        .filter(comp -> name.equals(comp.getName().orElse(null)))
+        .findFirst();
   }
 
   @Override
-  public Optional<org.mule.runtime.config.internal.model.ComponentModel> findNamedComponent(String name) {
-    return getMuleApplicationModel().findTopLevelNamedComponent(name);
-  }
-
   public List<String> findTypesDataList() {
     return typesDataList;
   }
@@ -130,7 +134,7 @@ public class MockedApplicationModel implements ApplicationModel {
     private final ArtifactConfig.Builder artifactConfigBuilder;
     private ResourceProvider resourceProvider;
     private MuleContext muleContext;
-    private List<String> typesDataList;
+    private final List<String> typesDataList;
     private URI baseURI;
 
     public Builder() {
@@ -202,7 +206,7 @@ public class MockedApplicationModel implements ApplicationModel {
       Set<ExtensionModel> extensionModels =
           Optional.ofNullable(muleContext).map(m -> m.getExtensionManager().getExtensions()).orElse(emptySet());
 
-      org.mule.runtime.config.internal.model.ApplicationModel toolingApplicationModel =
+      ArtifactAst toolingApplicationModel =
           MuleAppUtil.loadApplicationModel(artifactConfigBuilder.build(), "",
                                            ImmutableSet.<ExtensionModel>builder()
                                                .addAll(extensionModels)
@@ -217,9 +221,9 @@ public class MockedApplicationModel implements ApplicationModel {
 
       logger.debug("Resolved locations for Tooling ApplicationModel:");
       toolingApplicationModel
-          .executeOnEveryComponentTree(componentModel -> {
-            if (componentModel.getComponentLocation() != null) {
-              logger.debug(format("Location: %s (%s)", componentModel.getComponentLocation().getLocation(),
+          .recursiveStream().forEach(componentModel -> {
+            if (componentModel.getLocation() != null) {
+              logger.debug(format("Location: %s (%s)", componentModel.getLocation().getLocation(),
                                   componentModel.getIdentifier()));
             }
           });

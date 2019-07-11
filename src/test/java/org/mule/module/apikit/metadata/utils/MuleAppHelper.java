@@ -6,15 +6,11 @@
  */
 package org.mule.module.apikit.metadata.utils;
 
-import com.google.common.collect.ImmutableList;
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import javax.xml.parsers.SAXParserFactory;
+import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader.noValidationDocumentLoader;
+
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.meta.model.ExtensionModel;
+import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.config.api.dsl.model.ComponentBuildingDefinitionRegistry;
 import org.mule.runtime.config.api.dsl.model.ResourceProvider;
 import org.mule.runtime.config.api.dsl.processor.ArtifactConfig;
@@ -25,10 +21,19 @@ import org.mule.runtime.dsl.api.xml.XmlNamespaceInfoProvider;
 import org.mule.runtime.dsl.api.xml.parser.ConfigFile;
 import org.mule.runtime.dsl.api.xml.parser.ConfigLine;
 import org.mule.runtime.dsl.internal.xml.parser.XmlApplicationParser;
+
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.xml.parsers.SAXParserFactory;
+
 import org.w3c.dom.Document;
 import org.xml.sax.helpers.DefaultHandler;
 
-import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader.noValidationDocumentLoader;
+import com.google.common.collect.ImmutableList;
 
 // THIS CLASS WAS COPIED FROM git@github.com:mulesoft/mule-datasense-api.git
 class MuleAppHelper {
@@ -53,8 +58,8 @@ class MuleAppHelper {
     return xmlApplicationParser.parse(document.getDocumentElement());
   }
 
-  public static ApplicationModel loadApplicationModel(ConfigLine configLine,
-                                                      String fileName)
+  public static ArtifactAst loadApplicationModel(ConfigLine configLine,
+                                                 String fileName)
       throws Exception {
     ArtifactConfig artifactConfig = new ArtifactConfig.Builder()
         .addConfigFile(new ConfigFile(fileName, Collections.singletonList(configLine))).build();
@@ -65,21 +70,21 @@ class MuleAppHelper {
                                 });
   }
 
-  public static ApplicationModel loadApplicationModel(
-                                                      ArtifactConfig artifactConfig,
-                                                      String fileName,
-                                                      Set<ExtensionModel> extensionModels,
-                                                      Optional<ComponentBuildingDefinitionRegistry> componentBuildingDefinitionRegistry,
-                                                      boolean runtimeMode,
-                                                      ResourceProvider externalResourceProvider)
+  public static ArtifactAst loadApplicationModel(
+                                                 ArtifactConfig artifactConfig,
+                                                 String fileName,
+                                                 Set<ExtensionModel> extensionModels,
+                                                 Optional<ComponentBuildingDefinitionRegistry> componentBuildingDefinitionRegistry,
+                                                 boolean runtimeMode,
+                                                 ResourceProvider externalResourceProvider)
       throws Exception {
     return new ApplicationModel(artifactConfig, null,
                                 extensionModels, Collections.emptyMap(),
                                 Optional.empty(), componentBuildingDefinitionRegistry, runtimeMode, externalResourceProvider);
   }
 
-  public static Optional<ApplicationModel> createInternalApplicationModel(String name,
-                                                                          InputStream inputStream) {
+  public static Optional<ArtifactAst> createInternalApplicationModel(String name,
+                                                                     InputStream inputStream) {
     return loadConfigLines(inputStream).map(configLine -> {
       try {
         return loadApplicationModel(configLine, name);

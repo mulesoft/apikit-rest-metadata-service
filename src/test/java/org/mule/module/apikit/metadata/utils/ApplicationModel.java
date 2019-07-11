@@ -6,10 +6,11 @@
  */
 package org.mule.module.apikit.metadata.utils;
 
+import org.mule.runtime.ast.api.ArtifactAst;
+import org.mule.runtime.ast.api.ComponentAst;
+
 import java.net.URI;
 import java.util.List;
-import org.mule.runtime.config.internal.model.ComponentModel;
-
 import java.util.Optional;
 
 // THIS CLASS WAS COPIED FROM git@github.com:mulesoft/mule-datasense-api.git
@@ -17,20 +18,14 @@ interface ApplicationModel {
 
   /**
    *
-   * @return
-   */
-  ComponentModel findRootComponentModel();
-
-  /**
-   *
    * @param name
    * @return
    */
-  Optional<ComponentModel> findNamedComponent(String name);
+  Optional<ComponentAst> findNamedComponent(String name);
 
   List<String> findTypesDataList();
 
-  org.mule.runtime.config.internal.model.ApplicationModel getMuleApplicationModel();
+  ArtifactAst getMuleApplicationModel();
 
   default Optional<URI> findResource(String resource) {
     return Optional.empty();

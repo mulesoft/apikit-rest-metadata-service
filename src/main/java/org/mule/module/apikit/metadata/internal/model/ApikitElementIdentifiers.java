@@ -7,7 +7,7 @@
 package org.mule.module.apikit.metadata.internal.model;
 
 import org.mule.runtime.api.component.ComponentIdentifier;
-import org.mule.runtime.config.internal.model.ComponentModel;
+import org.mule.runtime.ast.api.ComponentAst;
 
 /**
  * Helper class that tells if a given XML Component is some of the valid APIKit
@@ -35,11 +35,11 @@ public class ApikitElementIdentifiers {
       ComponentIdentifier.buildFromStringRepresentation("apikit:flow-mapping");
 
 
-  public static boolean isFlow(ComponentModel component) {
+  public static boolean isFlow(ComponentAst component) {
     return component.getIdentifier().equals(FLOW);
   }
 
-  public static boolean isApikitConfig(ComponentModel component) {
+  public static boolean isApikitConfig(ComponentAst component) {
     return component.getIdentifier().equals(APIKIT_CONFIG);
   }
 
