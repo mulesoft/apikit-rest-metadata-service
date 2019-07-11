@@ -105,11 +105,9 @@ public class ApplicationModelWrapper {
     final String httpStatusVarName = config.getRawParameterValue(PARAMETER_HTTP_STATUS_VAR).orElse(null);
     final String parser = config.getRawParameterValue(PARAMETER_PARSER).orElse(null);
 
-    final List<FlowMapping> flowMappings = config.recursiveStream()
-        .filter(config.directChildrenPredicate())
+    final List<FlowMapping> flowMappings = config.directChildrenStream()
         .filter(cfg -> ApikitElementIdentifiers.isFlowMappings(cfg.getIdentifier()))
-        .flatMap(flowMappingsElement -> flowMappingsElement.recursiveStream()
-            .filter(flowMappingsElement.directChildrenPredicate()))
+        .flatMap(flowMappingsElement -> flowMappingsElement.directChildrenStream())
         .filter(flowMapping -> ApikitElementIdentifiers.isFlowMapping(flowMapping.getIdentifier()))
         .map(unwrappedFlowMapping -> createFlowMapping(configName, unwrappedFlowMapping))
         .collect(toList());
