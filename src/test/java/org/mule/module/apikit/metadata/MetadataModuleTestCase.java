@@ -6,7 +6,14 @@
  */
 package org.mule.module.apikit.metadata;
 
-import org.junit.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.mule.module.apikit.metadata.utils.TestNotifier.DEBUG;
+import static org.mule.module.apikit.metadata.utils.TestNotifier.ERROR;
+import static org.mule.module.apikit.metadata.utils.TestNotifier.INFO;
+import static org.mule.module.apikit.metadata.utils.TestNotifier.WARN;
+
 import org.mule.metadata.api.model.FunctionType;
 import org.mule.module.apikit.metadata.internal.MetadataBuilderImpl;
 import org.mule.module.apikit.metadata.utils.MockedApplicationModel;
@@ -15,17 +22,11 @@ import org.mule.module.apikit.metadata.utils.TestResourceLoader;
 import org.mule.runtime.apikit.metadata.api.Metadata;
 import org.mule.runtime.apikit.metadata.api.Notifier;
 import org.mule.runtime.apikit.metadata.api.ResourceLoader;
-import org.mule.runtime.config.internal.model.ApplicationModel;
+import org.mule.runtime.ast.api.ArtifactAst;
 
 import java.util.Optional;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.mule.module.apikit.metadata.utils.TestNotifier.ERROR;
-import static org.mule.module.apikit.metadata.utils.TestNotifier.DEBUG;
-import static org.mule.module.apikit.metadata.utils.TestNotifier.INFO;
-import static org.mule.module.apikit.metadata.utils.TestNotifier.WARN;
+import org.junit.Test;
 
 public class MetadataModuleTestCase {
 
@@ -35,7 +36,7 @@ public class MetadataModuleTestCase {
     ResourceLoader resourceLoader = new TestResourceLoader();
     Notifier notifier = new TestNotifier();
 
-    ApplicationModel applicationModel = createApplicationModel("org/mule/module/apikit/metadata/flow-mappings/app.xml");
+    ArtifactAst applicationModel = createApplicationModel("org/mule/module/apikit/metadata/flow-mappings/app.xml");
     assertThat(applicationModel, notNullValue());
 
     Metadata metadata = new MetadataBuilderImpl()
@@ -64,7 +65,7 @@ public class MetadataModuleTestCase {
     ResourceLoader resourceLoader = new TestResourceLoader();
     Notifier notifier = new TestNotifier();
 
-    ApplicationModel applicationModel =
+    ArtifactAst applicationModel =
         createApplicationModel("org/mule/module/apikit/metadata/single-api-with-no-name/app.xml");
     assertThat(applicationModel, notNullValue());
 
@@ -87,7 +88,7 @@ public class MetadataModuleTestCase {
     ResourceLoader resourceLoader = new TestResourceLoader();
     Notifier notifier = new TestNotifier();
 
-    ApplicationModel applicationModel = createApplicationModel("org/mule/module/apikit/metadata/api-in-raml08/app.xml");
+    ArtifactAst applicationModel = createApplicationModel("org/mule/module/apikit/metadata/api-in-raml08/app.xml");
     assertThat(applicationModel, notNullValue());
 
     Metadata metadata = new MetadataBuilderImpl()
@@ -116,7 +117,7 @@ public class MetadataModuleTestCase {
     ResourceLoader resourceLoader = new TestResourceLoader();
     TestNotifier notifier = new TestNotifier();
 
-    ApplicationModel applicationModel = createApplicationModel("org/mule/module/apikit/metadata/api-in-raml08/app.xml");
+    ArtifactAst applicationModel = createApplicationModel("org/mule/module/apikit/metadata/api-in-raml08/app.xml");
     assertThat(applicationModel, notNullValue());
 
     final Metadata metadata = getMetadata(resourceLoader, notifier, applicationModel);
@@ -132,7 +133,7 @@ public class MetadataModuleTestCase {
     ResourceLoader resourceLoader = new TestResourceLoader();
     TestNotifier notifier = new TestNotifier();
 
-    ApplicationModel model = createApplicationModel("org/mule/module/apikit/metadata/invalid-raml-file-location/app.xml");
+    ArtifactAst model = createApplicationModel("org/mule/module/apikit/metadata/invalid-raml-file-location/app.xml");
     assertThat(model, notNullValue());
 
     Metadata metadata;
@@ -155,7 +156,7 @@ public class MetadataModuleTestCase {
 
   }
 
-  private Metadata getMetadata(ResourceLoader resourceLoader, TestNotifier notifier, ApplicationModel model) {
+  private Metadata getMetadata(ResourceLoader resourceLoader, TestNotifier notifier, ArtifactAst model) {
     return new MetadataBuilderImpl()
         .withApplicationModel(model)
         .withResourceLoader(resourceLoader)
@@ -163,7 +164,7 @@ public class MetadataModuleTestCase {
         .build();
   }
 
-  private ApplicationModel createApplicationModel(String resourceName) throws Exception {
+  private ArtifactAst createApplicationModel(String resourceName) throws Exception {
     final MockedApplicationModel.Builder builder = new MockedApplicationModel.Builder();
     builder.addConfig("apiKitSample", getClass().getClassLoader().getResourceAsStream(resourceName));
     final MockedApplicationModel mockedApplicationModel = builder.build();

@@ -6,6 +6,20 @@
  */
 package org.mule.module.apikit.metadata;
 
+import static java.util.stream.Collectors.toList;
+
+import org.mule.metadata.api.model.FunctionType;
+import org.mule.metadata.internal.utils.MetadataTypeWriter;
+import org.mule.module.apikit.metadata.internal.MetadataBuilderImpl;
+import org.mule.module.apikit.metadata.internal.model.ApplicationModelWrapper;
+import org.mule.module.apikit.metadata.internal.model.Flow;
+import org.mule.module.apikit.metadata.utils.MetadataFixer;
+import org.mule.module.apikit.metadata.utils.MockedApplicationModel;
+import org.mule.module.apikit.metadata.utils.TestNotifier;
+import org.mule.module.apikit.metadata.utils.TestResourceLoader;
+import org.mule.runtime.apikit.metadata.api.Metadata;
+import org.mule.runtime.ast.api.ArtifactAst;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -17,19 +31,6 @@ import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
-import org.mule.metadata.api.model.FunctionType;
-import org.mule.metadata.internal.utils.MetadataTypeWriter;
-import org.mule.module.apikit.metadata.internal.MetadataBuilderImpl;
-import org.mule.module.apikit.metadata.internal.model.ApplicationModelWrapper;
-import org.mule.module.apikit.metadata.internal.model.Flow;
-import org.mule.module.apikit.metadata.utils.MetadataFixer;
-import org.mule.module.apikit.metadata.utils.MockedApplicationModel;
-import org.mule.module.apikit.metadata.utils.TestNotifier;
-import org.mule.module.apikit.metadata.utils.TestResourceLoader;
-import org.mule.runtime.apikit.metadata.api.Metadata;
-import org.mule.runtime.config.internal.model.ApplicationModel;
-
-import static java.util.stream.Collectors.toList;
 
 public class AbstractMetadataTestCase {
 
@@ -52,7 +53,7 @@ public class AbstractMetadataTestCase {
         .collect(toList());
   }
 
-  protected static ApplicationModel createApplicationModel(final File app) throws Exception {
+  protected static ArtifactAst createApplicationModel(final File app) throws Exception {
     final MockedApplicationModel.Builder builder = new MockedApplicationModel.Builder();
     builder.addConfig("apiKitSample", app);
     final MockedApplicationModel mockedApplicationModel = builder.build();
@@ -60,7 +61,7 @@ public class AbstractMetadataTestCase {
   }
 
   protected static List<Flow> findFlows(final File app) throws Exception {
-    final ApplicationModel applicationModel = createApplicationModel(app);
+    final ArtifactAst applicationModel = createApplicationModel(app);
 
     // Only APIKit flows
     return ApplicationModelWrapper.findFlows(applicationModel).stream()
@@ -76,7 +77,7 @@ public class AbstractMetadataTestCase {
 
   }
 
-  private static boolean hasMetadata(final ApplicationModel applicationModel, final Flow flow) {
+  private static boolean hasMetadata(final ArtifactAst applicationModel, final Flow flow) {
     try {
       return getMetadata(applicationModel, flow).isPresent();
     } catch (Exception e) {
@@ -88,7 +89,7 @@ public class AbstractMetadataTestCase {
     return metadata.getMetadataForFlow(flow.getName());
   }
 
-  protected static Optional<FunctionType> getMetadata(final ApplicationModel applicationModel, final Flow flow) throws Exception {
+  protected static Optional<FunctionType> getMetadata(final ArtifactAst applicationModel, final Flow flow) throws Exception {
 
     final Metadata metadata = new MetadataBuilderImpl()
         .withApplicationModel(applicationModel)

@@ -6,6 +6,17 @@
  */
 package org.mule.module.apikit.metadata;
 
+import static java.lang.String.format;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.mule.module.apikit.metadata.internal.MetadataBuilderImpl.MULE_APIKIT_PARSER;
+
+import org.mule.metadata.api.model.FunctionType;
+import org.mule.module.apikit.metadata.internal.model.Flow;
+import org.mule.runtime.ast.api.ArtifactAst;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -14,28 +25,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.mule.metadata.api.model.FunctionType;
-import org.mule.module.apikit.metadata.internal.model.Flow;
-import org.mule.runtime.config.internal.model.ApplicationModel;
-
-import static java.lang.String.format;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.mule.module.apikit.metadata.internal.MetadataBuilderImpl.MULE_APIKIT_PARSER;
 
 @RunWith(Parameterized.class)
 public class MetadataTestCase extends AbstractMetadataTestCase {
 
-  private String parser;
-  private File app;
-  private Flow flow;
+  private final String parser;
+  private final File app;
+  private final Flow flow;
 
   public MetadataTestCase(final String parser, final String folderName, final File app, final Flow flow) {
 
@@ -61,7 +63,7 @@ public class MetadataTestCase extends AbstractMetadataTestCase {
 
     final File goldenFile = goldenFile(flow, app, parser);
 
-    final ApplicationModel applicationModel = createApplicationModel(app);
+    final ArtifactAst applicationModel = createApplicationModel(app);
     assertThat(applicationModel, notNullValue());
 
     final Optional<FunctionType> metadata = getMetadata(applicationModel, flow);
