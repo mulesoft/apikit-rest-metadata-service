@@ -6,14 +6,16 @@
  */
 package org.mule.module.apikit.metadata.utils;
 
-import java.io.InputStream;
-import java.util.Optional;
-import java.util.Set;
 import org.mule.runtime.api.meta.model.ExtensionModel;
+import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.config.api.dsl.model.ComponentBuildingDefinitionRegistry;
 import org.mule.runtime.config.api.dsl.model.ResourceProvider;
 import org.mule.runtime.config.api.dsl.processor.ArtifactConfig;
 import org.mule.runtime.dsl.api.xml.parser.ConfigLine;
+
+import java.io.InputStream;
+import java.util.Optional;
+import java.util.Set;
 
 // THIS CLASS WAS COPIED FROM git@github.com:mulesoft/mule-datasense-api.git
 class MuleAppUtil {
@@ -22,20 +24,20 @@ class MuleAppUtil {
     return MuleAppHelper.loadConfigLines(inputStream);
   }
 
-  public static org.mule.runtime.config.internal.model.ApplicationModel loadApplicationModel(
-                                                                                             ArtifactConfig artifactConfig,
-                                                                                             String fileName,
-                                                                                             Set<ExtensionModel> extensionModels,
-                                                                                             Optional<ComponentBuildingDefinitionRegistry> componentBuildingDefinitionRegistry,
-                                                                                             boolean runtimeMode,
-                                                                                             ResourceProvider externalResourceProvider)
+  public static ArtifactAst loadApplicationModel(
+                                                 ArtifactConfig artifactConfig,
+                                                 String fileName,
+                                                 Set<ExtensionModel> extensionModels,
+                                                 Optional<ComponentBuildingDefinitionRegistry> componentBuildingDefinitionRegistry,
+                                                 boolean runtimeMode,
+                                                 ResourceProvider externalResourceProvider)
       throws Exception {
     return MuleAppHelper.loadApplicationModel(artifactConfig, fileName, extensionModels, componentBuildingDefinitionRegistry,
                                               runtimeMode, externalResourceProvider);
   }
 
-  public static Optional<org.mule.runtime.config.internal.model.ApplicationModel> createInternalApplicationModel(String name,
-                                                                                                                 InputStream inputStream) {
+  public static Optional<ArtifactAst> createInternalApplicationModel(String name,
+                                                                     InputStream inputStream) {
     return MuleAppHelper.createInternalApplicationModel(name, inputStream);
   }
 }

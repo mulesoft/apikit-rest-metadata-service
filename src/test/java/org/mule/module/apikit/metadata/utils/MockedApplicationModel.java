@@ -206,7 +206,7 @@ public class MockedApplicationModel implements ApplicationModel {
       Set<ExtensionModel> extensionModels =
           Optional.ofNullable(muleContext).map(m -> m.getExtensionManager().getExtensions()).orElse(emptySet());
 
-      org.mule.runtime.config.internal.model.ApplicationModel toolingApplicationModel =
+      ArtifactAst toolingApplicationModel =
           MuleAppUtil.loadApplicationModel(artifactConfigBuilder.build(), "",
                                            ImmutableSet.<ExtensionModel>builder()
                                                .addAll(extensionModels)
@@ -221,9 +221,9 @@ public class MockedApplicationModel implements ApplicationModel {
 
       logger.debug("Resolved locations for Tooling ApplicationModel:");
       toolingApplicationModel
-          .executeOnEveryComponentTree(componentModel -> {
-            if (componentModel.getComponentLocation() != null) {
-              logger.debug(format("Location: %s (%s)", componentModel.getComponentLocation().getLocation(),
+          .recursiveStream().forEach(componentModel -> {
+            if (componentModel.getLocation() != null) {
+              logger.debug(format("Location: %s (%s)", componentModel.getLocation().getLocation(),
                                   componentModel.getIdentifier()));
             }
           });
