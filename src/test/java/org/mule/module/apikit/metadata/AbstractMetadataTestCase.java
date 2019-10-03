@@ -88,7 +88,7 @@ public class AbstractMetadataTestCase {
   }
 
   protected static String metadataToString(String parser, final FunctionType functionType) {
-    final String result = new CustomMetadataWriter().toString(functionType);
+    final String result = new MetadataTypeWriter().toString(functionType);
     return AMF.equals(parser) ? MetadataFixer.normalizeEnums(result) : result;
   }
 
@@ -120,19 +120,5 @@ public class AbstractMetadataTestCase {
     if (!Files.exists(parent))
       Files.createDirectory(parent);
     return Files.write(goldenPath, content.getBytes("UTF-8"));
-  }
-
-  private static class CustomMetadataWriter extends MetadataTypeWriter {
-    private static final String TO_REPLACE = "String & @enum(\"values\" : [\"enum2\",\"enum1\"]) String";
-    private static final String REPLACEMENT = "@enum(\"values\" : [\"enum2\",\"enum1\"]) String & String";
-
-    @Override
-    public String toString(MetadataType structure) {
-      String result = super.toString(structure);
-      // THIS IS REQUIRED SINCE SERIALIZATION ORDER CANNOT BE GUARANTEED, MAKING OUR TESTS FAIL,
-      // A PROPER SOLUTION FOR THIS IS USE ANOTHER SERIALIZER e.g. metadata-model-persistent-api.
-//      return result.replace(TO_REPLACE, REPLACEMENT);
-      return result;
-    }
   }
 }
