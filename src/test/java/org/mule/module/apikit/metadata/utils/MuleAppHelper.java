@@ -65,14 +65,18 @@ class MuleAppHelper {
     return loadApplicationModel(artifactConfig,
                                 Collections.emptySet(),
                                 Optional.of(new ComponentBuildingDefinitionRegistry()),
-                                s -> { throw new UnsupportedOperationException(); });
+                                s -> {
+                                  throw new UnsupportedOperationException();
+                                });
   }
 
   public static ArtifactAst loadApplicationModel(ArtifactConfig artifactConfig,
                                                  Set<ExtensionModel> extensionModels,
                                                  Optional<ComponentBuildingDefinitionRegistry> componentBuildingDefinitionRegistry,
-                                                 ResourceProvider externalResourceProvider) throws Exception {
-    return new ApplicationModel(artifactConfig, null, extensionModels, Collections.emptyMap(), Optional.empty(), componentBuildingDefinitionRegistry, externalResourceProvider);
+                                                 ResourceProvider externalResourceProvider)
+      throws Exception {
+    return new ApplicationModel(artifactConfig, null, extensionModels, Collections.emptyMap(), Optional.empty(),
+                                componentBuildingDefinitionRegistry, externalResourceProvider);
   }
 
   static Optional<ArtifactAst> createInternalApplicationModel(String name, InputStream inputStream) {

@@ -29,7 +29,8 @@ class MuleAppUtil {
                                                  Optional<ComponentBuildingDefinitionRegistry> componentBuildingDefinitionRegistry,
                                                  ResourceProvider externalResourceProvider)
       throws Exception {
-    return MuleAppHelper.loadApplicationModel(artifactConfig, extensionModels, componentBuildingDefinitionRegistry, externalResourceProvider);
+    return MuleAppHelper.loadApplicationModel(artifactConfig, extensionModels, componentBuildingDefinitionRegistry,
+                                              externalResourceProvider);
   }
 
   public static Optional<ArtifactAst> createInternalApplicationModel(String name,

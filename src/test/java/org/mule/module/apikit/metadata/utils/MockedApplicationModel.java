@@ -205,9 +205,9 @@ public class MockedApplicationModel implements ApplicationModel {
 
     public MockedApplicationModel build() throws Exception {
       ImmutableSet<ExtensionModel> extensions = ImmutableSet.<ExtensionModel>builder()
-        .addAll(muleContext != null ? muleContext.getExtensionManager().getExtensions() : emptySet())
-        .addAll(discoverRuntimeExtensionModels())
-        .build();
+          .addAll(muleContext != null ? muleContext.getExtensionManager().getExtensions() : emptySet())
+          .addAll(discoverRuntimeExtensionModels())
+          .build();
       ClassLoader cl = ComponentBuildingDefinitionProvider.class.getClassLoader();
       ComponentBuildingDefinitionRegistry registry = createComponentBuildingDefinitionRegistry(extensions, cl);
       ArtifactAst toolingApp = MuleAppUtil.loadApplicationModel(artifactConfigBuilder.build(),
