@@ -51,17 +51,6 @@ public class MetadataBuilderImpl implements MetadataBuilder {
 
   @Override
   public Metadata build() {
-    return new MetadataModel(applicationModel, doMagic(resourceLoader), notifier);
-  }
-
-  private static ResourceLoader doMagic(final ResourceLoader resourceLoader) {
-    return s -> {
-      if (isExchangeModules(s)) {
-        String apiSyncResource = toApiSyncResource(s);
-        if (apiSyncResource != null)
-          return resourceLoader.getResource(apiSyncResource);
-      }
-      return resourceLoader.getResource(s);
-    };
+    return new MetadataModel(applicationModel, resourceLoader, notifier);
   }
 }
