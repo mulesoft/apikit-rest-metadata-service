@@ -58,33 +58,24 @@ class MuleAppHelper {
     return xmlApplicationParser.parse(document.getDocumentElement());
   }
 
-  public static ArtifactAst loadApplicationModel(ConfigLine configLine,
-                                                 String fileName)
-      throws Exception {
-    ArtifactConfig artifactConfig = new ArtifactConfig.Builder()
-        .addConfigFile(new ConfigFile(fileName, Collections.singletonList(configLine))).build();
-    return loadApplicationModel(artifactConfig, fileName, Collections.emptySet(),
+  public static ArtifactAst loadApplicationModel(ConfigLine configLine, String fileName) throws Exception {
+    ConfigFile configFile = new ConfigFile(fileName, Collections.singletonList(configLine));
+    ArtifactConfig artifactConfig = new ArtifactConfig.Builder().addConfigFile(configFile).build();
+
+    return loadApplicationModel(artifactConfig,
+                                Collections.emptySet(),
                                 Optional.of(new ComponentBuildingDefinitionRegistry()),
-                                false, s -> {
-                                  throw new UnsupportedOperationException();
-                                });
+                                s -> { throw new UnsupportedOperationException(); });
   }
 
-  public static ArtifactAst loadApplicationModel(
-                                                 ArtifactConfig artifactConfig,
-                                                 String fileName,
+  public static ArtifactAst loadApplicationModel(ArtifactConfig artifactConfig,
                                                  Set<ExtensionModel> extensionModels,
                                                  Optional<ComponentBuildingDefinitionRegistry> componentBuildingDefinitionRegistry,
-                                                 boolean runtimeMode,
-                                                 ResourceProvider externalResourceProvider)
-      throws Exception {
-    return new ApplicationModel(artifactConfig, null,
-                                extensionModels, Collections.emptyMap(),
-                                Optional.empty(), componentBuildingDefinitionRegistry, runtimeMode, externalResourceProvider);
+                                                 ResourceProvider externalResourceProvider) throws Exception {
+    return new ApplicationModel(artifactConfig, null, extensionModels, Collections.emptyMap(), Optional.empty(), componentBuildingDefinitionRegistry, externalResourceProvider);
   }
 
-  public static Optional<ArtifactAst> createInternalApplicationModel(String name,
-                                                                     InputStream inputStream) {
+  static Optional<ArtifactAst> createInternalApplicationModel(String name, InputStream inputStream) {
     return loadConfigLines(inputStream).map(configLine -> {
       try {
         return loadApplicationModel(configLine, name);

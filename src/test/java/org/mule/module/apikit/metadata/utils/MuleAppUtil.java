@@ -24,16 +24,12 @@ class MuleAppUtil {
     return MuleAppHelper.loadConfigLines(inputStream);
   }
 
-  public static ArtifactAst loadApplicationModel(
-                                                 ArtifactConfig artifactConfig,
-                                                 String fileName,
+  public static ArtifactAst loadApplicationModel(ArtifactConfig artifactConfig,
                                                  Set<ExtensionModel> extensionModels,
                                                  Optional<ComponentBuildingDefinitionRegistry> componentBuildingDefinitionRegistry,
-                                                 boolean runtimeMode,
                                                  ResourceProvider externalResourceProvider)
       throws Exception {
-    return MuleAppHelper.loadApplicationModel(artifactConfig, fileName, extensionModels, componentBuildingDefinitionRegistry,
-                                              runtimeMode, externalResourceProvider);
+    return MuleAppHelper.loadApplicationModel(artifactConfig, extensionModels, componentBuildingDefinitionRegistry, externalResourceProvider);
   }
 
   public static Optional<ArtifactAst> createInternalApplicationModel(String name,

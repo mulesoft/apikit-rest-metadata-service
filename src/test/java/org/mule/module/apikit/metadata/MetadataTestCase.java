@@ -40,7 +40,6 @@ public class MetadataTestCase extends AbstractMetadataTestCase {
   private final Flow flow;
 
   public MetadataTestCase(final String parser, final String folderName, final File app, final Flow flow) {
-
     this.parser = parser;
     this.app = app;
     this.flow = flow;
