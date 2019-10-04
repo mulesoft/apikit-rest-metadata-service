@@ -13,6 +13,7 @@ import static org.mule.module.apikit.metadata.utils.MetadataProviderUtil.createC
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.ast.api.ComponentAst;
+import org.mule.runtime.config.api.dsl.model.ComponentBuildingDefinitionRegistry;
 import org.mule.runtime.config.api.dsl.model.ResourceProvider;
 import org.mule.runtime.config.api.dsl.processor.ArtifactConfig;
 import org.mule.runtime.core.api.MuleContext;
@@ -203,24 +204,19 @@ public class MockedApplicationModel implements ApplicationModel {
     }
 
     public MockedApplicationModel build() throws Exception {
-      Set<ExtensionModel> extensionModels =
-          Optional.ofNullable(muleContext).map(m -> m.getExtensionManager().getExtensions()).orElse(emptySet());
-
-      ArtifactAst toolingApplicationModel =
-          MuleAppUtil.loadApplicationModel(artifactConfigBuilder.build(), "",
-                                           ImmutableSet.<ExtensionModel>builder()
-                                               .addAll(extensionModels)
-                                               .addAll(discoverRuntimeExtensionModels())
-                                               .build(),
-                                           Optional
-                                               .of(createComponentBuildingDefinitionRegistry(extensionModels,
-                                                                                             ComponentBuildingDefinitionProvider.class
-                                                                                                 .getClassLoader())),
-                                           false,
-                                           getResourceProvider());
+      ImmutableSet<ExtensionModel> extensions = ImmutableSet.<ExtensionModel>builder()
+          .addAll(muleContext != null ? muleContext.getExtensionManager().getExtensions() : emptySet())
+          .addAll(discoverRuntimeExtensionModels())
+          .build();
+      ClassLoader cl = ComponentBuildingDefinitionProvider.class.getClassLoader();
+      ComponentBuildingDefinitionRegistry registry = createComponentBuildingDefinitionRegistry(extensions, cl);
+      ArtifactAst toolingApp = MuleAppUtil.loadApplicationModel(artifactConfigBuilder.build(),
+                                                                extensions,
+                                                                Optional.ofNullable(registry),
+                                                                getResourceProvider());
 
       logger.debug("Resolved locations for Tooling ApplicationModel:");
-      toolingApplicationModel
+      toolingApp
           .recursiveStream().forEach(componentModel -> {
             if (componentModel.getLocation() != null) {
               logger.debug(format("Location: %s (%s)", componentModel.getLocation().getLocation(),
@@ -236,7 +232,7 @@ public class MockedApplicationModel implements ApplicationModel {
                                                               componentLocation.getComponentIdentifier())));
       }
 
-      return new MockedApplicationModel("", toolingApplicationModel, typesDataList, baseURI);
+      return new MockedApplicationModel("", toolingApp, typesDataList, baseURI);
     }
 
     public Set<ExtensionModel> discoverRuntimeExtensionModels() {

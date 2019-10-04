@@ -44,13 +44,26 @@
             <artifactId>mule-core</artifactId>
             <version>${mule.version}</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.yaml</groupId>
+                    <artifactId>snakeyaml</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Force to use 1.23 -->
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.23</version>
         </dependency>
 
         <!-- APIKit Metadata API -->
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-apikit-metadata-api</artifactId>
-            <version>${apikit.metadata.api.version}</version> 
+            <version>${apikit.metadata.api.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -81,13 +94,6 @@
             <groupId>org.mule.apikit</groupId>
             <artifactId>parser-service</artifactId>
             <version>${parser.service.version}</version>
-        </dependency>
-
-        <!-- Force to use 1.18 -->
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>1.18</version>
         </dependency>
 
         <!-- Test Dependencies -->

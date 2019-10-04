@@ -14,6 +14,7 @@ import static org.junit.Assert.assertThat;
 import static org.mule.module.apikit.metadata.internal.MetadataBuilderImpl.MULE_APIKIT_PARSER;
 
 import org.mule.metadata.api.model.FunctionType;
+import org.mule.metadata.internal.utils.MetadataTypeWriter;
 import org.mule.module.apikit.metadata.internal.model.Flow;
 import org.mule.runtime.ast.api.ArtifactAst;
 
@@ -39,8 +40,10 @@ public class MetadataTestCase extends AbstractMetadataTestCase {
   private final File app;
   private final Flow flow;
 
-  public MetadataTestCase(final String parser, final String folderName, final File app, final Flow flow) {
+  // SET TO TRUE IF YOU WANT THE TESTS THAT MISS MACH TO GENERATE A NEW FILE
+  private boolean generateFixedFiles = true;
 
+  public MetadataTestCase(final String parser, final String folderName, final File app, final Flow flow) {
     this.parser = parser;
     this.app = app;
     this.flow = flow;
@@ -75,19 +78,20 @@ public class MetadataTestCase extends AbstractMetadataTestCase {
 
     assertThat(metadata.isPresent(), is(true));
 
-    final String current = metadataToString(parser, metadata.get());
+    final String current = metadataToString(parser, metadata.get()).trim();
 
     final Path goldenPath = goldenFile.exists() ? goldenFile.toPath() : createGoldenFile(goldenFile, current);
-    final String expected = readFile(goldenPath);
+    final String expected = readFile(goldenPath).trim();
 
     try {
-      assertThat(format("Function metadata differ from expected. File: '%s'", goldenFile.getName()), current,
-                 is(equalTo(expected)));
+      assertThat("Metadata differ from expected. File: " + goldenFile.getName(), current, is(expected));
     } catch (final AssertionError error) {
       final String name = goldenFile.getName();
       final File folder = goldenFile.getParentFile();
-      final File newGoldenFile = new File(folder, name + ".fixed");
-      createGoldenFile(newGoldenFile, current);
+      if (generateFixedFiles) {
+        final File newGoldenFile = new File(folder, name + ".fixed");
+        createGoldenFile(newGoldenFile, current);
+      }
       throw error;
     }
   }

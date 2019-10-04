@@ -6,9 +6,14 @@
  */
 package org.mule.module.apikit.metadata.utils;
 
+import static org.mule.apikit.common.ApiSyncUtils.isSyncProtocol;
+import static org.mule.apikit.common.ApiSyncUtils.toApiSyncResource;
+
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+
 import org.mule.module.apikit.metadata.MetadataTestCase;
 import org.mule.apikit.common.ApiSyncUtils;
 import org.mule.runtime.apikit.metadata.api.ResourceLoader;
@@ -16,18 +21,14 @@ import org.mule.runtime.apikit.metadata.api.ResourceLoader;
 public class TestResourceLoader implements ResourceLoader {
 
   @Override
-  public URI getResource(String relativePath) {
+  public URI getResource(String resource) {
     try {
-      if (ApiSyncUtils.isSyncProtocol(relativePath))
-        relativePath = getTestPathForApiSync(relativePath);
-
-      final URL resource = MetadataTestCase.class.getResource(relativePath);
-      return resource == null ? null : resource.toURI();
-
+      URL url = MetadataTestCase.class.getResource(isSyncProtocol(resource) ? getTestPathForApiSync(resource) : resource);
+      return url == null ? null : url.toURI();
     } catch (final URISyntaxException e) {
       e.printStackTrace();
+      return null;
     }
-    return null;
   }
 
   private static String getTestPathForApiSync(String relativePath) throws URISyntaxException {

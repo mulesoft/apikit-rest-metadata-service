@@ -6,10 +6,18 @@
  */
 package org.mule.module.apikit.metadata.internal.raml;
 
+import java.io.InputStream;
+import java.net.URI;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.mule.apikit.model.api.ApiReference;
 import org.mule.module.apikit.metadata.internal.model.MetadataResolver;
 import org.mule.module.apikit.metadata.internal.model.MetadataResolverFactory;
 import org.mule.apikit.model.ApiSpecification;
+import org.mule.parser.service.result.ParseResult;
+import org.mule.parser.service.result.ParsingIssue;
 import org.mule.runtime.apikit.metadata.api.Notifier;
 import org.mule.runtime.apikit.metadata.api.ResourceLoader;
 import org.mule.runtime.core.api.util.StringUtils;
@@ -20,6 +28,8 @@ import static java.util.Optional.of;
 
 public class RamlHandler implements MetadataResolverFactory {
 
+
+  private final org.mule.parser.service.ParserService SERVICE = new org.mule.parser.service.ParserService();
   private final ResourceLoader resourceLoader;
   private final Notifier notifier;
 
@@ -41,13 +51,36 @@ public class RamlHandler implements MetadataResolverFactory {
         return empty();
       }
 
-      final ParserService parserService = new ParserService(uri, resourceLoader);
-      return of(parserService.build());
+      ParseResult result = SERVICE.parse(ApiReference.create(uri, new ResourceLoaderAdapter(resourceLoader)));
+      if (!result.success()) {
+        result.getErrors().forEach(error -> notifier.error(error.cause()));
+        return empty();
+      }
+      return of(result.get());
 
     } catch (Exception e) {
       notifier.error(format("Error reading RAML document '%s'. Detail: %s", uri, e.getMessage()));
     }
 
     return empty();
+  }
+
+  private class ResourceLoaderAdapter implements org.mule.apikit.loader.ResourceLoader {
+
+    private final ResourceLoader resourceLoader;
+
+    ResourceLoaderAdapter(ResourceLoader resourceLoader) {
+      this.resourceLoader = resourceLoader;
+    }
+
+    @Override
+    public URI getResource(String res) {
+      return resourceLoader.getResource(res);
+    }
+
+    @Override
+    public InputStream getResourceAsStream(String res) {
+      return resourceLoader.getResourceAsStream(res);
+    }
   }
 }
