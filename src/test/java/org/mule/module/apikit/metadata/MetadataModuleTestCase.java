@@ -26,8 +26,10 @@ import org.mule.runtime.ast.api.ArtifactAst;
 
 import java.util.Optional;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore("APIKIT-2051")
 public class MetadataModuleTestCase {
 
   @Test
