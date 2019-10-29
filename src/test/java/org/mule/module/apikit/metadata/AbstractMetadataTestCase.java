@@ -18,6 +18,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import org.mule.metadata.api.model.FunctionType;
+import org.mule.metadata.api.model.MetadataType;
 import org.mule.metadata.internal.utils.MetadataTypeWriter;
 import org.mule.module.apikit.metadata.internal.MetadataBuilderImpl;
 import org.mule.module.apikit.metadata.internal.model.ApplicationModelWrapper;
@@ -76,19 +77,7 @@ public class AbstractMetadataTestCase {
 
   }
 
-  private static boolean hasMetadata(final ApplicationModel applicationModel, final Flow flow) {
-    try {
-      return getMetadata(applicationModel, flow).isPresent();
-    } catch (Exception e) {
-      return false;
-    }
-  }
-
-  protected static Optional<FunctionType> getMetadata(Metadata metadata, Flow flow) {
-    return metadata.getMetadataForFlow(flow.getName());
-  }
-
-  protected static Optional<FunctionType> getMetadata(final ApplicationModel applicationModel, final Flow flow) throws Exception {
+  protected static Optional<FunctionType> getMetadata(final ApplicationModel applicationModel, final Flow flow) {
 
     final Metadata metadata = new MetadataBuilderImpl()
         .withApplicationModel(applicationModel)
@@ -98,7 +87,7 @@ public class AbstractMetadataTestCase {
   }
 
   protected static String metadataToString(String parser, final FunctionType functionType) {
-    final String result = new MetadataTypeWriter().toString(functionType);
+    final String result = new CustomMetadataWriter().toString(functionType);
     return AMF.equals(parser) ? MetadataFixer.normalizeEnums(result) : result;
   }
 
@@ -131,4 +120,19 @@ public class AbstractMetadataTestCase {
       Files.createDirectory(parent);
     return Files.write(goldenPath, content.getBytes("UTF-8"));
   }
+
+  private static class CustomMetadataWriter extends MetadataTypeWriter {
+
+    private static final String TO_REPLACE = "String & @enum(\"values\" : [\"enum2\",\"enum1\"]) String";
+    private static final String REPLACEMENT = "@enum(\"values\" : [\"enum2\",\"enum1\"]) String & String";
+
+    @Override
+    public String toString(MetadataType structure) {
+      String result = super.toString(structure);
+      // THIS IS REQUIRED SINCE SERIALIZATION ORDER CANNOT BE GUARANTEED, MAKING OUR TESTS FAIL,
+      // A PROPER SOLUTION FOR THIS IS USE ANOTHER SERIALIZER e.g. metadata-model-persistent-api.
+      return result.replace(TO_REPLACE, REPLACEMENT);
+    }
+  }
+
 }

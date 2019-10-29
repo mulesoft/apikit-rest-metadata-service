@@ -11,6 +11,8 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.Optional;
 import org.mule.amf.impl.AMFParser;
+import org.mule.module.apikit.metadata.internal.loader.CompositeResourceLoader;
+import org.mule.module.apikit.metadata.internal.loader.ExchangeResourceLoader;
 import org.mule.module.apikit.metadata.internal.model.MetadataResolver;
 import org.mule.module.apikit.metadata.internal.model.MetadataResolverFactory;
 import org.mule.apikit.model.api.ApiReference;
@@ -45,7 +47,7 @@ public class AmfHandler implements MetadataResolverFactory {
     }
 
     try {
-      ApiReference apiRef = ApiReference.create(apiDefinition, adaptResourceLoader(resourceLoader));
+      ApiReference apiRef = ApiReference.create(apiDefinition, adaptResourceLoader(apiDefinition, resourceLoader));
       AMFParser parserWrapper = new AMFParser(apiRef, true);
       notifier.info(format("Metadata for API definition '%s' was generated using AMF parser.", apiDefinition));
       return of(parserWrapper.getWebApi());
@@ -56,16 +58,15 @@ public class AmfHandler implements MetadataResolverFactory {
 
   }
 
-  private static org.mule.apikit.loader.ResourceLoader adaptResourceLoader(ResourceLoader resourceLoader) {
+  private static org.mule.apikit.loader.ResourceLoader adaptResourceLoader(String apiDefinition, ResourceLoader resourceLoader) {
     return new org.mule.apikit.loader.ResourceLoader() {
+
+      private final ResourceLoader rl =
+          new CompositeResourceLoader(resourceLoader, new ExchangeResourceLoader(resourceLoader, apiDefinition));
 
       @Override
       public URI getResource(final String path) {
-        return resourceLoader.getResource(path);
-      }
-
-      public InputStream getResourceAsStream(String relativePath) {
-        return resourceLoader.getResourceAsStream(relativePath);
+        return rl.getResource(path);
       }
     };
   }

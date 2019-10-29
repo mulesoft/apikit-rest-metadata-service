@@ -6,10 +6,15 @@
  */
 package org.mule.module.apikit.metadata.internal.raml;
 
+import java.net.URI;
 import java.util.Optional;
+import org.mule.apikit.model.api.ApiReference;
+import org.mule.module.apikit.metadata.internal.loader.CompositeResourceLoader;
+import org.mule.module.apikit.metadata.internal.loader.ExchangeResourceLoader;
 import org.mule.module.apikit.metadata.internal.model.MetadataResolver;
 import org.mule.module.apikit.metadata.internal.model.MetadataResolverFactory;
 import org.mule.apikit.model.ApiSpecification;
+import org.mule.parser.service.result.ParseResult;
 import org.mule.runtime.apikit.metadata.api.Notifier;
 import org.mule.runtime.apikit.metadata.api.ResourceLoader;
 import org.mule.runtime.core.api.util.StringUtils;
@@ -22,6 +27,7 @@ public class RamlHandler implements MetadataResolverFactory {
 
   private final ResourceLoader resourceLoader;
   private final Notifier notifier;
+  private final org.mule.parser.service.ParserService SERVICE = new org.mule.parser.service.ParserService();
 
   public RamlHandler(ResourceLoader resourceLoader, Notifier notifier) {
     this.resourceLoader = resourceLoader;
@@ -41,13 +47,32 @@ public class RamlHandler implements MetadataResolverFactory {
         return empty();
       }
 
-      final ParserService parserService = new ParserService(uri, resourceLoader);
-      return of(parserService.build());
+      ParseResult result = SERVICE.parse(ApiReference.create(uri, new ResourceLoaderAdapter(uri, resourceLoader)));
+      if (!result.success()) {
+        result.getErrors().forEach(error -> notifier.error(error.cause()));
+        return empty();
+      }
+      return of(result.get());
 
     } catch (Exception e) {
       notifier.error(format("Error reading RAML document '%s'. Detail: %s", uri, e.getMessage()));
     }
 
     return empty();
+  }
+
+  private class ResourceLoaderAdapter implements org.mule.apikit.loader.ResourceLoader {
+
+    private final ResourceLoader resourceLoader;
+
+    ResourceLoaderAdapter(String uri, ResourceLoader resourceLoader) {
+      this.resourceLoader = new CompositeResourceLoader(resourceLoader, new ExchangeResourceLoader(resourceLoader, uri));
+    }
+
+    @Override
+    public URI getResource(String res) {
+      return resourceLoader.getResource(res);
+    }
+
   }
 }

@@ -203,7 +203,7 @@ public class MockedApplicationModel implements ApplicationModel {
           Optional.ofNullable(muleContext).map(m -> m.getExtensionManager().getExtensions()).orElse(emptySet());
 
       org.mule.runtime.config.internal.model.ApplicationModel toolingApplicationModel =
-          MuleAppUtil.loadApplicationModel(artifactConfigBuilder.build(), "",
+          MuleAppUtil.loadApplicationModel(artifactConfigBuilder.build(),
                                            ImmutableSet.<ExtensionModel>builder()
                                                .addAll(extensionModels)
                                                .addAll(discoverRuntimeExtensionModels())
@@ -212,7 +212,6 @@ public class MockedApplicationModel implements ApplicationModel {
                                                .of(createComponentBuildingDefinitionRegistry(extensionModels,
                                                                                              ComponentBuildingDefinitionProvider.class
                                                                                                  .getClassLoader())),
-                                           false,
                                            getResourceProvider());
 
       logger.debug("Resolved locations for Tooling ApplicationModel:");

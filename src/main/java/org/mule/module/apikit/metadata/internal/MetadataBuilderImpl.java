@@ -13,9 +13,6 @@ import org.mule.runtime.apikit.metadata.api.Notifier;
 import org.mule.runtime.apikit.metadata.api.ResourceLoader;
 import org.mule.runtime.config.internal.model.ApplicationModel;
 
-import static org.mule.apikit.common.ApiSyncUtils.isExchangeModules;
-import static org.mule.apikit.common.ApiSyncUtils.toApiSyncResource;
-
 /**
  * Builder for Metadata module
  */
@@ -47,17 +44,6 @@ public class MetadataBuilderImpl implements MetadataBuilder {
   }
 
   public Metadata build() {
-    return new MetadataModel(applicationModel, doMagic(resourceLoader), notifier);
-  }
-
-  private static ResourceLoader doMagic(final ResourceLoader resourceLoader) {
-    return s -> {
-      if (isExchangeModules(s)) {
-        String apiSyncResource = toApiSyncResource(s);
-        if (apiSyncResource != null)
-          return resourceLoader.getResource(apiSyncResource);
-      }
-      return resourceLoader.getResource(s);
-    };
+    return new MetadataModel(applicationModel, resourceLoader, notifier);
   }
 }
