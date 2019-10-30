@@ -49,7 +49,7 @@ public class RamlHandler implements MetadataResolverFactory {
       }
 
       ParseResult result =
-          SERVICE.parse(ApiReference.create(uri, new ResourceLoaderAdapter(uri, resourceLoader)), ParserMode.RAML);
+          SERVICE.parse(ApiReference.create(uri, new ResourceLoaderAdapter(resourceLoader)), ParserMode.RAML);
       if (!result.success()) {
         result.getErrors().forEach(error -> notifier.error(error.cause()));
         return empty();
@@ -67,8 +67,8 @@ public class RamlHandler implements MetadataResolverFactory {
 
     private final ResourceLoader resourceLoader;
 
-    ResourceLoaderAdapter(String uri, ResourceLoader resourceLoader) {
-      this.resourceLoader = new CompositeResourceLoader(resourceLoader, new ExchangeResourceLoader(resourceLoader, uri));
+    ResourceLoaderAdapter(ResourceLoader resourceLoader) {
+      this.resourceLoader = resourceLoader;
     }
 
     @Override

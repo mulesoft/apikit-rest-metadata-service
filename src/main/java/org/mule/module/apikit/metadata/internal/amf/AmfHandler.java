@@ -47,7 +47,7 @@ public class AmfHandler implements MetadataResolverFactory {
     }
 
     try {
-      ApiReference apiRef = ApiReference.create(apiDefinition, adaptResourceLoader(apiDefinition, resourceLoader));
+      ApiReference apiRef = ApiReference.create(apiDefinition, adaptResourceLoader(resourceLoader));
       AMFParser parserWrapper = new AMFParser(apiRef, true);
       notifier.info(format("Metadata for API definition '%s' was generated using AMF parser.", apiDefinition));
       return of(parserWrapper.getWebApi());
@@ -58,11 +58,10 @@ public class AmfHandler implements MetadataResolverFactory {
 
   }
 
-  private static org.mule.apikit.loader.ResourceLoader adaptResourceLoader(String apiDefinition, ResourceLoader resourceLoader) {
+  private static org.mule.apikit.loader.ResourceLoader adaptResourceLoader(ResourceLoader resourceLoader) {
     return new org.mule.apikit.loader.ResourceLoader() {
 
-      private final ResourceLoader rl =
-          new CompositeResourceLoader(resourceLoader, new ExchangeResourceLoader(resourceLoader, apiDefinition));
+      private final ResourceLoader rl = resourceLoader;
 
       @Override
       public URI getResource(final String path) {
