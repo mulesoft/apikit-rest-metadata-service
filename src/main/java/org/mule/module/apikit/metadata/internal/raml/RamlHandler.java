@@ -14,6 +14,7 @@ import org.mule.module.apikit.metadata.internal.loader.ExchangeResourceLoader;
 import org.mule.module.apikit.metadata.internal.model.MetadataResolver;
 import org.mule.module.apikit.metadata.internal.model.MetadataResolverFactory;
 import org.mule.apikit.model.ApiSpecification;
+import org.mule.parser.service.ParserMode;
 import org.mule.parser.service.result.ParseResult;
 import org.mule.runtime.apikit.metadata.api.Notifier;
 import org.mule.runtime.apikit.metadata.api.ResourceLoader;
@@ -47,7 +48,8 @@ public class RamlHandler implements MetadataResolverFactory {
         return empty();
       }
 
-      ParseResult result = SERVICE.parse(ApiReference.create(uri, new ResourceLoaderAdapter(uri, resourceLoader)));
+      ParseResult result =
+          SERVICE.parse(ApiReference.create(uri, new ResourceLoaderAdapter(uri, resourceLoader)), ParserMode.RAML);
       if (!result.success()) {
         result.getErrors().forEach(error -> notifier.error(error.cause()));
         return empty();
