@@ -44,7 +44,7 @@ public class TestResourceLoader implements ResourceLoader {
     String groupId = parts[2];
     String fileName = parts[7];
     String version = parts[4];
-    if (type.equals("raml") || type.equals("oas")) {
+    if (type.equals("raml") || type.equals("oas") || type.equals("oas-yaml")) {
       return artifactId + "/" + fileName;
     }
     if (type.equals("raml-fragment")) {

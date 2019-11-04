@@ -1,0 +1,60 @@
+%type _:Java = (inputMetadata:{
+  "message" : @typeId("value" : "org.mule.runtime.api.message.Message") {
+    "payload" : Any, 
+    "attributes" : {
+      "clientCertificate"? : {
+        "publicKey"? : {
+
+        }, 
+        "type"? : String, 
+        "encoded"? : Binary
+      }, 
+      "headers" : {
+
+      }, 
+      "listenerPath" : String, 
+      "method" : String, 
+      "queryParams" : {
+
+      }, 
+      "queryString" : String, 
+      "relativePath" : String, 
+      "remoteAddress" : String, 
+      "requestPath" : String, 
+      "requestUri" : String, 
+      "scheme" : String, 
+      "uriParams" : {
+        "petId" : @range("from" : -9.223372036854776E18, "to" : 9.223372036854776E18) Number
+      }, 
+      "version" : String, 
+      "localAddress" : String
+    }
+  }, 
+  "variables" : {
+
+  }
+}) -> {
+  "message" : @typeId("value" : "org.mule.runtime.api.message.Message") {
+    "payload" : {
+      "photoUrls" : [String], 
+      "name" : String, 
+      "id"? : @range("from" : -9.223372036854776E18, "to" : 9.223372036854776E18) Number, 
+      "category"? : {
+        "name" : String, 
+        "id" : @range("from" : -9.223372036854776E18, "to" : 9.223372036854776E18) Number, 
+        * : Any
+      }, 
+      "tags"? : [{
+          "id" : @range("from" : -9.223372036854776E18, "to" : 9.223372036854776E18) Number, 
+          * : Any
+        }], 
+      "status"? : @enum("values" : ["sold","pending","available"]) String & String
+    }
+  }, 
+  "variables" : {
+    "outboundHeaders" : {
+
+    }, 
+    "httpStatus" : String
+  }
+}

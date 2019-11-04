@@ -28,7 +28,7 @@ public class AutoHandler implements MetadataResolverFactory {
 
   @Override
   public Optional<MetadataResolver> getMetadataResolver(final String apiDefinition) {
-    final AmfHandler amfHandler = new AmfHandler(resourceLoader, notifier);
+    final AmfHandler amfHandler = new AmfHandler(resourceLoader, notifier, true);
     final Optional<WebApi> webApi = amfHandler.getApi(apiDefinition);
     if (webApi.isPresent())
       return webApi.map(api -> new AmfWrapper(api, notifier));
