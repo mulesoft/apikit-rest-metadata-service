@@ -9,8 +9,6 @@ package org.mule.module.apikit.metadata.internal.raml;
 import java.net.URI;
 import java.util.Optional;
 import org.mule.apikit.model.api.ApiReference;
-import org.mule.module.apikit.metadata.internal.loader.CompositeResourceLoader;
-import org.mule.module.apikit.metadata.internal.loader.ExchangeResourceLoader;
 import org.mule.module.apikit.metadata.internal.model.MetadataResolver;
 import org.mule.module.apikit.metadata.internal.model.MetadataResolverFactory;
 import org.mule.apikit.model.ApiSpecification;

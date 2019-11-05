@@ -10,7 +10,6 @@ import amf.client.model.domain.AnyShape;
 import amf.client.model.domain.ArrayShape;
 import amf.client.model.domain.Example;
 import amf.client.model.domain.FileShape;
-import amf.client.model.domain.ScalarShape;
 import amf.client.model.domain.Shape;
 import java.util.List;
 import java.util.Optional;
