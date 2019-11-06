@@ -120,7 +120,7 @@ public class MockedApplicationModel implements ApplicationModel {
   @Override
   public Optional<ComponentAst> findNamedComponent(String name) {
     return getMuleApplicationModel().topLevelComponentsStream()
-        .filter(comp -> name.equals(comp.getName().orElse(null)))
+        .filter(comp -> name.equals(comp.getComponentId().orElse(null)))
         .findFirst();
   }
 
