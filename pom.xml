@@ -94,6 +94,12 @@
             <groupId>org.mule.apikit</groupId>
             <artifactId>parser-service</artifactId>
             <version>${parser.service.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-simple</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Test Dependencies -->

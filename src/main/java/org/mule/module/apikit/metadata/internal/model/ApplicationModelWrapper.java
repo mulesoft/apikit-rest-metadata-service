@@ -6,6 +6,7 @@
  */
 package org.mule.module.apikit.metadata.internal.model;
 
+import static java.util.Collections.emptyList;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
@@ -99,26 +100,33 @@ public class ApplicationModelWrapper {
   }
 
   private ApikitConfig createApikitConfig(final ComponentAst config) {
-    final String configName = config.getRawParameterValue(PARAMETER_NAME).orElse(null);
+    final String configName = (String) config.getParameter(PARAMETER_NAME).getValue().getRight();
     final String apiDefinition = getApiDefinition(config);
-    final String outputHeadersVarName = config.getRawParameterValue(PARAMETER_OUTPUT_HEADERS_VAR).orElse(null);
-    final String httpStatusVarName = config.getRawParameterValue(PARAMETER_HTTP_STATUS_VAR).orElse(null);
-    final String parser = config.getRawParameterValue(PARAMETER_PARSER).orElse(null);
+    final String outputHeadersVarName = (String) config.getParameter(PARAMETER_OUTPUT_HEADERS_VAR).getValue().getRight();
+    final String httpStatusVarName = (String) config.getParameter(PARAMETER_HTTP_STATUS_VAR).getValue().getRight();
+    final String parser = config.getParameter(PARAMETER_PARSER).getValue().getRight().toString();
 
-    final List<FlowMapping> flowMappings = config.directChildrenStream()
-        .filter(cfg -> ApikitElementIdentifiers.isFlowMappings(cfg.getIdentifier()))
-        .flatMap(flowMappingsElement -> flowMappingsElement.directChildrenStream())
-        .filter(flowMapping -> ApikitElementIdentifiers.isFlowMapping(flowMapping.getIdentifier()))
-        .map(unwrappedFlowMapping -> createFlowMapping(configName, unwrappedFlowMapping))
-        .collect(toList());
+    final List<FlowMapping> flowMappings = config.getParameter("flowMappings")
+        .getValue()
+        .reduce(l -> emptyList(),
+                r -> ((ComponentAst) r)
+                    .directChildrenStream()
+                    .filter(flowMapping -> ApikitElementIdentifiers.isFlowMapping(flowMapping.getIdentifier()))
+                    .map(unwrappedFlowMapping -> createFlowMapping(configName, unwrappedFlowMapping))
+                    .collect(toList()));
 
-    return new ApikitConfig(configName, apiDefinition, flowMappings, httpStatusVarName, outputHeadersVarName,
-                            parser, resourceLoader, notifier);
+    return new ApikitConfig(configName, apiDefinition, flowMappings == null ? emptyList() : flowMappings, httpStatusVarName,
+                            outputHeadersVarName, parser, resourceLoader, notifier);
   }
 
   private static String getApiDefinition(ComponentAst config) {
-    return config.getRawParameterValue(PARAMETER_API_DEFINITION)
-        .orElseGet(() -> config.getRawParameterValue(PARAMETER_RAML_DEFINITION).orElse(null));
+    if (config.getParameter(PARAMETER_API_DEFINITION).getValue().getRight() != null) {
+      return (String) config.getParameter(PARAMETER_API_DEFINITION).getValue().getRight();
+    } else if (config.getParameter(PARAMETER_RAML_DEFINITION).getValue().getRight() != null) {
+      return (String) config.getParameter(PARAMETER_RAML_DEFINITION).getValue().getRight();
+    } else {
+      return null;
+    }
   }
 
   public List<Flow> findFlows() {
@@ -133,8 +141,7 @@ public class ApplicationModelWrapper {
   }
 
   private static Flow createFlow(ComponentAst componentModel) {
-    final String flowName = componentModel.getRawParameterValue(PARAMETER_NAME).orElse(null);
-    return new Flow(flowName);
+    return new Flow((String) componentModel.getParameter(PARAMETER_NAME).getValue().getRight());
   }
 
   public Optional<ApiCoordinate> getApiCoordinate(final String flowName) {
@@ -171,10 +178,10 @@ public class ApplicationModelWrapper {
   }
 
   private static FlowMapping createFlowMapping(final String configName, final ComponentAst component) {
-    final String resource = component.getRawParameterValue(PARAMETER_RESOURCE).orElse(null);
-    final String action = component.getRawParameterValue(PARAMETER_ACTION).orElse(null);
-    final String contentType = component.getRawParameterValue(PARAMETER_CONTENT_TYPE).orElse(null);
-    final String flowRef = component.getRawParameterValue(PARAMETER_FLOW_REF).orElse(null);
+    final String resource = (String) component.getParameter(PARAMETER_RESOURCE).getValue().getRight();
+    final String action = (String) component.getParameter(PARAMETER_ACTION).getValue().getRight();
+    final String contentType = (String) component.getParameter(PARAMETER_CONTENT_TYPE).getValue().getRight();
+    final String flowRef = (String) component.getParameter(PARAMETER_FLOW_REF).getValue().getRight();
 
     return new FlowMapping(configName, resource, action, contentType, flowRef);
   }

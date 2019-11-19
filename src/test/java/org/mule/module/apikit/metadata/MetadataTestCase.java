@@ -6,15 +6,12 @@
  */
 package org.mule.module.apikit.metadata;
 
-import static java.lang.String.format;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.module.apikit.metadata.internal.MetadataBuilderImpl.MULE_APIKIT_PARSER;
 
 import org.mule.metadata.api.model.FunctionType;
-import org.mule.metadata.internal.utils.MetadataTypeWriter;
 import org.mule.module.apikit.metadata.internal.model.Flow;
 import org.mule.runtime.ast.api.ArtifactAst;
 
@@ -29,11 +26,13 @@ import java.util.Optional;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 @RunWith(Parameterized.class)
+@Ignore("APIKIT-2051")
 public class MetadataTestCase extends AbstractMetadataTestCase {
 
   private final String parser;
@@ -41,7 +40,7 @@ public class MetadataTestCase extends AbstractMetadataTestCase {
   private final Flow flow;
 
   // SET TO TRUE IF YOU WANT THE TESTS THAT MISS MACH TO GENERATE A NEW FILE
-  private boolean generateFixedFiles = true;
+  private final boolean generateFixedFiles = true;
 
   public MetadataTestCase(final String parser, final String folderName, final File app, final Flow flow) {
     this.parser = parser;
