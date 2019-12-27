@@ -36,7 +36,18 @@
   }
 }) -> {
   "message" : @typeId("value" : "org.mule.runtime.api.message.Message") {
-    "payload" : Any
+    "payload" : {
+      "date"? : String, 
+      "clientId"? : Number, 
+      "price"? : String, 
+      "id"? : Number, 
+      "items"? : [{
+          "itemId"? : Number, 
+          "notes"? : String, 
+          * : Any
+        }], 
+      * : Any
+    }
   }, 
   "variables" : {
     "outboundHeaders" : {
