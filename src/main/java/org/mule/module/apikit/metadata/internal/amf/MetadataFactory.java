@@ -12,14 +12,13 @@ import amf.client.model.domain.Example;
 import amf.client.model.domain.FileShape;
 import amf.client.model.domain.ScalarShape;
 import amf.client.model.domain.Shape;
+import java.util.List;
+import java.util.Optional;
 import org.mule.metadata.api.TypeLoader;
 import org.mule.metadata.api.model.MetadataFormat;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.metadata.json.api.JsonExampleTypeLoader;
 import org.mule.metadata.json.api.JsonTypeLoader;
-
-import java.util.List;
-import java.util.Optional;
 
 import static java.util.Optional.empty;
 import static org.mule.metadata.api.builder.BaseTypeBuilder.create;
@@ -45,7 +44,7 @@ class MetadataFactory {
 
       final List<Example> examples = anyShape.examples();
       final TypeLoader typeLoader = anyShape.isDefaultEmpty() && !examples.isEmpty()
-          ? createJsonExampleTypeLoader(examples.get(0).toJson()) : new JsonTypeLoader(anyShape.buildJsonSchema());
+          ? createJsonExampleTypeLoader(examples.get(0).value().value()) : new JsonTypeLoader(anyShape.toJsonSchema());
 
       metadataType = typeLoader.load(null);
     }
