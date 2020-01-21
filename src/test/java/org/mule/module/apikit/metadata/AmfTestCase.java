@@ -22,20 +22,19 @@ import amf.client.model.domain.Response;
 import amf.client.model.domain.Shape;
 import amf.client.model.domain.WebApi;
 import amf.client.parse.Parser;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.mule.amf.impl.DocumentParser;
-import org.mule.apikit.model.api.ApiReference;
-import org.mule.metadata.api.model.MetadataType;
-import org.mule.metadata.internal.utils.MetadataTypeWriter;
-import org.mule.metadata.json.api.JsonTypeLoader;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.mule.amf.impl.DocumentParser;
+import org.mule.metadata.api.model.MetadataType;
+import org.mule.metadata.internal.utils.MetadataTypeWriter;
+import org.mule.metadata.json.api.JsonTypeLoader;
+import org.mule.apikit.model.api.ApiReference;
 
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -85,7 +84,7 @@ public class AmfTestCase {
           final Shape schema = parameter.schema();
           if (schema instanceof AnyShape) {
             try {
-              final String jsonSchema = ((AnyShape) schema).buildJsonSchema();
+              final String jsonSchema = ((AnyShape) schema).toJsonSchema();
               System.out.println("Parameter " + parameter.name() + ":");
               System.out.println(jsonSchema);
               System.out.println();
@@ -122,6 +121,9 @@ public class AmfTestCase {
       final Payload payload = payloads.get(0);
       final Shape schema = payload.schema();
       if (schema instanceof AnyShape) {
+        //final String jsonSchema = ((AnyShape) schema).toJsonSchema();
+        //System.out.println("-> " + jsonSchema);
+
         final List<PropertyShape> properties = ((NodeShape) schema).properties();
         properties.forEach(p -> System.out.println(p.name()));
 
@@ -142,7 +144,7 @@ public class AmfTestCase {
           final Shape schema = parameter.schema();
           if (schema instanceof AnyShape) {
             try {
-              final String jsonSchema = ((AnyShape) schema).buildJsonSchema();
+              final String jsonSchema = ((AnyShape) schema).toJsonSchema();
             } // TODO remove try catch when AMF fix it
             catch (final Throwable e) {
               System.out
@@ -239,7 +241,7 @@ public class AmfTestCase {
 
         if (schema instanceof AnyShape) {
           AnyShape anyShape = (AnyShape) schema;
-          System.out.println("\t\t\tJsonSchema:\n" + anyShape.buildJsonSchema());
+          System.out.println("\t\t\tJsonSchema:\n" + anyShape.toJsonSchema());
           final List<Example> examples = anyShape.examples();
           System.out.println("\t\t\tExamples:");
           examples.forEach(example -> {

@@ -15,10 +15,13 @@
       "listenerPath" : String, 
       "method" : String, 
       "queryParams" : {
-        "code" : @length("min" : 3, "max" : 10) String, 
-        "size" : @enum("values" : ["small","large","medium"]) String & String, 
-        "color"? : String, 
-        "description"? : String
+        "stringQueryParam"? : [@length("min" : 2, "max" : 10) @enum("values" : ["enum2","enum1"]) String & String], 
+        "numberQueryParam"? : [@range("from" : 10.1, "to" : 20.2) Number], 
+        "integerQueryParam"? : [@range("from" : 10, "to" : 20) @int Number], 
+        "dateQueryParam"? : [String], 
+        "booleanQueryParam"? : [Boolean], 
+        "fileQueryParam"? : [String], 
+        "queryParamWithoutType"? : [String]
       }, 
       "queryString" : String, 
       "relativePath" : String, 
@@ -27,7 +30,7 @@
       "requestUri" : String, 
       "scheme" : String, 
       "uriParams" : {
-        "version" : String
+
       }, 
       "version" : String, 
       "localAddress" : String
