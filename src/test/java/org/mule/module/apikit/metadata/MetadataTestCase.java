@@ -38,7 +38,7 @@ public class MetadataTestCase extends AbstractMetadataTestCase {
   private final File app;
 
   // SET TO TRUE IF YOU WANT THE TESTS THAT MISS MACH TO GENERATE A NEW FILE
-  private final boolean generateFixedFiles = true;
+  private final boolean generateFixedFiles = false;
 
   public MetadataTestCase(final String parser, final File app) {
     this.parser = parser;
