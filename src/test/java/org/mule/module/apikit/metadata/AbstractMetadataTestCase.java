@@ -40,7 +40,8 @@ public abstract class AbstractMetadataTestCase extends MuleArtifactFunctionalTes
   private static final PathMatcher API_MATCHER = FileSystems.getDefault().getPathMatcher("glob:app.xml");
 
   protected static List<File> scanApps() throws IOException, URISyntaxException {
-    final URI baseFolder = new File(AbstractMetadataTestCase.class.getResource("/anchor.test.resource.file").toURI()).getParentFile().toURI();
+    final URI baseFolder =
+        new File(AbstractMetadataTestCase.class.getResource("/anchor.test.resource.file").toURI()).getParentFile().toURI();
     return scan(baseFolder);
   }
 
@@ -71,11 +72,11 @@ public abstract class AbstractMetadataTestCase extends MuleArtifactFunctionalTes
 
     // Only APIKit flows
     return applicationModel.topLevelComponentsStream()
-            .filter(componentAst -> componentAst.getIdentifier().getNamespace().equals("mule") &&
-                                    componentAst.getIdentifier().getName().equals("flow"))
-            .map(componentAst -> (String) componentAst.getParameter("name").getValue().getRight())
-            .filter(flow -> isApikitFlow(flow))
-            .collect(toList());
+        .filter(componentAst -> componentAst.getIdentifier().getNamespace().equals("mule") &&
+            componentAst.getIdentifier().getName().equals("flow"))
+        .map(componentAst -> (String) componentAst.getParameter("name").getValue().getRight())
+        .filter(flow -> isApikitFlow(flow))
+        .collect(toList());
   }
 
   private static boolean isApikitFlow(final String name) {
@@ -85,7 +86,8 @@ public abstract class AbstractMetadataTestCase extends MuleArtifactFunctionalTes
 
   }
 
-  protected static Optional<FunctionType> getMetadata(MetadataBuilder metadataBuilder, final ArtifactAst applicationModel, final String flow) {
+  protected static Optional<FunctionType> getMetadata(MetadataBuilder metadataBuilder, final ArtifactAst applicationModel,
+                                                      final String flow) {
 
     final Metadata metadata = metadataBuilder
         .withApplicationModel(applicationModel)

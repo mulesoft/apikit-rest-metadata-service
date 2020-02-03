@@ -191,7 +191,7 @@ public class MockedApplicationModel implements ApplicationModel {
       Preconditions.checkNotNull(configName);
       Preconditions.checkNotNull(configData);
       artifactConfigBuilder.addConfigFile(new ConfigFile(configName, Collections.singletonList(
-              MuleAppUtil
+                                                                                               MuleAppUtil
                                                                                                    .loadConfigLines(configData)
                                                                                                    .orElseThrow(() -> new IllegalArgumentException(format("Failed to get %s.",
                                                                                                                                                           configName))))));
@@ -209,7 +209,8 @@ public class MockedApplicationModel implements ApplicationModel {
           .addAll(muleContext != null ? muleContext.getExtensionManager().getExtensions() : emptySet())
           .addAll(discoverRuntimeExtensionModels())
           .build();
-      ComponentBuildingDefinitionRegistry registry = createComponentBuildingDefinitionRegistry(extensions, ComponentBuildingDefinitionProvider.class
+      ComponentBuildingDefinitionRegistry registry =
+          createComponentBuildingDefinitionRegistry(extensions, ComponentBuildingDefinitionProvider.class
               .getClassLoader());
       ArtifactAst toolingApp = MuleAppUtil.loadApplicationModel(artifactConfigBuilder.build(),
                                                                 "",
