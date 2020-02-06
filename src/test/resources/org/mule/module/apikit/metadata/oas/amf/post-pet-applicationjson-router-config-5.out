@@ -13,7 +13,7 @@
           "id" : @range("from" : -9.223372036854776E18, "to" : 9.223372036854776E18) Number, 
           * : Any
         }], 
-      "status"? : @enum("values" : ["sold","pending","available"]) String & String
+      "status"? : @enum("values" : ["sold","pending","available"]) String
     }, 
     "attributes" : {
       "clientCertificate"? : {

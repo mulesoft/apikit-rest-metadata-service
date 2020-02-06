@@ -15,7 +15,7 @@
       "listenerPath" : String, 
       "method" : String, 
       "queryParams" : {
-        "size"? : @enum("values" : ["small","large","medium"]) String & String
+        "size"? : @enum("values" : ["small","large","medium"]) String
       }, 
       "queryString" : String, 
       "relativePath" : String, 

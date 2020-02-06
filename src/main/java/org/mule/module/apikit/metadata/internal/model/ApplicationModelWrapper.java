@@ -109,8 +109,8 @@ public class ApplicationModelWrapper {
     final List<FlowMapping> flowMappings = config.getParameter("flowMappings")
         .getValue()
         .reduce(l -> emptyList(),
-                r -> ((ComponentAst) r)
-                    .directChildrenStream()
+                r -> ((List<ComponentAst>) r)
+                    .stream()
                     .filter(flowMapping -> ApikitElementIdentifiers.isFlowMapping(flowMapping.getIdentifier()))
                     .map(unwrappedFlowMapping -> createFlowMapping(configName, unwrappedFlowMapping))
                     .collect(toList()));

@@ -83,7 +83,7 @@ public class MetadataTestCase extends AbstractMetadataTestCase {
       final String expected = readFile(goldenPath).trim();
 
       try {
-        assertThat("Metadata differ from expected. File: " + goldenFile.getName(), current, is(expected));
+        assertThat("Metadata differ from expected on flow: " + flow + ". File: " + relativePath(goldenFile), current, is(expected));
       } catch (final AssertionError error) {
         final String name = goldenFile.getName();
         final File folder = goldenFile.getParentFile();
@@ -93,6 +93,16 @@ public class MetadataTestCase extends AbstractMetadataTestCase {
         }
         throw error;
       }
+    }
+  }
+
+  private String relativePath(File goldenFile) {
+    try {
+      File base = new File(this.getClass().getClassLoader().getResource("").toURI());
+      return base.toURI().relativize(goldenFile.toURI()).getPath();
+    }
+    catch (URISyntaxException e) {
+      throw new RuntimeException(e);
     }
   }
 

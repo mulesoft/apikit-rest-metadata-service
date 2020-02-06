@@ -15,7 +15,7 @@
         "booleanHeader" : Boolean, 
         "fileHeader" : String, 
         "dateHeader" : String, 
-        "stringHeader" : @enum("values" : ["enum2","enum1"]) String & String, 
+        "stringHeader" : @enum("values" : ["enum2","enum1"]) String, 
         "numberHeader" : Number
       }, 
       "listenerPath" : String, 

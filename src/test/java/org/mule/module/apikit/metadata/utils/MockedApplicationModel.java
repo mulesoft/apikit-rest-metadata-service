@@ -210,8 +210,7 @@ public class MockedApplicationModel implements ApplicationModel {
           .addAll(discoverRuntimeExtensionModels())
           .build();
       ComponentBuildingDefinitionRegistry registry =
-          createComponentBuildingDefinitionRegistry(extensions, ComponentBuildingDefinitionProvider.class
-              .getClassLoader());
+          createComponentBuildingDefinitionRegistry();
       ArtifactAst toolingApp = MuleAppUtil.loadApplicationModel(artifactConfigBuilder.build(),
                                                                 "",
                                                                 extensions,
