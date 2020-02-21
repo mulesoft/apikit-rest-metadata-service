@@ -8,8 +8,9 @@ package org.mule.module.apikit.metadata.utils;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptySet;
-import static org.mule.module.apikit.metadata.utils.MetadataProviderUtil.createComponentBuildingDefinitionRegistry;
+import static org.mule.datasense.test.metadataprovider.util.MetadataProviderUtil.createComponentBuildingDefinitionRegistry;
 
+import org.mule.datasense.test.metadataprovider.util.MuleAppUtil;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.ast.api.ComponentAst;
@@ -208,9 +209,10 @@ public class MockedApplicationModel implements ApplicationModel {
           .addAll(muleContext != null ? muleContext.getExtensionManager().getExtensions() : emptySet())
           .addAll(discoverRuntimeExtensionModels())
           .build();
-      ClassLoader cl = ComponentBuildingDefinitionProvider.class.getClassLoader();
-      ComponentBuildingDefinitionRegistry registry = createComponentBuildingDefinitionRegistry(extensions, cl);
+      ComponentBuildingDefinitionRegistry registry =
+          createComponentBuildingDefinitionRegistry();
       ArtifactAst toolingApp = MuleAppUtil.loadApplicationModel(artifactConfigBuilder.build(),
+                                                                "",
                                                                 extensions,
                                                                 Optional.ofNullable(registry),
                                                                 getResourceProvider());

@@ -15,7 +15,7 @@
       "listenerPath" : String, 
       "method" : String, 
       "queryParams" : {
-        "status" : [@enum("values" : ["sold","pending","available"]) String & String]
+        "status" : [@enum("values" : ["sold","pending","available"]) String]
       }, 
       "queryString" : String, 
       "relativePath" : String, 
@@ -48,7 +48,7 @@
             "id" : @range("from" : -9.223372036854776E18, "to" : 9.223372036854776E18) Number, 
             * : Any
           }], 
-        "status"? : @enum("values" : ["sold","pending","available"]) String & String
+        "status"? : @enum("values" : ["sold","pending","available"]) String
       }]
   }, 
   "variables" : {

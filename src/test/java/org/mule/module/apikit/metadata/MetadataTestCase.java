@@ -12,8 +12,10 @@ import static org.junit.Assert.assertThat;
 import static org.mule.module.apikit.metadata.internal.MetadataBuilderImpl.MULE_APIKIT_PARSER;
 
 import org.mule.metadata.api.model.FunctionType;
-import org.mule.module.apikit.metadata.internal.model.Flow;
+import org.mule.runtime.apikit.metadata.api.MetadataBuilder;
+import org.mule.runtime.apikit.metadata.api.MetadataService;
 import org.mule.runtime.ast.api.ArtifactAst;
+import org.mule.test.runner.RunnerDelegateTo;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,26 +28,21 @@ import java.util.Optional;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-@RunWith(Parameterized.class)
-@Ignore("APIKIT-2051")
+@RunnerDelegateTo(Parameterized.class)
 public class MetadataTestCase extends AbstractMetadataTestCase {
 
   private final String parser;
   private final File app;
-  private final Flow flow;
 
   // SET TO TRUE IF YOU WANT THE TESTS THAT MISS MACH TO GENERATE A NEW FILE
-  private final boolean generateFixedFiles = true;
+  private final boolean generateFixedFiles = false;
 
-  public MetadataTestCase(final String parser, final String folderName, final File app, final Flow flow) {
+  public MetadataTestCase(final String parser, final File app) {
     this.parser = parser;
     this.app = app;
-    this.flow = flow;
   }
 
   @Before
@@ -63,50 +60,61 @@ public class MetadataTestCase extends AbstractMetadataTestCase {
     if (app.getAbsolutePath().contains("oas") && parser.equals(RAML))
       return;
 
-    final File goldenFile = goldenFile(flow, app, parser);
+    for (String flow : findFlows(app)) {
+      final File goldenFile = goldenFile(flow, app, parser);
 
-    final ArtifactAst applicationModel = createApplicationModel(app);
-    assertThat(applicationModel, notNullValue());
+      final ArtifactAst applicationModel = createApplicationModel(app);
+      assertThat(applicationModel, notNullValue());
 
-    final Optional<FunctionType> metadata = getMetadata(applicationModel, flow);
+      MetadataService service = getService(MetadataService.class);
+      MetadataBuilder apikitMetadataBuilder = service.getApikitMetadataBuilder();
+      final Optional<FunctionType> metadata = getMetadata(apikitMetadataBuilder, applicationModel, flow);
 
-    if (isInvalidFileLocation()) {
-      assertThat(metadata.isPresent(), is(false));
-      return;
-    }
-
-    assertThat(metadata.isPresent(), is(true));
-
-    final String current = metadataToString(parser, metadata.get()).trim();
-
-    final Path goldenPath = goldenFile.exists() ? goldenFile.toPath() : createGoldenFile(goldenFile, current);
-    final String expected = readFile(goldenPath).trim();
-
-    try {
-      assertThat("Metadata differ from expected. File: " + goldenFile.getName(), current, is(expected));
-    } catch (final AssertionError error) {
-      final String name = goldenFile.getName();
-      final File folder = goldenFile.getParentFile();
-      if (generateFixedFiles) {
-        final File newGoldenFile = new File(folder, name + ".fixed");
-        createGoldenFile(newGoldenFile, current);
+      if (isInvalidFileLocation()) {
+        assertThat(metadata.isPresent(), is(false));
+        return;
       }
-      throw error;
+
+      assertThat(metadata.isPresent(), is(true));
+
+      final String current = metadataToString(parser, metadata.get()).trim();
+
+      final Path goldenPath = goldenFile.exists() ? goldenFile.toPath() : createGoldenFile(goldenFile, current);
+      final String expected = readFile(goldenPath).trim();
+
+      try {
+        assertThat("Metadata differ from expected on flow: " + flow + ". File: " + relativePath(goldenFile), current,
+                   is(expected));
+      } catch (final AssertionError error) {
+        final String name = goldenFile.getName();
+        final File folder = goldenFile.getParentFile();
+        if (generateFixedFiles) {
+          final File newGoldenFile = new File(folder, name + ".fixed");
+          createGoldenFile(newGoldenFile, current);
+        }
+        throw error;
+      }
     }
   }
 
-  @Parameterized.Parameters(name = "{0} -> {1}-{3}")
+  private String relativePath(File goldenFile) {
+    try {
+      File base = new File(this.getClass().getClassLoader().getResource("").toURI());
+      return base.toURI().relativize(goldenFile.toURI()).getPath();
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Parameterized.Parameters(name = "{0} -> {1}")
   public static Collection<Object[]> getData() throws IOException, URISyntaxException {
 
     final List<Object[]> parameters = new ArrayList<>();
 
     scanApps().forEach(app -> {
       try {
-        final String folderName = app.getParentFile().getName();
-        findFlows(app).forEach(flow -> {
-          parameters.add(new Object[] {RAML, folderName, app, flow});
-          parameters.add(new Object[] {AMF, folderName, app, flow});
-        });
+        parameters.add(new Object[] {RAML, app});
+        parameters.add(new Object[] {AMF, app});
       } catch (Exception e) {
         throw new RuntimeException(e);
       }

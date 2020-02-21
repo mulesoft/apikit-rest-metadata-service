@@ -16,7 +16,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.mule.module.apikit.metadata.internal.model.Flow;
 
 import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -31,25 +30,23 @@ import static org.junit.Assert.assertThat;
 @Ignore
 public class MetadataCompatibilityTestCase extends AbstractMetadataTestCase {
 
-  private String folderName;
   private File app;
-  private Flow flow;
+  private String flow;
 
-  public MetadataCompatibilityTestCase(final String folderName, final File app, final Flow flow) {
-    this.folderName = folderName;
+  public MetadataCompatibilityTestCase(final File app, final String flow) {
     this.app = app;
     this.flow = flow;
   }
 
   @Test
-  public void compatibilityMetadata() throws Exception {
+  public void compatibilityMetadata() {
     final File javaGoldenFile = goldenFile(flow, app, RAML);
     final File amfGoldenFile = goldenFile(flow, app, AMF);
 
     final String javaMetadata = readFile(javaGoldenFile.toPath());
     final String amfMetadata = readFile(amfGoldenFile.toPath());
 
-    assertThat(format("Java/AMF metadata differ. App: '%s' Flow: '%s'", app.getParentFile().getName(), flow.getName()),
+    assertThat(format("Java/AMF metadata differ. App: '%s' Flow: '%s'", app.getParentFile().getName(), flow),
                javaMetadata,
                is(equalTo(amfMetadata)));
   }

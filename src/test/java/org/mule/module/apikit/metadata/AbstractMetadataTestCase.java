@@ -8,17 +8,16 @@ package org.mule.module.apikit.metadata;
 
 import static java.util.stream.Collectors.toList;
 
+import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.metadata.api.model.FunctionType;
 import org.mule.metadata.api.model.MetadataType;
-import org.mule.metadata.internal.utils.MetadataTypeWriter;
-import org.mule.module.apikit.metadata.internal.MetadataBuilderImpl;
-import org.mule.module.apikit.metadata.internal.model.ApplicationModelWrapper;
-import org.mule.module.apikit.metadata.internal.model.Flow;
 import org.mule.module.apikit.metadata.utils.MetadataFixer;
+import org.mule.module.apikit.metadata.utils.MetadataTypeWriter;
 import org.mule.module.apikit.metadata.utils.MockedApplicationModel;
 import org.mule.module.apikit.metadata.utils.TestNotifier;
 import org.mule.module.apikit.metadata.utils.TestResourceLoader;
 import org.mule.runtime.apikit.metadata.api.Metadata;
+import org.mule.runtime.apikit.metadata.api.MetadataBuilder;
 import org.mule.runtime.ast.api.ArtifactAst;
 
 import java.io.File;
@@ -33,7 +32,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
-public class AbstractMetadataTestCase {
+public abstract class AbstractMetadataTestCase extends MuleArtifactFunctionalTestCase {
 
   protected static final String AMF = "AMF";
   protected static final String RAML = "RAML";
@@ -41,8 +40,14 @@ public class AbstractMetadataTestCase {
   private static final PathMatcher API_MATCHER = FileSystems.getDefault().getPathMatcher("glob:app.xml");
 
   protected static List<File> scanApps() throws IOException, URISyntaxException {
-    final URI baseFolder = AbstractMetadataTestCase.class.getResource("").toURI();
+    final URI baseFolder =
+        new File(AbstractMetadataTestCase.class.getResource("/anchor.test.resource.file").toURI()).getParentFile().toURI();
     return scan(baseFolder);
+  }
+
+  @Override
+  protected String getConfigFile() {
+    return "mule-config.xml";
   }
 
   protected static List<File> scan(final URI resources) throws IOException {
@@ -57,43 +62,47 @@ public class AbstractMetadataTestCase {
   protected static ArtifactAst createApplicationModel(final File app) throws Exception {
     final MockedApplicationModel.Builder builder = new MockedApplicationModel.Builder();
     builder.addConfig("apiKitSample", app);
+    builder.muleContext(muleContext);
     final MockedApplicationModel mockedApplicationModel = builder.build();
     return mockedApplicationModel.getMuleApplicationModel();
   }
 
-  protected static List<Flow> findFlows(final File app) throws Exception {
+  protected static List<String> findFlows(final File app) throws Exception {
     final ArtifactAst applicationModel = createApplicationModel(app);
 
     // Only APIKit flows
-    return ApplicationModelWrapper.findFlows(applicationModel).stream()
-        .filter(flow -> isApikitFlow(flow)).collect(toList());
+    return applicationModel.topLevelComponentsStream()
+        .filter(componentAst -> componentAst.getIdentifier().getNamespace().equals("mule") &&
+            componentAst.getIdentifier().getName().equals("flow"))
+        .map(componentAst -> (String) componentAst.getParameter("name").getValue().getRight())
+        .filter(flow -> isApikitFlow(flow))
+        .collect(toList());
   }
 
-  private static boolean isApikitFlow(final Flow flow) {
-    final String name = flow.getName();
-
+  private static boolean isApikitFlow(final String name) {
     return name.startsWith("get:") || name.startsWith("post:") || name.startsWith("put:") ||
         name.startsWith("delete:") || name.startsWith("head:") || name.startsWith("patch:") ||
         name.startsWith("options:") || name.startsWith("trace:") || name.startsWith("connect:");
 
   }
 
-  protected static Optional<FunctionType> getMetadata(final ArtifactAst applicationModel, final Flow flow) {
+  protected static Optional<FunctionType> getMetadata(MetadataBuilder metadataBuilder, final ArtifactAst applicationModel,
+                                                      final String flow) {
 
-    final Metadata metadata = new MetadataBuilderImpl()
+    final Metadata metadata = metadataBuilder
         .withApplicationModel(applicationModel)
         .withResourceLoader(new TestResourceLoader())
         .withNotifier(new TestNotifier()).build();
-    return metadata.getMetadataForFlow(flow.getName());
+    return metadata.getMetadataForFlow(flow);
   }
 
   protected static String metadataToString(String parser, final FunctionType functionType) {
-    final String result = new CustomMetadataWriter().toString(functionType);
+    final String result = new MetadataTypeWriter().toString(functionType);
     return AMF.equals(parser) ? MetadataFixer.normalizeEnums(result) : result;
   }
 
-  protected File goldenFile(final Flow flow, final File app, final String parser) {
-    final String fileName = flow.getName()
+  protected File goldenFile(final String flow, final File app, final String parser) {
+    final String fileName = flow
         .replace("\\", "")
         .replace(":", "-") + ".out";
 
@@ -120,19 +129,5 @@ public class AbstractMetadataTestCase {
     if (!Files.exists(parent))
       Files.createDirectory(parent);
     return Files.write(goldenPath, content.getBytes("UTF-8"));
-  }
-
-  private static class CustomMetadataWriter extends MetadataTypeWriter {
-
-    private static final String TO_REPLACE = "String & @enum(\"values\" : [\"enum2\",\"enum1\"]) String";
-    private static final String REPLACEMENT = "@enum(\"values\" : [\"enum2\",\"enum1\"]) String & String";
-
-    @Override
-    public String toString(MetadataType structure) {
-      String result = super.toString(structure);
-      // THIS IS REQUIRED SINCE SERIALIZATION ORDER CANNOT BE GUARANTEED, MAKING OUR TESTS FAIL,
-      // A PROPER SOLUTION FOR THIS IS USE ANOTHER SERIALIZER e.g. metadata-model-persistent-api.
-      return result.replace(TO_REPLACE, REPLACEMENT);
-    }
   }
 }

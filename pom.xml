@@ -25,6 +25,8 @@
 
         <!-- Test -->
         <mule.http.connector.version>1.5.3</mule.http.connector.version>
+        <mule.apikit.module.version>1.3.10-SNAPSHOT</mule.apikit.module.version>
+        <mule.service.weave.version>2.3.0-SNAPSHOT</mule.service.weave.version>
     </properties>
 
     <build>
@@ -76,12 +78,6 @@
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-metadata-model-json</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.everit.json</groupId>
-                    <artifactId>org.everit.json.schema</artifactId>
-                </exclusion>
-            </exclusions>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -102,6 +98,34 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-module-dsl-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-module-spring-config</artifactId>
+            <version>${mule.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-service-http-api</artifactId>
+            <version>${mule.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- org/mule/runtime/dsl/internal/xml/parser/XmlApplicationParser cannot be loaded from test classes -->
+        <dependency>
+            <groupId>org.mule</groupId>
+            <artifactId>mule-datasense-test-fmwk</artifactId>
+            <version>${mule.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Test Dependencies -->
         <dependency>
             <groupId>junit</groupId>
@@ -115,15 +139,35 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.9.0</version>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-tests-runner</artifactId>
+            <version>${mule.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mule.tests</groupId>
-            <artifactId>mule-tests-runner</artifactId>
+            <artifactId>mule-tests-functional</artifactId>
             <version>${mule.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-tests-unit</artifactId>
+            <version>${mule.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests.plugin</groupId>
+            <artifactId>mule-tests-component-plugin</artifactId>
+            <version>${mule.version}</version>
+            <classifier>mule-plugin</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-apikit-module</artifactId>
+            <version>${mule.apikit.module.version}</version>
+            <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -134,17 +178,48 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-          <groupId>org.mule.runtime</groupId>
-          <artifactId>mule-module-dsl-api</artifactId>
-          <scope>test</scope>
+            <groupId>org.mule.services</groupId>
+            <artifactId>mule-service-weave</artifactId>
+            <version>${mule.service.weave.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-module-spring-config</artifactId>
-            <version>${mule.version}</version>
-            <scope>test </scope>
+            <groupId>org.mule.services</groupId>
+            <artifactId>mule-service-http</artifactId>
+            <classifier>mule-service</classifier>
+            <version>1.5.0-SNAPSHOT</version>
+            <scope>test</scope>
         </dependency>
 
+        <!-- mule-test-runner dependencies to mimic container classpath -->
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-module-container</artifactId>
+            <version>${mule.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-module-service</artifactId>
+            <version>${mule.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-module-extensions-support</artifactId>
+            <version>${mule.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- TODO remove once AST doesn't need parsers to resolve parameters -->
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-module-extensions-spring-support</artifactId>
+            <version>${mule.version}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <distributionManagement>
