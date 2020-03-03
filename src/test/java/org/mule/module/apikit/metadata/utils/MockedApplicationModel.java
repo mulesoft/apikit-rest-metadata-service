@@ -6,22 +6,19 @@
  */
 package org.mule.module.apikit.metadata.utils;
 
-import static java.lang.String.format;
-import static java.util.Collections.emptySet;
-import static org.mule.datasense.test.metadataprovider.util.MetadataProviderUtil.createComponentBuildingDefinitionRegistry;
-
-import org.mule.datasense.test.metadataprovider.util.MuleAppUtil;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
+import org.apache.commons.io.IOUtils;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.ast.api.ComponentAst;
-import org.mule.runtime.config.api.dsl.model.ComponentBuildingDefinitionRegistry;
 import org.mule.runtime.config.api.dsl.model.ResourceProvider;
 import org.mule.runtime.config.api.dsl.processor.ArtifactConfig;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.extension.RuntimeExtensionModelProvider;
 import org.mule.runtime.core.api.registry.SpiServiceRegistry;
-import org.mule.runtime.dsl.api.component.ComponentBuildingDefinitionProvider;
-import org.mule.runtime.dsl.api.xml.parser.ConfigFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,18 +27,13 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableSet;
+import static java.lang.String.format;
+import static java.util.Collections.emptySet;
 
 // THIS CLASS WAS COPIED FROM git@github.com:mulesoft/mule-datasense-api.git
 public class MockedApplicationModel implements ApplicationModel {
@@ -190,11 +182,11 @@ public class MockedApplicationModel implements ApplicationModel {
     public Builder addConfig(String configName, InputStream configData) {
       Preconditions.checkNotNull(configName);
       Preconditions.checkNotNull(configData);
-      artifactConfigBuilder.addConfigFile(new ConfigFile(configName, Collections.singletonList(
-                                                                                               MuleAppUtil
-                                                                                                   .loadConfigLines(configData)
-                                                                                                   .orElseThrow(() -> new IllegalArgumentException(format("Failed to get %s.",
-                                                                                                                                                          configName))))));
+      //      artifactConfigBuilder.addConfigFile(new ConfigFile(configName, Collections.singletonList(
+      //                                                                                               MuleAppUtil
+      //                                                                                                   .loadConfigLines(configData)
+      //                                                                                                   .orElseThrow(() -> new IllegalArgumentException(format("Failed to get %s.",
+      //                                                                                                                                                          configName))))));
       return this;
     }
 
@@ -209,22 +201,22 @@ public class MockedApplicationModel implements ApplicationModel {
           .addAll(muleContext != null ? muleContext.getExtensionManager().getExtensions() : emptySet())
           .addAll(discoverRuntimeExtensionModels())
           .build();
-      ComponentBuildingDefinitionRegistry registry =
-          createComponentBuildingDefinitionRegistry();
-      ArtifactAst toolingApp = MuleAppUtil.loadApplicationModel(artifactConfigBuilder.build(),
-                                                                "",
-                                                                extensions,
-                                                                Optional.ofNullable(registry),
-                                                                getResourceProvider());
+      //      ComponentBuildingDefinitionRegistry registry =
+      //          createComponentBuildingDefinitionRegistry();
+      //      ArtifactAst toolingApp = MuleAppUtil.loadApplicationModel(artifactConfigBuilder.build(),
+      //                                                                "",
+      //                                                                extensions,
+      //                                                                Optional.ofNullable(registry),
+      //                                                                getResourceProvider());
 
       logger.debug("Resolved locations for Tooling ApplicationModel:");
-      toolingApp
-          .recursiveStream().forEach(componentModel -> {
-            if (componentModel.getLocation() != null) {
-              logger.debug(format("Location: %s (%s)", componentModel.getLocation().getLocation(),
-                                  componentModel.getIdentifier()));
-            }
-          });
+      //      toolingApp
+      //          .recursiveStream().forEach(componentModel -> {
+      //            if (componentModel.getLocation() != null) {
+      //              logger.debug(format("Location: %s (%s)", componentModel.getLocation().getLocation(),
+      //                                  componentModel.getIdentifier()));
+      //            }
+      //          });
 
       if (muleContext != null) {
         logger.debug("Resolved locations from deployed application:");
@@ -234,7 +226,7 @@ public class MockedApplicationModel implements ApplicationModel {
                                                               componentLocation.getComponentIdentifier())));
       }
 
-      return new MockedApplicationModel("", toolingApp, typesDataList, baseURI);
+      return new MockedApplicationModel("", null, typesDataList, baseURI);
     }
 
     public Set<ExtensionModel> discoverRuntimeExtensionModels() {

@@ -5,7 +5,7 @@
     <parent>
        <groupId>org.mule.services</groupId>
         <artifactId>mule-core-services-parent</artifactId>
-        <version>1.3.0-SNAPSHOT</version>
+        <version>1.3.0-ea1</version>
     </parent>
 
     <artifactId>mule-service-apikit-metadata</artifactId>
@@ -19,14 +19,14 @@
     <properties>
         <licensePath>LICENSE_HEADER.txt</licensePath>
 
-        <apikit.metadata.api.version>2.0.0-SNAPSHOT</apikit.metadata.api.version>
+        <apikit.metadata.api.version>2.0.0-ea1</apikit.metadata.api.version>
         <mule.app.plugins.maven.plugin.version>1.2.0</mule.app.plugins.maven.plugin.version>
-        <parser.service.version>2.1.0-SNAPSHOT</parser.service.version>
+        <parser.service.version>2.0.5-ea1</parser.service.version>
 
         <!-- Test -->
         <mule.http.connector.version>1.5.3</mule.http.connector.version>
-        <mule.apikit.module.version>1.3.10-SNAPSHOT</mule.apikit.module.version>
-        <mule.service.weave.version>2.3.0-SNAPSHOT</mule.service.weave.version>
+        <mule.apikit.module.version>1.3.9</mule.apikit.module.version>
+        <mule.service.weave.version>2.3.0-ea1</mule.service.weave.version>
     </properties>
 
     <build>
@@ -118,14 +118,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- org/mule/runtime/dsl/internal/xml/parser/XmlApplicationParser cannot be loaded from test classes -->
-        <dependency>
-            <groupId>org.mule</groupId>
-            <artifactId>mule-datasense-test-fmwk</artifactId>
-            <version>${mule.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- Test Dependencies -->
         <dependency>
             <groupId>junit</groupId>
@@ -181,13 +173,6 @@
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-weave</artifactId>
             <version>${mule.service.weave.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.services</groupId>
-            <artifactId>mule-service-http</artifactId>
-            <classifier>mule-service</classifier>
-            <version>1.5.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
 

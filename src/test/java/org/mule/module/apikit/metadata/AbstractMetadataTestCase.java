@@ -6,14 +6,10 @@
  */
 package org.mule.module.apikit.metadata;
 
-import static java.util.stream.Collectors.toList;
-
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.metadata.api.model.FunctionType;
-import org.mule.metadata.api.model.MetadataType;
 import org.mule.module.apikit.metadata.utils.MetadataFixer;
 import org.mule.module.apikit.metadata.utils.MetadataTypeWriter;
-import org.mule.module.apikit.metadata.utils.MockedApplicationModel;
 import org.mule.module.apikit.metadata.utils.TestNotifier;
 import org.mule.module.apikit.metadata.utils.TestResourceLoader;
 import org.mule.runtime.apikit.metadata.api.Metadata;
@@ -31,6 +27,8 @@ import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+
+import static java.util.stream.Collectors.toList;
 
 public abstract class AbstractMetadataTestCase extends MuleArtifactFunctionalTestCase {
 
@@ -60,23 +58,25 @@ public abstract class AbstractMetadataTestCase extends MuleArtifactFunctionalTes
   }
 
   protected static ArtifactAst createApplicationModel(final File app) throws Exception {
-    final MockedApplicationModel.Builder builder = new MockedApplicationModel.Builder();
-    builder.addConfig("apiKitSample", app);
-    builder.muleContext(muleContext);
-    final MockedApplicationModel mockedApplicationModel = builder.build();
-    return mockedApplicationModel.getMuleApplicationModel();
+    //    final MockedApplicationModel.Builder builder = new MockedApplicationModel.Builder();
+    //    builder.addConfig("apiKitSample", app);
+    //    builder.muleContext(muleContext);
+    //    final MockedApplicationModel mockedApplicationModel = builder.build();
+    //    return mockedApplicationModel.getMuleApplicationModel();
+    return null;
   }
 
   protected static List<String> findFlows(final File app) throws Exception {
-    final ArtifactAst applicationModel = createApplicationModel(app);
-
-    // Only APIKit flows
-    return applicationModel.topLevelComponentsStream()
-        .filter(componentAst -> componentAst.getIdentifier().getNamespace().equals("mule") &&
-            componentAst.getIdentifier().getName().equals("flow"))
-        .map(componentAst -> (String) componentAst.getParameter("name").getValue().getRight())
-        .filter(flow -> isApikitFlow(flow))
-        .collect(toList());
+    //    final ArtifactAst applicationModel = createApplicationModel(app);
+    //
+    //    // Only APIKit flows
+    //    return applicationModel.topLevelComponentsStream()
+    //        .filter(componentAst -> componentAst.getIdentifier().getNamespace().equals("mule") &&
+    //            componentAst.getIdentifier().getName().equals("flow"))
+    //        .map(componentAst -> (String) componentAst.getParameter("name").getValue().getRight())
+    //        .filter(flow -> isApikitFlow(flow))
+    //        .collect(toList());
+    return null;
   }
 
   private static boolean isApikitFlow(final String name) {
