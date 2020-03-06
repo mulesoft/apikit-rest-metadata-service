@@ -222,9 +222,7 @@ class FlowMetadata implements MetadataSource {
     baseUriParameters
         .forEach((name, param) -> builder.addField().key(name).value(metadata(param)).required(param.required().value()));
 
-    //endPoint.parameters().forEach(parameter -> addField(builder, parameter));
-    // TODO ALE BUG AMF ????
-    addFields(builder, endPoint, endPoint.parameters());
+    addFields(builder, endPoint);
 
     return builder;
   }
@@ -240,21 +238,11 @@ class FlowMetadata implements MetadataSource {
     return builder;
   }
 
-  private void addFields(final ObjectTypeBuilder builder, final EndPoint endPoint, final List<Parameter> parameters) {
-
+  private void addFields(ObjectTypeBuilder builder, EndPoint endPoint) {
+    List<Parameter> parameters = endPoint.parameters();
     if (!parameters.isEmpty()) {
-      final String path = endPoint.path().value();
-      final String[] split = path.split("/");
-      final List<String> keys = Arrays.stream(split).filter(s -> s.startsWith("{"))
-          .map(s -> s.substring(1, s.length() - 1))
-          .collect(toList());
-
-      final Map<String, Parameter> parametersMap =
-          parameters.stream()
-              .collect(Collectors.toMap(p -> p.name().value(), Function.identity()));
-
-      keys.forEach(key -> builder.addField().key(key).value(metadata(parametersMap.get(key)))
-          .required(parametersMap.get(key).required().value()));
+      parameters.forEach(p -> builder.addField().key(p.name().value()).value(metadata(p))
+          .required(p.required().value()));
     }
   }
 
