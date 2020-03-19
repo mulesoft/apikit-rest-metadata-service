@@ -119,7 +119,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- DataSense test framework depends on mule-service DataWeave, therefore we need to include its API dependency as part of Runtime classpath-->
+        <!-- test-runner discover also services declared as test scope therefore weave comes from http service, so we need to include its API in Runtime classpath -->
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-dwb-api</artifactId>
