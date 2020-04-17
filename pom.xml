@@ -19,7 +19,7 @@
     <properties>
         <licensePath>LICENSE_HEADER.txt</licensePath>
 
-        <apikit.metadata.api.version>2.0.0-SNAPSHOT</apikit.metadata.api.version>
+        <apikit.metadata.api.version>2.0.0</apikit.metadata.api.version>
         <mule.app.plugins.maven.plugin.version>1.2.0</mule.app.plugins.maven.plugin.version>
         <parser.service.version>2.0.5</parser.service.version>
 
