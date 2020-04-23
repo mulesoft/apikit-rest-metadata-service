@@ -1,0 +1,38 @@
+#%RAML 1.0
+title: Healthcare API
+version: 1.0
+
+types:
+  Patient:
+    properties:
+      name: string
+      gender?: string
+      birthDate?: date-only | datetime
+      address?: string
+
+mediaType:
+  - application/fhir+xml; fhirVersion=4.0
+  - application/fhir+json; fhirVersion=4.0
+  - application/xml; charset=iso-8859-1
+  - application/json; charset=iso-8859-1
+
+/Patient/{id}:
+  get:
+    responses:
+      200:
+        body:
+          type: Patient
+
+  put:
+    headers:
+      Accept?:
+        type: string
+        enum: [ "application/fhir+xml; fhirVersion=4.0", "application/fhir+json; fhirVersion=4.0", "application/fhir+turtle; fhirVersion=4.0", "text/html" ]
+    body:
+      type: Patient
+    responses:
+      200:
+        headers:
+          Content-type:
+            type: string
+            enum: [ "application/fhir+xml; fhirVersion=4.0", "application/fhir+json; fhirVersion=4.0" ]

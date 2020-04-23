@@ -6,7 +6,8 @@
  */
 package org.mule.module.apikit.metadata.internal.raml;
 
-import javax.annotation.Nullable;
+import org.mule.apikit.model.MimeType;
+import org.mule.apikit.model.parameter.Parameter;
 import org.mule.metadata.api.builder.ObjectTypeBuilder;
 import org.mule.metadata.api.model.MetadataFormat;
 import org.mule.metadata.api.model.MetadataType;
@@ -16,9 +17,9 @@ import org.mule.metadata.xml.api.ModelFactory;
 import org.mule.metadata.xml.api.SchemaCollector;
 import org.mule.metadata.xml.api.XmlTypeLoader;
 import org.mule.metadata.xml.api.utils.XmlSchemaUtils;
-import org.mule.apikit.model.MimeType;
-import org.mule.apikit.model.parameter.Parameter;
+import org.mule.runtime.api.metadata.MediaType;
 
+import javax.annotation.Nullable;
 import javax.xml.namespace.QName;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,7 @@ import java.util.Optional;
 
 import static java.util.Collections.singletonList;
 import static org.mule.metadata.api.builder.BaseTypeBuilder.create;
+import static org.mule.runtime.api.metadata.MediaType.parse;
 
 class MetadataFactory {
 
@@ -44,7 +46,8 @@ class MetadataFactory {
       return MetadataFactory.defaultMetadata();
     }
 
-    final String type = body.getType();
+    final MediaType mType = parse(body.getType());
+    final String type = mType.getPrimaryType() + "/" + mType.getSubType();
     final String schema = resolveSchema(api, body);
     final String example = body.getExample();
 

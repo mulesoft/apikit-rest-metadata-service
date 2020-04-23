@@ -6,6 +6,9 @@
  */
 package org.mule.module.apikit.metadata.internal.raml;
 
+import org.mule.apikit.model.Action;
+import org.mule.apikit.model.MimeType;
+import org.mule.apikit.model.Response;
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.metadata.api.builder.BaseTypeBuilder;
 import org.mule.metadata.api.builder.FunctionTypeBuilder;
@@ -21,20 +24,19 @@ import org.mule.metadata.message.api.MuleEventMetadataTypeBuilder;
 import org.mule.module.apikit.metadata.internal.model.ApiCoordinate;
 import org.mule.module.apikit.metadata.internal.model.CertificateFields;
 import org.mule.module.apikit.metadata.internal.model.HttpRequestAttributesFields;
-import org.mule.apikit.model.Action;
-import org.mule.apikit.model.MimeType;
-import org.mule.apikit.model.Response;
+import org.mule.runtime.api.metadata.MediaType;
+import org.mule.runtime.apikit.metadata.api.MetadataSource;
+import org.mule.runtime.apikit.metadata.api.Notifier;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
-import org.mule.runtime.apikit.metadata.api.MetadataSource;
-import org.mule.runtime.apikit.metadata.api.Notifier;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyMap;
 import static java.util.Optional.of;
+import static org.mule.runtime.api.metadata.MediaType.parse;
 
 public class FlowMetadata implements MetadataSource {
 
@@ -251,7 +253,9 @@ public class FlowMetadata implements MetadataSource {
       if (action.getBody().size() == 1) {
         mimeType = action.getBody().values().iterator().next();
       } else if (coordinate.getMediaType() != null) {
-        mimeType = action.getBody().get(coordinate.getMediaType());
+        MediaType mType = parse(coordinate.getMediaType());
+        mimeType = action.getBody().entrySet().stream().filter(map -> parse(map.getKey()).matches(mType)).findFirst()
+            .map(map -> map.getValue()).orElse(null);
       }
     }
 
