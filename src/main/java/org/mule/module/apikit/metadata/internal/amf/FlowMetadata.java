@@ -12,12 +12,6 @@ import amf.client.model.domain.Parameter;
 import amf.client.model.domain.Payload;
 import amf.client.model.domain.Request;
 import amf.client.model.domain.Response;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.mule.metadata.api.builder.BaseTypeBuilder;
 import org.mule.metadata.api.builder.FunctionTypeBuilder;
 import org.mule.metadata.api.builder.ObjectTypeBuilder;
@@ -32,14 +26,23 @@ import org.mule.metadata.message.api.MuleEventMetadataTypeBuilder;
 import org.mule.module.apikit.metadata.internal.model.ApiCoordinate;
 import org.mule.module.apikit.metadata.internal.model.CertificateFields;
 import org.mule.module.apikit.metadata.internal.model.HttpRequestAttributesFields;
+import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.apikit.metadata.api.MetadataSource;
 import org.mule.runtime.apikit.metadata.api.Notifier;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.stream.Collectors.toList;
+import static org.mule.runtime.api.metadata.MediaType.parse;
 
 class FlowMetadata implements MetadataSource {
 
@@ -257,12 +260,16 @@ class FlowMetadata implements MetadataSource {
   }
 
   private static Optional<Payload> findPayload(final List<Payload> payloads, final String mediaType) {
-
-    if (payloads.isEmpty())
+    if (payloads.isEmpty()) {
       return empty();
+    }
 
-    return payloads.size() == 1 || mediaType == null ? of(payloads.get(0))
-        : payloads.stream().filter(p -> p.mediaType().value().equalsIgnoreCase(mediaType)).findFirst();
+    if (payloads.size() == 1 || mediaType == null) {
+      return of(payloads.get(0));
+    }
+
+    MediaType mType = parse(mediaType);
+    return payloads.stream().filter(p -> parse(p.mediaType().value()).matches(mType)).findFirst();
   }
 
   private MetadataType metadata(final Parameter parameter) {
