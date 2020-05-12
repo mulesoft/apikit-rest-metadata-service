@@ -268,7 +268,7 @@ public class AmfTestCase {
   }
 
   private static WebApi webApi(final String path) {
-    final Parser parser = DocumentParser.getParserForApi(ApiReference.create(path), DefaultEnvironment.apply());
+    final Parser parser = DocumentParser.getParserForApi(ApiReference.create(path), DefaultEnvironment.apply(), null);
     final Document document = DocumentParser.parseFile(parser, path, true);
     final WebApi webApi = DocumentParser.getWebApi(document);
     assertThat(webApi, notNullValue());
