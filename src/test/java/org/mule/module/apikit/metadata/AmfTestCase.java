@@ -6,9 +6,7 @@
  */
 package org.mule.module.apikit.metadata;
 
-import amf.client.environment.DefaultEnvironment;
 import amf.client.model.StrField;
-import amf.client.model.document.Document;
 import amf.client.model.domain.AnyShape;
 import amf.client.model.domain.EndPoint;
 import amf.client.model.domain.Example;
@@ -21,10 +19,9 @@ import amf.client.model.domain.Request;
 import amf.client.model.domain.Response;
 import amf.client.model.domain.Shape;
 import amf.client.model.domain.WebApi;
-import amf.client.parse.Parser;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mule.amf.impl.DocumentParser;
+import org.mule.amf.impl.AMFParser;
 import org.mule.apikit.model.api.ApiReference;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.metadata.internal.utils.MetadataTypeWriter;
@@ -269,9 +266,8 @@ public class AmfTestCase {
 
   private static WebApi webApi(final String path) {
     ApiReference apiRef = ApiReference.create(path);
-    final Parser parser = DocumentParser.getParserForApi(apiRef, DefaultEnvironment.apply(), null);
-    final Document document = DocumentParser.parseFile(parser, apiRef, true);
-    final WebApi webApi = DocumentParser.getWebApi(document);
+    AMFParser parserWrapper = new AMFParser(apiRef, true);
+    final WebApi webApi = parserWrapper.getWebApi();
     assertThat(webApi, notNullValue());
     return webApi;
   }
