@@ -222,7 +222,7 @@ class FlowMetadata implements MetadataSource {
     baseUriParameters
         .forEach((name, param) -> builder.addField().key(name).value(metadata(param)).required(param.required().value()));
 
-    addFields(builder, endPoint);
+    addEndpointUriParametersFields(builder, endPoint);
 
     return builder;
   }
@@ -238,17 +238,26 @@ class FlowMetadata implements MetadataSource {
     return builder;
   }
 
-  private void addFields(ObjectTypeBuilder builder, EndPoint endPoint) {
+  /**
+   * Add all the URI parameters' metadata found for {@link EndPoint} to the {@link ObjectTypeBuilder}.
+   * It looks for all the URI parameters found from either:
+   * - the parameter's endpoint or
+   * - the first endpoint operation's request (if any).
+   *
+   * @param builder
+   * @param endPoint
+   */
+  private void addEndpointUriParametersFields(ObjectTypeBuilder builder, EndPoint endPoint) {
     List<Parameter> parameters = endPoint.parameters();
-    Consumer<Parameter> parameterConsumer = p -> builder.addField().key(p.name().value()).value(metadata(p))
+    Consumer<Parameter> addParameterMetadata = p -> builder.addField().key(p.name().value()).value(metadata(p))
         .required(p.required().value());
     if (!parameters.isEmpty()) {
-      parameters.forEach(parameterConsumer);
+      parameters.forEach(addParameterMetadata);
     } else {
       Optional<Request> request =
           endPoint.operations().stream().filter(o -> o.request() != null).map(o -> o.request()).findFirst();
       if (request.isPresent()) {
-        request.get().uriParameters().forEach(parameterConsumer);
+        request.get().uriParameters().forEach(addParameterMetadata);
       }
     }
   }
