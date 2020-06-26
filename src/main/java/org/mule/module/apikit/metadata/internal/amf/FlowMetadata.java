@@ -30,18 +30,15 @@ import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.apikit.metadata.api.MetadataSource;
 import org.mule.runtime.apikit.metadata.api.Notifier;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.function.Consumer;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
-import static java.util.stream.Collectors.toList;
 import static org.mule.runtime.api.metadata.MediaType.parse;
 
 class FlowMetadata implements MetadataSource {
@@ -225,7 +222,7 @@ class FlowMetadata implements MetadataSource {
     baseUriParameters
         .forEach((name, param) -> builder.addField().key(name).value(metadata(param)).required(param.required().value()));
 
-    addFields(builder, endPoint);
+    addEndpointUriParametersFields(builder, endPoint);
 
     return builder;
   }
@@ -241,11 +238,27 @@ class FlowMetadata implements MetadataSource {
     return builder;
   }
 
-  private void addFields(ObjectTypeBuilder builder, EndPoint endPoint) {
+  /**
+   * Add all the URI parameters' metadata found for {@link EndPoint} to the {@link ObjectTypeBuilder}.
+   * It looks for all the URI parameters found from either:
+   * - the parameter's endpoint or
+   * - the first endpoint operation's request (if any).
+   *
+   * @param builder
+   * @param endPoint
+   */
+  private void addEndpointUriParametersFields(ObjectTypeBuilder builder, EndPoint endPoint) {
     List<Parameter> parameters = endPoint.parameters();
+    Consumer<Parameter> addParameterMetadata = p -> builder.addField().key(p.name().value()).value(metadata(p))
+        .required(p.required().value());
     if (!parameters.isEmpty()) {
-      parameters.forEach(p -> builder.addField().key(p.name().value()).value(metadata(p))
-          .required(p.required().value()));
+      parameters.forEach(addParameterMetadata);
+    } else {
+      Optional<Request> request =
+          endPoint.operations().stream().filter(o -> o.request() != null).map(o -> o.request()).findFirst();
+      if (request.isPresent()) {
+        request.get().uriParameters().forEach(addParameterMetadata);
+      }
     }
   }
 
