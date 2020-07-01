@@ -6,9 +6,7 @@
  */
 package org.mule.module.apikit.metadata;
 
-import amf.client.environment.DefaultEnvironment;
 import amf.client.model.StrField;
-import amf.client.model.document.Document;
 import amf.client.model.domain.AnyShape;
 import amf.client.model.domain.EndPoint;
 import amf.client.model.domain.Example;
@@ -21,10 +19,9 @@ import amf.client.model.domain.Request;
 import amf.client.model.domain.Response;
 import amf.client.model.domain.Shape;
 import amf.client.model.domain.WebApi;
-import amf.client.parse.Parser;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mule.amf.impl.DocumentParser;
+import org.mule.amf.impl.AMFParser;
 import org.mule.apikit.model.api.ApiReference;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.metadata.internal.utils.MetadataTypeWriter;
@@ -200,20 +197,6 @@ public class AmfTestCase {
         });
       });
     });
-    //dump(webApi);
-  }
-
-
-
-  private static void dump(final WebApi webApi) {
-    final List<EndPoint> endPoints = webApi.endPoints();
-    endPoints.forEach(AmfTestCase::dump);
-  }
-
-  private static void dump(final EndPoint endPoint) {
-    final List<String> methods = endPoint.operations().stream().map(o -> o.method().value()).collect(toList());
-    System.out.println("Endpoint Path:" + endPoint.path() + " Operations=" + mkString(methods));
-    endPoint.operations().forEach(AmfTestCase::dump);
   }
 
   private static void dump(final Operation operation) {
@@ -251,11 +234,6 @@ public class AmfTestCase {
     });
   }
 
-  private static Optional<EndPoint> findEndPoint(final WebApi webApi, final String path) {
-    return webApi.endPoints().stream()
-        .filter(e -> e.path().value().equals(path)).findFirst();
-  }
-
   private static Optional<Operation> findOperation(final WebApi webApi, final String path, final String method) {
     return webApi.endPoints().stream()
         .filter(e -> e.path().value().equals(path)).findFirst()
@@ -268,11 +246,17 @@ public class AmfTestCase {
   }
 
   private static WebApi webApi(final String path) {
-    final Parser parser = DocumentParser.getParserForApi(ApiReference.create(path), DefaultEnvironment.apply());
-    final Document document = DocumentParser.parseFile(parser, path, true);
-    final WebApi webApi = DocumentParser.getWebApi(document);
-    assertThat(webApi, notNullValue());
-    return webApi;
+    AMFParser parser;
+    try {
+      parser = new AMFParser(ApiReference.create(path), false);
+      if (!parser.validate().conforms()) {
+        throw new RuntimeException(String.format("Invalid API definition : %s", path));
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    assertThat(parser.getWebApi(), notNullValue());
+    return parser.getWebApi();
   }
 
   private static String resource(final String resource) {
