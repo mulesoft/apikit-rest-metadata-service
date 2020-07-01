@@ -21,7 +21,7 @@
 
         <apikit.metadata.api.version>2.0.0</apikit.metadata.api.version>
         <mule.app.plugins.maven.plugin.version>1.2.0</mule.app.plugins.maven.plugin.version>
-        <parser.service.version>2.0.8-SNAPSHOT</parser.service.version>
+        <parser.service.version>2.0.8</parser.service.version>
 
         <!-- Test -->
         <mule.http.connector.version>1.5.3</mule.http.connector.version>
