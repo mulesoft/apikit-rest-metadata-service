@@ -27,7 +27,7 @@
         <mule.http.connector.version>1.5.3</mule.http.connector.version>
         <mule.apikit.module.version>1.3.13-SNAPSHOT</mule.apikit.module.version>
 
-        <mule.dwb.api.version>2.3.0</mule.dwb.api.version>
+        <mule.dwb.api.version>2.3.0-20200629</mule.dwb.api.version>
 
         <jacoco.version>0.8.5</jacoco.version>
         <allureJunitVersion>2.13.0</allureJunitVersion>
