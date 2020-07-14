@@ -172,7 +172,6 @@ public class AmfTestCase {
       final List<String> parameters = request.queryParameters().stream().map(o -> o.name().value()).collect(toList());
       assertThat(mkString(parameters), equalTo("code,size,color,description"));
     });
-    //dump(webApi);
   }
 
   @Test
@@ -197,20 +196,6 @@ public class AmfTestCase {
         });
       });
     });
-    //dump(webApi);
-  }
-
-
-
-  private static void dump(final WebApi webApi) {
-    final List<EndPoint> endPoints = webApi.endPoints();
-    endPoints.forEach(AmfTestCase::dump);
-  }
-
-  private static void dump(final EndPoint endPoint) {
-    final List<String> methods = endPoint.operations().stream().map(o -> o.method().value()).collect(toList());
-    System.out.println("Endpoint Path:" + endPoint.path() + " Operations=" + mkString(methods));
-    endPoint.operations().forEach(AmfTestCase::dump);
   }
 
   private static void dump(final Operation operation) {
@@ -246,11 +231,6 @@ public class AmfTestCase {
         }
       });
     });
-  }
-
-  private static Optional<EndPoint> findEndPoint(final WebApi webApi, final String path) {
-    return webApi.endPoints().stream()
-        .filter(e -> e.path().value().equals(path)).findFirst();
   }
 
   private static Optional<Operation> findOperation(final WebApi webApi, final String path, final String method) {

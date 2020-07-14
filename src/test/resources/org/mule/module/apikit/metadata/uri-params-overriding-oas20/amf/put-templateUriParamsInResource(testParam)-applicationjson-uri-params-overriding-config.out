@@ -1,6 +1,6 @@
 %type _:Java = (inputMetadata:{
   "message" : @typeId("value" : "org.mule.runtime.api.message.Message") {
-    "payload" : Any, 
+    "payload" : String, 
     "attributes" : {
       "clientCertificate"? : {
         "publicKey"? : {
@@ -15,13 +15,7 @@
       "listenerPath" : String, 
       "method" : String, 
       "queryParams" : {
-        "stringQueryParam"? : [@length("min" : 2, "max" : 10) @enum("values" : ["enum2","enum1"]) String & String], 
-        "numberQueryParam"? : [@range("from" : 10.1, "to" : 20.2) Number], 
-        "integerQueryParam"? : [@range("from" : 10, "to" : 20) @int Number], 
-        "dateQueryParam"? : [String], 
-        "booleanQueryParam"? : [Boolean], 
-        "fileQueryParam"? : [String], 
-        "queryParamWithoutType"? : [String]
+
       }, 
       "queryString" : String, 
       "relativePath" : String, 
@@ -30,7 +24,7 @@
       "requestUri" : String, 
       "scheme" : String, 
       "uriParams" : {
-
+        "testParam" : @enum("values" : ["resource"]) String
       }, 
       "version" : String, 
       "localAddress" : String
