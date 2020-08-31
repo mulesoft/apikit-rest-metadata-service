@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-       <groupId>org.mule.services</groupId>
+        <groupId>org.mule.services</groupId>
         <artifactId>mule-core-services-parent</artifactId>
         <version>1.3.0</version>
     </parent>
@@ -15,13 +15,13 @@
 
     <name>APIKit Metadata Service</name>
     <description>Mule service that allows get APIKit Metadata</description>
-    
+
     <properties>
         <licensePath>LICENSE_HEADER.txt</licensePath>
 
         <apikit.metadata.api.version>2.0.0</apikit.metadata.api.version>
         <mule.app.plugins.maven.plugin.version>1.2.0</mule.app.plugins.maven.plugin.version>
-        <parser.service.version>2.0.9-SNAPSHOT</parser.service.version>
+        <parser.service.version>2.0.10-SNAPSHOT</parser.service.version>
 
         <!-- Test -->
         <mule.http.connector.version>1.5.3</mule.http.connector.version>
@@ -130,7 +130,7 @@
         <dependency>
             <groupId>org.mule</groupId>
             <artifactId>mule-datasense-test-fmwk</artifactId>
-            <version>4.3.0-rc3</version>
+            <version>4.3.0</version>
             <scope>provided</scope>
         </dependency>
 
@@ -251,5 +251,5 @@
             <layout>default</layout>
         </pluginRepository>
     </pluginRepositories>
-    
+
 </project>
