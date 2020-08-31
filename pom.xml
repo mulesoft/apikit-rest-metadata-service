@@ -130,7 +130,7 @@
         <dependency>
             <groupId>org.mule</groupId>
             <artifactId>mule-datasense-test-fmwk</artifactId>
-            <version>4.3.0-rc3</version>
+            <version>4.3.0</version>
             <scope>provided</scope>
         </dependency>
 
