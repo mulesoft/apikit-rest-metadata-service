@@ -32,7 +32,6 @@
       "requestUri" : String, 
       "scheme" : String, 
       "uriParams" : {
-        "version" : String, 
         "clientId"? : @range("from" : 0) @int Number
       }, 
       "version" : String, 
