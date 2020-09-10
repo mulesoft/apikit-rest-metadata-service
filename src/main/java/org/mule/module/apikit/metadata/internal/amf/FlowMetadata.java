@@ -30,15 +30,21 @@ import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.apikit.metadata.api.MetadataSource;
 import org.mule.runtime.apikit.metadata.api.Notifier;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
+import static java.util.stream.Collectors.toList;
+import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static org.mule.runtime.api.metadata.MediaType.parse;
 
 class FlowMetadata implements MetadataSource {
@@ -182,7 +188,7 @@ class FlowMetadata implements MetadataSource {
     builder.addField()
         .key(HttpRequestAttributesFields.ATTRIBUTES_URI_PARAMS.getName())
         .required(true)
-        .value(getUriParameters(endPoint, baseUrParameters));
+        .value(getUriParameters(endPoint, operation, baseUrParameters));
     builder.addField()
         .key(HttpRequestAttributesFields.ATTRIBUTES_VERSION.getName())
         .required(true)
@@ -216,17 +222,6 @@ class FlowMetadata implements MetadataSource {
     return builder.build();
   }
 
-  private ObjectTypeBuilder getUriParameters(final EndPoint endPoint, final Map<String, Parameter> baseUriParameters) {
-    final ObjectTypeBuilder builder = BaseTypeBuilder.create(MetadataFormat.JAVA).objectType();
-
-    baseUriParameters
-        .forEach((name, param) -> builder.addField().key(name).value(metadata(param)).required(param.required().value()));
-
-    addEndpointUriParametersFields(builder, endPoint);
-
-    return builder;
-  }
-
   private ObjectTypeBuilder getQueryParameters(final Operation operation) {
     final ObjectTypeBuilder builder = BaseTypeBuilder.create(MetadataFormat.JAVA).objectType();
 
@@ -238,28 +233,32 @@ class FlowMetadata implements MetadataSource {
     return builder;
   }
 
-  /**
-   * Add all the URI parameters' metadata found for {@link EndPoint} to the {@link ObjectTypeBuilder}.
-   * It looks for all the URI parameters found from either:
-   * - the parameter's endpoint or
-   * - the first endpoint operation's request (if any).
-   *
-   * @param builder
-   * @param endPoint
-   */
-  private void addEndpointUriParametersFields(ObjectTypeBuilder builder, EndPoint endPoint) {
-    List<Parameter> parameters = endPoint.parameters();
-    Consumer<Parameter> addParameterMetadata = p -> builder.addField().key(p.name().value()).value(metadata(p))
+  private ObjectTypeBuilder getUriParameters(final EndPoint endPoint, Operation operation,
+                                             final Map<String, Parameter> baseUriParameters) {
+    final ObjectTypeBuilder builder = BaseTypeBuilder.create(MetadataFormat.JAVA).objectType();
+    Map<String, Parameter> parameters = new LinkedHashMap<>(baseUriParameters);
+    parameters.putAll(getEndpointUriParametersFields(endPoint));
+    parameters.putAll(getUriParametersFromOperation(operation));
+    Predicate<Entry<String, Parameter>> versionFilter = e -> !"version".equals(e.getKey());
+    Consumer<Parameter> addParameterToBuilder = p -> builder.addField().key(p.name().value()).value(metadata(p))
         .required(p.required().value());
-    if (!parameters.isEmpty()) {
-      parameters.forEach(addParameterMetadata);
-    } else {
-      Optional<Request> request =
-          endPoint.operations().stream().filter(o -> o.request() != null).map(o -> o.request()).findFirst();
-      if (request.isPresent()) {
-        request.get().uriParameters().forEach(addParameterMetadata);
-      }
-    }
+    parameters.entrySet().stream().filter(versionFilter).map(e -> e.getValue())
+        .forEach(addParameterToBuilder);
+    return builder;
+  }
+
+  private Map<String, Parameter> getEndpointUriParametersFields(EndPoint endPoint) {
+    List<Parameter> endPointParameters = endPoint.parameters();
+    return isEmpty(endPointParameters) ? emptyMap() : endPointParameters.stream()
+        .collect(LinkedHashMap::new, (map, param) -> map.put(param.name().value(), param), Map::putAll);
+  }
+
+  private Map<String, Parameter> getUriParametersFromOperation(Operation operation) {
+    Map<String, Parameter> uriParams = new LinkedHashMap<>();
+    List<Parameter> requestUriParams =
+        operation.requests().stream().map(r -> r.uriParameters()).flatMap(List::stream).collect(toList());
+    requestUriParams.forEach(p -> uriParams.put(p.name().value(), p));
+    return uriParams;
   }
 
   private static Optional<Response> findFirstResponse(final Operation operation) {

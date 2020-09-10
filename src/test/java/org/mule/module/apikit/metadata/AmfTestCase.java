@@ -172,7 +172,6 @@ public class AmfTestCase {
       final List<String> parameters = request.queryParameters().stream().map(o -> o.name().value()).collect(toList());
       assertThat(mkString(parameters), equalTo("code,size,color,description"));
     });
-    //dump(webApi);
   }
 
   @Test

@@ -24,7 +24,6 @@
       "requestUri" : String, 
       "scheme" : String, 
       "uriParams" : {
-        "version" : String, 
         "invoiceId"? : @range("from" : 0) @int Number
       }, 
       "version" : String, 
