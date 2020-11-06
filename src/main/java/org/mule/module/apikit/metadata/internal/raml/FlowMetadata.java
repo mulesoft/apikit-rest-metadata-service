@@ -32,6 +32,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyMap;
@@ -41,6 +42,7 @@ import static org.mule.runtime.api.metadata.MediaType.parse;
 public class FlowMetadata implements MetadataSource {
 
   private static final String PARAMETER_INPUT_METADATA = "inputMetadata";
+  private static final Pattern STATUS_CODE_2XX_PATTERN = Pattern.compile("^2\\d{2}$");
 
   final private Action action;
   final private ApiCoordinate coordinate;
@@ -110,19 +112,9 @@ public class FlowMetadata implements MetadataSource {
   }
 
   private Optional<Response> findFirstResponse(final Action action) {
-    final Optional<Response> response = getResponse(action, "200");
-
-    if (response.isPresent())
-      return response;
-
-    return action.getResponses().keySet().stream()
-        .map(code -> getResponse(action, code))
-        .filter(Optional::isPresent).map(Optional::get)
-        .findFirst();
-  }
-
-  private Optional<Response> getResponse(final Action action, final String statusCode) {
-    return Optional.ofNullable(action.getResponses().get(statusCode)).filter(Response::hasBody);
+    return action.getResponses().entrySet().stream()
+        .filter(response -> STATUS_CODE_2XX_PATTERN.matcher(response.getKey()).matches() && response.getValue().hasBody())
+        .map(Map.Entry::getValue).findFirst();
   }
 
   private ObjectTypeBuilder getQueryParameters(Action action) {
