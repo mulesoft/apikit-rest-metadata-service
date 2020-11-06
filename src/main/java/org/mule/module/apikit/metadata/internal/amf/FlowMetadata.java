@@ -37,6 +37,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
@@ -50,7 +51,7 @@ import static org.mule.runtime.api.metadata.MediaType.parse;
 class FlowMetadata implements MetadataSource {
 
   private static final String PARAMETER_INPUT_METADATA = "inputMetadata";
-  private static final String STATUS_CODE_200 = "200";
+  private static final Pattern STATUS_CODE_2XX_PATTERN = Pattern.compile("^2\\d{2}$");
 
   final private EndPoint endPoint;
   final private Operation operation;
@@ -262,12 +263,9 @@ class FlowMetadata implements MetadataSource {
   }
 
   private static Optional<Response> findFirstResponse(final Operation operation) {
-    return getResponse(operation, STATUS_CODE_200);
-  }
-
-  private static Optional<Response> getResponse(final Operation operation, final String statusCode) {
     return operation.responses().stream()
-        .filter(response -> statusCode.equals(response.statusCode().value()) && !response.payloads().isEmpty())
+        .filter(response -> STATUS_CODE_2XX_PATTERN.matcher(response.statusCode().value()).matches()
+            && !response.payloads().isEmpty())
         .findFirst();
   }
 
