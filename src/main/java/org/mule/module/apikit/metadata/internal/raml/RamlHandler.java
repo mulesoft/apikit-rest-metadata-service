@@ -6,19 +6,21 @@
  */
 package org.mule.module.apikit.metadata.internal.raml;
 
-import org.mule.apikit.model.ApiSpecification;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.mule.apikit.model.api.ApiReference;
 import org.mule.module.apikit.metadata.internal.model.MetadataResolver;
 import org.mule.module.apikit.metadata.internal.model.MetadataResolverFactory;
-import org.mule.parser.service.internal.ParserService;
-import org.mule.parser.service.result.internal.ParseResult;
+import org.mule.apikit.model.ApiSpecification;
+import org.mule.parser.service.result.ParseResult;
+import org.mule.parser.service.result.ParsingIssue;
 import org.mule.runtime.apikit.metadata.api.Notifier;
 import org.mule.runtime.apikit.metadata.api.ResourceLoader;
 import org.mule.runtime.core.api.util.StringUtils;
-
-import java.io.InputStream;
-import java.net.URI;
-import java.util.Optional;
 
 import static java.lang.String.format;
 import static java.util.Optional.empty;
@@ -27,7 +29,7 @@ import static java.util.Optional.of;
 public class RamlHandler implements MetadataResolverFactory {
 
 
-  private final ParserService SERVICE = new ParserService();
+  private final org.mule.parser.service.ParserService SERVICE = new org.mule.parser.service.ParserService();
   private final ResourceLoader resourceLoader;
   private final Notifier notifier;
 
