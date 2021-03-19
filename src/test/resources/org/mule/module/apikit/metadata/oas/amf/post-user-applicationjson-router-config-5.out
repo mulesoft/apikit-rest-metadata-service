@@ -6,7 +6,7 @@
       "password"? : String, 
       "userStatus"? : @range("from" : -2147483648, "to" : 2147483647) @int Number, 
       "phone"? : String, 
-      "id"? : @range("from" : -9.223372036854776E18, "to" : 9.223372036854776E18) Number, 
+      "id"? : @range("from" : -9.223372036854776E18, "to" : 9.223372036854776E18) @int Number, 
       "email"? : String, 
       "username"? : String
     }, 

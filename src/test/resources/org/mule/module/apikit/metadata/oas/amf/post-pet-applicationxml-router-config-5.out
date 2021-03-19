@@ -3,14 +3,14 @@
     "payload" : {
       "photoUrls" : [String], 
       "name" : String, 
-      "id"? : @range("from" : -9.223372036854776E18, "to" : 9.223372036854776E18) Number, 
+      "id"? : @range("from" : -9.223372036854776E18, "to" : 9.223372036854776E18) @int Number, 
       "category"? : {
         "name" : String, 
-        "id" : @range("from" : -9.223372036854776E18, "to" : 9.223372036854776E18) Number, 
+        "id" : @range("from" : -9.223372036854776E18, "to" : 9.223372036854776E18) @int Number, 
         * : Any
       }, 
       "tags"? : [{
-          "id" : @range("from" : -9.223372036854776E18, "to" : 9.223372036854776E18) Number, 
+          "id" : @range("from" : -9.223372036854776E18, "to" : 9.223372036854776E18) @int Number, 
           * : Any
         }], 
       "status"? : @enum("values" : ["sold","pending","available"]) String
