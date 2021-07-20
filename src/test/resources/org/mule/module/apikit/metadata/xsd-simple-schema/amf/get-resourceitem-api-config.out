@@ -35,8 +35,13 @@
   }
 }) -> {
   "message" : @typeId("value" : "org.mule.runtime.api.message.Message") {
-    "payload" : {
-      * : Any
+    "payload" : @typeId("value" : "#root:{http://www.mulesoft.com/schema/items}item") {
+      "{http://www.mulesoft.com/schema/items}item" : @typeId("value" : "{http://www.mulesoft.com/schema/items}#AnonType_item") {{
+        "title" : String, 
+        "note"? : String, 
+        "quantity" : @range("from" : 1.0) Number, 
+        "price" : Number
+      }}
     }
   }, 
   "variables" : {

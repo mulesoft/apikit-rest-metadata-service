@@ -1,6 +1,12 @@
 %type _:Java = (inputMetadata:{
   "message" : @typeId("value" : "org.mule.runtime.api.message.Message") {
-    "payload" : Any, 
+    "payload" : @typeId("value" : "#root:{http://mulesoft.org/schemas/sample}user") {
+      "{http://mulesoft.org/schemas/sample}user" @("firstName" : String, "lastName" : String, "username" : String) : @typeId("value" : "{http://mulesoft.org/schemas/sample}user") {{
+        "{http://mulesoft.org/schemas/sample}email-addresses" : @typeId("value" : "{http://mulesoft.org/schemas/sample}#AnonType_email-addressesuser") {{
+          "{http://mulesoft.org/schemas/sample}email-address"* : String
+        }}
+      }}
+    }, 
     "attributes" : {
       "clientCertificate"? : {
         "publicKey"? : {
@@ -35,14 +41,7 @@
   }
 }) -> {
   "message" : @typeId("value" : "org.mule.runtime.api.message.Message") {
-    "payload" : @typeId("value" : "{http://www.mulesoft.com/schema/items}item") {
-      "{http://www.mulesoft.com/schema/items}item" : @typeId("value" : "{http://www.mulesoft.com/schema/items}#AnonType_item") {{
-        "title" : String,
-        "note"? : String,
-        "quantity" : @range("from" : 1.0) Number,
-        "price" : Number
-      }}
-    }
+    "payload" : Any
   }, 
   "variables" : {
     "outboundHeaders" : {

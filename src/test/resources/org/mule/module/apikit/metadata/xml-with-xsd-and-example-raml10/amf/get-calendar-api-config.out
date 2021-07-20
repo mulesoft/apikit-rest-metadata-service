@@ -35,12 +35,13 @@
   }
 }) -> {
   "message" : @typeId("value" : "org.mule.runtime.api.message.Message") {
-    "payload" : @typeId("value" : "{http://www.mulesoft.com/schema/items}item") {
-      "{http://www.mulesoft.com/schema/items}item" : @typeId("value" : "{http://www.mulesoft.com/schema/items}#AnonType_item") {{
-        "title" : String,
-        "note"? : String,
-        "quantity" : @range("from" : 1.0) Number,
-        "price" : Number
+    "payload" : @typeId("value" : "#root:calendar") {
+      "calendar" : @typeId("value" : "#AnonType_calendar") {{
+        "items" : @typeId("value" : "#AnonType_itemscalendar") {{
+          "event"* : @typeId("value" : "#AnonType_eventitemscalendar") {{
+            "id" : String
+          }}
+        }}
       }}
     }
   }, 

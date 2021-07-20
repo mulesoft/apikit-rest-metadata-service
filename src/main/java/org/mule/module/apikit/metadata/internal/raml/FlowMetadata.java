@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
 import static java.lang.String.format;
 import static java.util.Collections.emptyMap;
 import static java.util.Optional.of;
+import static org.mule.module.apikit.metadata.internal.utils.CommonMetadataFactory.defaultMetadata;
 import static org.mule.runtime.api.metadata.MediaType.parse;
 
 public class FlowMetadata implements MetadataSource {
@@ -261,7 +262,7 @@ public class FlowMetadata implements MetadataSource {
     } catch (Exception e) {
       notifier.warn(format("Error while trying to resolve %s payload metadata for flow '%s'.\nDetails: %s", payloadDescription,
                            coordinate.getFlowName(), e.getMessage()));
-      return MetadataFactory.defaultMetadata();
+      return defaultMetadata();
     }
   }
 

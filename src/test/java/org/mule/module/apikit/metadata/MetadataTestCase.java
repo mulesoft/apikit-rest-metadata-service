@@ -6,7 +6,6 @@
  */
 package org.mule.module.apikit.metadata;
 
-import javax.inject.Inject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +17,7 @@ import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.core.api.extension.ExtensionManager;
 import org.mule.test.runner.RunnerDelegateTo;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -61,8 +61,9 @@ public class MetadataTestCase extends AbstractMetadataTestCase {
 
   @Test
   public void checkMetadata() throws Exception {
-    if (app.getAbsolutePath().contains("oas") && parser.equals(RAML))
+    if (app.getAbsolutePath().contains("oas") && parser.equals(RAML)) {
       return;
+    }
 
     for (String flow : findFlows(app, extensionManager)) {
       final File goldenFile = goldenFile(flow, app, parser);
