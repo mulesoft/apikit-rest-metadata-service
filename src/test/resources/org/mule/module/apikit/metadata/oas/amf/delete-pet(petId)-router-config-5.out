@@ -24,7 +24,7 @@
       "requestUri" : String, 
       "scheme" : String, 
       "uriParams" : {
-        "petId" : @range("from" : -9.223372036854776E18, "to" : 9.223372036854776E18) @int Number
+        "petId" : @range("from" : -9.223372036854776E+18, "to" : 9.223372036854776E+18) @int Number
       }, 
       "version" : String, 
       "localAddress" : String

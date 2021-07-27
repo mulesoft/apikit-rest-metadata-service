@@ -40,7 +40,7 @@
   "variables" : {
     "outboundHeaders" : {
       "stringheader"? : String, 
-      "numberheader"? : @range("from" : 10.1, "to" : 20.2) Number, 
+      "numberheader"? : @range("from" : 10.10, "to" : 20.20) Number, 
       "integerheader"? : @range("from" : 10, "to" : 20) @int Number, 
       "dateheader"? : String, 
       "booleanheader"? : Boolean, 

@@ -35,7 +35,27 @@
   }
 }) -> {
   "message" : @typeId("value" : "org.mule.runtime.api.message.Message") {
-    "payload" : Any
+    "payload" : @typeId("value" : "http://jsonschema.net") {
+      "providers"? : @typeId("value" : "http://jsonschema.net/providers") [@typeId("value" : "http://jsonschema.net/providers/0") {
+          "address"? : @typeId("value" : "http://jsonschema.net/providers/0/address") [@typeId("value" : "http://jsonschema.net/providers/0/address/0") {
+              "number"? : Number, 
+              "street"? : String, 
+              "floor"? : String, 
+              * : Any
+            }], 
+          "code" : String, 
+          "phone"? : @typeId("value" : "http://jsonschema.net/providers/0/phone") [@typeId("value" : "http://jsonschema.net/providers/0/phone/0") {
+              "business"? : String, 
+              "personal"? : String, 
+              "cellPhone"? : String, 
+              * : Any
+            }], 
+          "name" : String, 
+          "id"? : Number, 
+          * : Any
+        }], 
+      * : Any
+    }
   }, 
   "variables" : {
     "outboundHeaders" : {

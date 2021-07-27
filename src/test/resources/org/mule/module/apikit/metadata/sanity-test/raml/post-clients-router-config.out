@@ -35,7 +35,15 @@
   }
 }) -> {
   "message" : @typeId("value" : "org.mule.runtime.api.message.Message") {
-    "payload" : Any
+    "payload" : @typeId("value" : "http://jsonschema.net") {
+      "clients"? : @typeId("value" : "http://jsonschema.net/clients") [@typeId("value" : "http://jsonschema.net/clients/0") {
+          "code"? : String, 
+          "name"? : String, 
+          "id"? : Number, 
+          * : Any
+        }], 
+      * : Any
+    }
   }, 
   "variables" : {
     "outboundHeaders" : {

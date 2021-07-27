@@ -25,7 +25,7 @@
       "scheme" : String, 
       "uriParams" : {
         "apiDomain" : String, 
-        "testParam" : @enum("values" : ["method-get"]) String
+        "testParam" : @enum("values" : ["method-get"]) String & String
       }, 
       "version" : String, 
       "localAddress" : String

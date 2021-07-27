@@ -16,7 +16,7 @@
         "encoded"? : Binary
       }, 
       "headers" : {
-        "Accept"? : @enum("values" : ["text/html","application/fhir+turtle; fhirVersion=4.0","application/fhir+xml; fhirVersion=4.0","application/fhir+json; fhirVersion=4.0"]) String
+        "Accept"? : @enum("values" : ["text/html","application/fhir+turtle; fhirVersion=4.0","application/fhir+xml; fhirVersion=4.0","application/fhir+json; fhirVersion=4.0"]) String & String
       }, 
       "listenerPath" : String, 
       "method" : String, 

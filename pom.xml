@@ -159,6 +159,12 @@
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-metadata-model-json</artifactId>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>org.everit.json.schema</artifactId>
+                    <groupId>org.everit.json</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.mule.runtime</groupId>
@@ -290,13 +296,6 @@
             <artifactId>mule-module-extensions-support</artifactId>
             <version>${mule.version}</version>
             <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.everit.json</groupId>
-            <artifactId>org.everit.json.schema</artifactId>
-            <version>1.5.1</version>
-            <scope>test</scope>
         </dependency>
 
         <!-- TODO remove once AST doesn't need parsers to resolve parameters -->

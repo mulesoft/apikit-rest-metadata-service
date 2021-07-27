@@ -39,8 +39,8 @@
   }, 
   "variables" : {
     "outboundHeaders" : {
-      "stringheader" : @enum("values" : ["enum2","enum1"]) String, 
-      "numberheader" : @range("from" : 10.1, "to" : 20.2) Number, 
+      "stringheader" : @enum("values" : ["enum2","enum1"]) String & String, 
+      "numberheader" : @range("from" : 10.10, "to" : 20.20) Number, 
       "integerheader" : @range("from" : 10, "to" : 20) @int Number, 
       "dateheader" : String, 
       "booleanheader" : Boolean, 

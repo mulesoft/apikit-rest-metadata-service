@@ -8,28 +8,23 @@ documentation:
     content: This application provides a way to test APIkit with RAML 0.8 for any Sanity test
 schemas:
   - Items: |
-      { "$schema" : "http://json-schema.org/draft-03/schema",
+      { "$schema" : "http://json-schema.org/draft-04/schema",
           "id" : "http://jsonschema.net",
           "properties" : { "items" : { "id" : "http://jsonschema.net/items",
                   "items" : { "id" : "http://jsonschema.net/items/0",
                      "properties" : { "code" : { "id" : "http://jsonschema.net/items/0/code",
-                        "required" : false,
                         "type" : "string"
                         },
                     "color" : { "id" : "http://jsonschema.net/items/0/color",
-                        "required" : false,
                         "type" : "string"
                       },
                     "description" : { "id" : "http://jsonschema.net/items/0/description",
-                        "required" : false,
                         "type" : "string"
                       },
                     "id" : { "id" : "http://jsonschema.net/items/0/id",
-                        "required" : false,
                         "type" : "number"
                       },
                     "size" : { "id" : "http://jsonschema.net/items/0/size",
-                        "required" : false,
                         "type" : "string"
                       }
                   },
@@ -40,139 +35,109 @@ schemas:
         "type" : "object"
       }
   - Providers: |
-      { "$schema" : "http://json-schema.org/draft-03/schema",
+      { "$schema" : "http://json-schema.org/draft-04/schema",
         "id" : "http://jsonschema.net",
         "properties" : { "providers" : { "id" : "http://jsonschema.net/providers",
                 "items" : { "id" : "http://jsonschema.net/providers/0",
+                    "required" : ["name", "code"],
                     "properties" : { "address" : { "id" : "http://jsonschema.net/providers/0/address",
                             "items" : { "id" : "http://jsonschema.net/providers/0/address/0",
                                 "properties" : { "floor" : { "id" : "http://jsonschema.net/providers/0/address/0/floor",
-                                        "required" : false,
                                         "type" : "string"
                                       },
                                     "number" : { "id" : "http://jsonschema.net/providers/0/address/0/number",
-                                        "required" : false,
                                         "type" : "number"
                                       },
                                     "street" : { "id" : "http://jsonschema.net/providers/0/address/0/street",
-                                        "required" : false,
                                         "type" : "string"
                                       }
                                   },
-                                "required" : false,
                                 "type" : "object"
                               },
-                            "required" : false,
                             "type" : "array"
                           },
                         "id" : { "id" : "http://jsonschema.net/providers/0/id",
-                            "required" : false,
                             "type" : "number"
                           },
                         "name" : { "id" : "http://jsonschema.net/providers/0/name",
-                            "required" : true,
                             "type" : "string"
                           },
                         "code" : { "id" : "http://jsonschema.net/providers/0/code",
-                            "required" : true,
                             "type" : "string"
                           },
                         "phone" : { "id" : "http://jsonschema.net/providers/0/phone",
                             "items" : { "id" : "http://jsonschema.net/providers/0/phone/0",
                                 "properties" : { "business" : { "id" : "http://jsonschema.net/providers/0/phone/0/business",
-                                        "required" : false,
                                         "type" : "string"
                                       },
                                     "cellPhone" : { "id" : "http://jsonschema.net/providers/0/phone/0/cellPhone",
-                                        "required" : false,
                                         "type" : "string"
                                       },
                                     "personal" : { "id" : "http://jsonschema.net/providers/0/phone/0/personal",
-                                        "required" : false,
                                         "type" : "string"
                                       }
                                   },
-                                "required" : false,
                                 "type" : "object"
                               },
-                            "required" : false,
                             "type" : "array"
                           }
                       },
-                    "required" : false,
                     "type" : "object"
                   },
-                "required" : false,
                 "type" : "array"
               } },
-        "required" : false,
         "type" : "object"
       }
   - Clients: |
-      { "$schema" : "http://json-schema.org/draft-03/schema",
+      { "$schema" : "http://json-schema.org/draft-04/schema",
         "id" : "http://jsonschema.net",
         "properties" : { "clients" : { "id" : "http://jsonschema.net/clients",
                 "items" : { "id" : "http://jsonschema.net/clients/0",
                     "properties" : { "code" : { "id" : "http://jsonschema.net/clients/0/code",
-                            "required" : false,
                             "type" : "string"
                           },
                         "id" : { "id" : "http://jsonschema.net/clients/0/id",
-                            "required" : false,
                             "type" : "number"
                           },
                         "name" : { "id" : "http://jsonschema.net/clients/0/name",
-                            "required" : false,
                             "type" : "string"
                           }
                       },
-                    "required" : false,
                     "type" : "object"
                   },
-                "required" : false,
                 "type" : "array"
               } },
-        "required" : false,
         "type" : "object"
       }
   - Invoices: |
-      { "$schema" : "http://json-schema.org/draft-03/schema",
+      { "$schema" : "http://json-schema.org/draft-04/schema",
         "id" : "http://jsonschema.net",
         "properties" : { "clientId" : { "id" : "http://jsonschema.net/clientId",
-                "required" : false,
                 "type" : "number"
               },
             "date" : { "id" : "http://jsonschema.net/date",
-                "required" : false,
                 "type" : "string"
               },
             "id" : { "id" : "http://jsonschema.net/id",
-                "required" : false,
                 "type" : "number"
               },
             "items" : { "id" : "http://jsonschema.net/items",
                 "items" : { "id" : "http://jsonschema.net/items/0",
                     "properties" : { "itemId" : { "id" : "http://jsonschema.net/items/0/itemId",
-                            "required" : false,
                             "type" : "number"
                           },
                         "notes" : { "id" : "http://jsonschema.net/items/0/notes",
-                            "required" : false,
                             "type" : "string"
                           }
                       },
-                    "required" : false,
                     "type" : "object"
                   },
-                "required" : false,
                 "type" : "array"
               },
             "price" : { "id" : "http://jsonschema.net/price",
-                "required" : false,
                 "type" : "string"
               }
           },
-        "required" : false,
         "type" : "object"
       }
 traits:

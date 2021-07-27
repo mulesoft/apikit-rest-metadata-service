@@ -15,8 +15,8 @@
       "listenerPath" : String, 
       "method" : String, 
       "queryParams" : {
-        "stringQueryParam"? : @enum("values" : ["enum2","enum1"]) String, 
-        "numberQueryParam"? : @range("from" : 10.1, "to" : 20.2) Number, 
+        "stringQueryParam"? : @enum("values" : ["enum2","enum1"]) String & String, 
+        "numberQueryParam"? : @range("from" : 10.10, "to" : 20.20) Number, 
         "integerQueryParam"? : @range("from" : 10, "to" : 20) @int Number, 
         "dateQueryParam"? : String, 
         "booleanQueryParam"? : Boolean, 

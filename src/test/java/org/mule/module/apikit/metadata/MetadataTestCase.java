@@ -57,8 +57,9 @@ public class MetadataTestCase extends AbstractMetadataTestCase {
 
   @Test
   public void checkMetadata() throws Exception {
-    if (app.getAbsolutePath().contains("oas") && parser.equals(RAML))
+    if (app.getAbsolutePath().contains("oas") && parser.equals(RAML)) {
       return;
+    }
 
     for (String flow : findFlows(app)) {
       final File goldenFile = goldenFile(flow, app, parser);

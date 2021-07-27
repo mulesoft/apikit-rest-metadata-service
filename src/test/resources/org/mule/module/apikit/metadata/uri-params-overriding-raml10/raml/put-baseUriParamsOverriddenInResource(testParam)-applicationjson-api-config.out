@@ -24,9 +24,9 @@
       "requestUri" : String, 
       "scheme" : String, 
       "uriParams" : {
-        "apiDomain" : @enum("values" : ["domain"]) String, 
-        "apiDomain" : @enum("values" : ["resource-domain"]) String, 
-        "testParam" : @enum("values" : ["resource"]) String
+        "apiDomain" : String & @enum("values" : ["domain"]) String, 
+        "apiDomain" : String & @enum("values" : ["resource-domain"]) String, 
+        "testParam" : @enum("values" : ["resource"]) String & String
       }, 
       "version" : String, 
       "localAddress" : String

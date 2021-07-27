@@ -24,7 +24,7 @@
       "requestUri" : String, 
       "scheme" : String, 
       "uriParams" : {
-        "testParam" : @enum("values" : ["method-put"]) String
+        "testParam" : @enum("values" : ["method-put"]) String & String
       }, 
       "version" : String, 
       "localAddress" : String
