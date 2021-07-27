@@ -6,14 +6,7 @@
  */
 package org.mule.module.apikit.metadata;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.mule.module.apikit.metadata.utils.TestNotifier.DEBUG;
-import static org.mule.module.apikit.metadata.utils.TestNotifier.ERROR;
-import static org.mule.module.apikit.metadata.utils.TestNotifier.INFO;
-import static org.mule.module.apikit.metadata.utils.TestNotifier.WARN;
-
+import org.junit.Test;
 import org.mule.metadata.api.model.FunctionType;
 import org.mule.module.apikit.metadata.internal.MetadataBuilderImpl;
 import org.mule.module.apikit.metadata.utils.MockedApplicationModel;
@@ -24,21 +17,30 @@ import org.mule.runtime.apikit.metadata.api.Notifier;
 import org.mule.runtime.apikit.metadata.api.ResourceLoader;
 import org.mule.runtime.ast.api.ArtifactAst;
 
+import java.io.File;
 import java.util.Optional;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.mule.module.apikit.metadata.utils.TestNotifier.DEBUG;
+import static org.mule.module.apikit.metadata.utils.TestNotifier.ERROR;
+import static org.mule.module.apikit.metadata.utils.TestNotifier.INFO;
+import static org.mule.module.apikit.metadata.utils.TestNotifier.WARN;
 
-@Ignore("APIKIT-2051")
+
 public class MetadataModuleTestCase {
 
+  private static final String TESTS_RESOURCES = "src/test/resources/";
+
   @Test
-  public void testBasicMetadataModule() throws Exception {
+  public void testBasicMetadataModule() {
 
     ResourceLoader resourceLoader = new TestResourceLoader();
     Notifier notifier = new TestNotifier();
 
-    ArtifactAst applicationModel = createApplicationModel("org/mule/module/apikit/metadata/flow-mappings/app.xml");
+    ArtifactAst applicationModel =
+        createApplicationModel(new File(TESTS_RESOURCES + "org/mule/module/apikit/metadata/flow-mappings/app.xml"));
     assertThat(applicationModel, notNullValue());
 
     Metadata metadata = new MetadataBuilderImpl()
@@ -62,13 +64,13 @@ public class MetadataModuleTestCase {
 
 
   @Test
-  public void singleApiWithFlowsWithoutConfigRef() throws Exception {
+  public void singleApiWithFlowsWithoutConfigRef() {
 
     ResourceLoader resourceLoader = new TestResourceLoader();
     Notifier notifier = new TestNotifier();
 
     ArtifactAst applicationModel =
-        createApplicationModel("org/mule/module/apikit/metadata/single-api-with-no-name/app.xml");
+        createApplicationModel(new File(TESTS_RESOURCES + "org/mule/module/apikit/metadata/single-api-with-no-name/app.xml"));
     assertThat(applicationModel, notNullValue());
 
     Metadata metadata = new MetadataBuilderImpl()
@@ -85,12 +87,13 @@ public class MetadataModuleTestCase {
   }
 
   @Test
-  public void ramlApplicationInRaml08() throws Exception {
+  public void ramlApplicationInRaml08() {
 
     ResourceLoader resourceLoader = new TestResourceLoader();
     Notifier notifier = new TestNotifier();
 
-    ArtifactAst applicationModel = createApplicationModel("org/mule/module/apikit/metadata/api-in-raml08/app.xml");
+    ArtifactAst applicationModel =
+        createApplicationModel(new File(TESTS_RESOURCES + "org/mule/module/apikit/metadata/api-in-raml08/app.xml"));
     assertThat(applicationModel, notNullValue());
 
     Metadata metadata = new MetadataBuilderImpl()
@@ -114,12 +117,13 @@ public class MetadataModuleTestCase {
   }
 
   @Test
-  public void testNotifyingOnlyInfoMesages() throws Exception {
+  public void testNotifyingOnlyInfoMesages() {
 
     ResourceLoader resourceLoader = new TestResourceLoader();
     TestNotifier notifier = new TestNotifier();
 
-    ArtifactAst applicationModel = createApplicationModel("org/mule/module/apikit/metadata/api-in-raml08/app.xml");
+    ArtifactAst applicationModel =
+        createApplicationModel(new File(TESTS_RESOURCES + "org/mule/module/apikit/metadata/api-in-raml08/app.xml"));
     assertThat(applicationModel, notNullValue());
 
     final Metadata metadata = getMetadata(resourceLoader, notifier, applicationModel);
@@ -131,11 +135,12 @@ public class MetadataModuleTestCase {
   }
 
   @Test
-  public void testNotifyingOnlyErrorMessages() throws Exception {
+  public void testNotifyingOnlyErrorMessages() {
     ResourceLoader resourceLoader = new TestResourceLoader();
     TestNotifier notifier = new TestNotifier();
 
-    ArtifactAst model = createApplicationModel("org/mule/module/apikit/metadata/invalid-raml-file-location/app.xml");
+    ArtifactAst model =
+        createApplicationModel(new File(TESTS_RESOURCES + "org/mule/module/apikit/metadata/invalid-raml-file-location/app.xml"));
     assertThat(model, notNullValue());
 
     Metadata metadata;
@@ -144,17 +149,17 @@ public class MetadataModuleTestCase {
     assertNotifierMessages(notifier, 0, 0, 0, 0);
 
     metadata.getMetadataForFlow("get:\\flow1:router-config");
-    assertNotifierMessages(notifier, 2, 0, 0, 0);
+    assertNotifierMessages(notifier, 3, 0, 0, 0);
 
     notifier = new TestNotifier();
     metadata = getMetadata(resourceLoader, notifier, model);
     metadata.getMetadataForFlow("get:\\flow2:router-config");
-    assertNotifierMessages(notifier, 2, 0, 0, 0);
+    assertNotifierMessages(notifier, 3, 0, 0, 0);
 
     notifier = new TestNotifier();
     metadata = getMetadata(resourceLoader, notifier, model);
     metadata.getMetadataForFlow("get:\\flow3:router-config");
-    assertNotifierMessages(notifier, 2, 0, 0, 0);
+    assertNotifierMessages(notifier, 3, 0, 0, 0);
 
   }
 
@@ -166,9 +171,9 @@ public class MetadataModuleTestCase {
         .build();
   }
 
-  private ArtifactAst createApplicationModel(String resourceName) throws Exception {
+  private ArtifactAst createApplicationModel(File config) {
     final MockedApplicationModel.Builder builder = new MockedApplicationModel.Builder();
-    builder.addConfig("apiKitSample", getClass().getClassLoader().getResourceAsStream(resourceName));
+    builder.addConfig(config);
     final MockedApplicationModel mockedApplicationModel = builder.build();
     return mockedApplicationModel.getMuleApplicationModel();
   }

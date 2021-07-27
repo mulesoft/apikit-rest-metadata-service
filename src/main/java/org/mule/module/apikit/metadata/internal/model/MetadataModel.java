@@ -32,10 +32,12 @@ public class MetadataModel implements Metadata {
     this.outboundHeaders = loadOutboundHeaders(applicationModel);
   }
 
-  // protected abstract MetadataResolverFactory createMetadataResolverFactory(final ResourceLoader loader, final Notifier notifier);
+  // protected abstract MetadataResolverFactory createMetadataResolverFactory(final ResourceLoader loader, final Notifier
+  // notifier);
 
   /**
    * Gets the metadata for a Flow
+   * 
    * @param flowName Name of the flow
    * @return The Metadata
    */

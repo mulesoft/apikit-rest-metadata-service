@@ -5,7 +5,7 @@
     <parent>
        <groupId>org.mule.services</groupId>
         <artifactId>mule-core-services-parent</artifactId>
-        <version>1.3.0</version>
+        <version>1.4.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>mule-service-apikit-metadata</artifactId>
@@ -19,7 +19,7 @@
     <properties>
         <licensePath>LICENSE_HEADER.txt</licensePath>
 
-        <apikit.metadata.api.version>3.0.0-SNAPSHOT</apikit.metadata.api.version>
+        <apikit.metadata.api.version>2.3.0-SNAPSHOT</apikit.metadata.api.version>
         <mule.app.plugins.maven.plugin.version>1.3.1</mule.app.plugins.maven.plugin.version>
         <parser.service.version>3.0.0-SNAPSHOT</parser.service.version>
 
@@ -33,8 +33,6 @@
         <allureJunitVersion>2.13.5</allureJunitVersion>
         <allureReportVersion>2.3.4</allureReportVersion>
         <allure.maven.plugin.version>2.10.0</allure.maven.plugin.version>
-
-      <mule.version>4.4.0-SNAPSHOT</mule.version>
     </properties>
 
     <build>
@@ -137,7 +135,6 @@
             </exclusions>
         </dependency>
 
-        <!-- Force to use 1.23 -->
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
@@ -252,32 +249,24 @@
             <version>1.5.0</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-extensions-api</artifactId>
-            <version>1.4.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-api</artifactId>
-            <version>1.4.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-module-dsl-api</artifactId>
-            <version>1.4.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-artifact-ast</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 

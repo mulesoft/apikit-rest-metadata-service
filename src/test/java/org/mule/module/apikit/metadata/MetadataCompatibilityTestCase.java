@@ -23,8 +23,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * This test is ignored on purpose. There are differences between JAVA & AMF Metadata. 
- * Running this test you can undestand this differences, some are in favor of AMF, some in favor of JAVA
+ * This test is ignored on purpose. There are differences between JAVA & AMF Metadata. Running this test you can undestand this
+ * differences, some are in favor of AMF, some in favor of JAVA
  */
 @RunWith(Parameterized.class)
 @Ignore

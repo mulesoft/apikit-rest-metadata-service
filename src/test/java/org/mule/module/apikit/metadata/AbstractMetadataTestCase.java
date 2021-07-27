@@ -47,7 +47,7 @@ public abstract class AbstractMetadataTestCase {
   protected static List<File> scan(final URI resources) throws IOException {
 
     return Files.walk(Paths.get(resources))
-        //.peek(path -> System.out.println("Path:" + path + " isMuleApp:" + API_MATCHER.matches(path.getFileName())))
+        // .peek(path -> System.out.println("Path:" + path + " isMuleApp:" + API_MATCHER.matches(path.getFileName())))
         .filter(path -> Files.isRegularFile(path) && API_MATCHER.matches(path.getFileName()))
         .map(Path::toFile)
         .collect(toList());
@@ -117,7 +117,7 @@ public abstract class AbstractMetadataTestCase {
     final Path goldenPath = Paths.get(srcPath);
     System.out.println("*** Create Golden " + goldenPath);
 
-    // Write golden files  with current values
+    // Write golden files with current values
     final Path parent = goldenPath.getParent();
     if (!Files.exists(parent))
       Files.createDirectory(parent);

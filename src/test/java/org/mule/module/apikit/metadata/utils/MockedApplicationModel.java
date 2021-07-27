@@ -6,15 +6,7 @@
  */
 package org.mule.module.apikit.metadata.utils;
 
-import static java.lang.String.format;
-import static java.util.Collections.emptySet;
-import static org.mule.runtime.core.api.config.MuleManifest.getProductVersion;
-import static org.mule.runtime.module.extension.api.loader.AbstractJavaExtensionModelLoader.TYPE_PROPERTY_NAME;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import org.mule.datasense.test.metadataprovider.util.MuleAppUtil;
+import com.google.common.base.Preconditions;
 import org.mule.extension.http.internal.temporary.HttpConnector;
 import org.mule.extension.socket.api.SocketsExtension;
 import org.mule.module.apikit.ApikitExtensionLoadingDelegate;
@@ -28,26 +20,27 @@ import org.mule.runtime.config.api.dsl.processor.ArtifactConfig;
 import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
 import org.mule.runtime.core.api.extension.RuntimeExtensionModelProvider;
 import org.mule.runtime.core.api.registry.SpiServiceRegistry;
-import org.mule.runtime.dsl.api.xml.parser.ConfigFile;
-import static org.mule.runtime.module.extension.api.loader.AbstractJavaExtensionModelLoader.VERSION;
-
-import java.io.File;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import static java.util.Collections.singleton;
-import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
 import org.mule.runtime.extension.api.loader.ExtensionLoadingContext;
 import org.mule.runtime.extension.internal.loader.DefaultExtensionLoadingContext;
 import org.mule.runtime.extension.internal.loader.ExtensionModelFactory;
 import org.mule.runtime.module.extension.api.loader.java.DefaultJavaExtensionModelLoader;
 
-import com.google.common.base.Preconditions;
+import java.io.File;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static java.util.Collections.emptySet;
+import static java.util.Collections.singleton;
+import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
+import static org.mule.runtime.core.api.config.MuleManifest.getProductVersion;
+import static org.mule.runtime.module.extension.api.loader.AbstractJavaExtensionModelLoader.TYPE_PROPERTY_NAME;
+import static org.mule.runtime.module.extension.api.loader.AbstractJavaExtensionModelLoader.VERSION;
 
 public class MockedApplicationModel implements ApplicationModel {
 
@@ -102,21 +95,11 @@ public class MockedApplicationModel implements ApplicationModel {
       return this;
     }
 
-    public Builder addConfig(String configName, InputStream configData) {
-      Preconditions.checkNotNull(configName);
-      Preconditions.checkNotNull(configData);
-      artifactConfigBuilder.addConfigFile(new ConfigFile(configName, Collections.singletonList(
-                                                                                               MuleAppUtil
-                                                                                                   .loadConfigLines(configData)
-                                                                                                   .orElseThrow(() -> new IllegalArgumentException(format("Failed to get %s.",
-                                                                                                                                                          configName))))));
-      return this;
-    }
-
     public MockedApplicationModel build() {
 
       List<ExtensionModel> extensionModels =
-          Arrays.asList(loadApikitExtensionModel(), loadHttpExtensionModel(), loadSocketsExtensionModel());
+          Arrays.asList(loadApikitExtensionModel(), loadExtensionModel(HttpConnector.class),
+                        loadExtensionModel(SocketsExtension.class));
       ArtifactAst applicationModel = AstXmlParser.builder()
           .withExtensionModels(extensionModels)
           .withExtensionModels(loadRuntimeExtensionModels())
@@ -153,26 +136,15 @@ public class MockedApplicationModel implements ApplicationModel {
       return runtimeExtensionModels;
     }
 
-    private static ExtensionModel loadHttpExtensionModel() {
-      DefaultJavaExtensionModelLoader extensionModelLoader = new DefaultJavaExtensionModelLoader();
-      DslResolvingContext dslResolvingContext = getDefault(singleton(MuleExtensionModelProvider.getExtensionModel()));
-
-      Map<String, Object> params = new HashMap<>();
-      params.put(TYPE_PROPERTY_NAME, HttpConnector.class.getName());
-      params.put(VERSION, getProductVersion());
-
-      return extensionModelLoader.loadExtensionModel(HttpConnector.class.getClassLoader(), dslResolvingContext, params);
-    }
-
-    private static ExtensionModel loadSocketsExtensionModel() {
+    private static ExtensionModel loadExtensionModel(Class extensionClass) {
       DefaultJavaExtensionModelLoader extensionModelLoader = new DefaultJavaExtensionModelLoader();
 
       DslResolvingContext dslResolvingContext = getDefault(singleton(MuleExtensionModelProvider.getExtensionModel()));
       Map<String, Object> params = new HashMap<>();
-      params.put(TYPE_PROPERTY_NAME, SocketsExtension.class.getName());
+      params.put(TYPE_PROPERTY_NAME, extensionClass.getName());
       params.put(VERSION, getProductVersion());
 
-      return extensionModelLoader.loadExtensionModel(SocketsExtension.class.getClassLoader(), dslResolvingContext, params);
+      return extensionModelLoader.loadExtensionModel(extensionClass.getClassLoader(), dslResolvingContext, params);
     }
 
   }
