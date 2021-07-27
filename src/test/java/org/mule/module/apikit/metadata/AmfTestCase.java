@@ -150,7 +150,7 @@ public class AmfTestCase {
     }));
   }
 
-  // TODO  https://www.mulesoft.org/jira/browse/APIMF-904
+  // TODO https://www.mulesoft.org/jira/browse/APIMF-904
   @Test
   public void remoteRaml10() throws URISyntaxException {
 

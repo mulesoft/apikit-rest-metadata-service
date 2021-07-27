@@ -10,13 +10,10 @@ import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.ast.api.ComponentAst;
 
 /**
- * Helper class that tells if a given XML Component is some of the valid APIKit
- * XML Elements.
+ * Helper class that tells if a given XML Component is some of the valid APIKit XML Elements.
  *
- * Related Clases:
- * {@link org.mule.module.apikit.metadata.internal.model.ApikitConfig}
- * {@link org.mule.module.apikit.metadata.internal.model.Flow}
- * {@link org.mule.module.apikit.metadata.internal.model.FlowMapping}
+ * Related Clases: {@link org.mule.module.apikit.metadata.internal.model.ApikitConfig}
+ * {@link org.mule.module.apikit.metadata.internal.model.Flow} {@link org.mule.module.apikit.metadata.internal.model.FlowMapping}
  */
 public class ApikitElementIdentifiers {
 

@@ -12,10 +12,12 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javax.inject.Inject;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mule.runtime.core.api.extension.ExtensionManager;
 
 import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -23,8 +25,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * This test is ignored on purpose. There are differences between JAVA & AMF Metadata. 
- * Running this test you can undestand this differences, some are in favor of AMF, some in favor of JAVA
+ * This test is ignored on purpose. There are differences between JAVA & AMF Metadata. Running this test you can undestand this
+ * differences, some are in favor of AMF, some in favor of JAVA
  */
 @RunWith(Parameterized.class)
 @Ignore
@@ -32,6 +34,7 @@ public class MetadataCompatibilityTestCase extends AbstractMetadataTestCase {
 
   private File app;
   private String flow;
+
 
   public MetadataCompatibilityTestCase(final File app, final String flow) {
     this.app = app;
@@ -59,7 +62,8 @@ public class MetadataCompatibilityTestCase extends AbstractMetadataTestCase {
     scanApps().forEach(app -> {
       try {
         final String folderName = app.getParentFile().getName();
-        findFlows(app).forEach(flow -> parameters.add(new Object[] {folderName, app, flow}));
+        // TODO : remove ignore and inject ExtensionManager
+        findFlows(app, null).forEach(flow -> parameters.add(new Object[] {folderName, app, flow}));
       } catch (Exception e) {
         throw new RuntimeException(e);
       }

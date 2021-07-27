@@ -27,9 +27,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 /**
- * These tests try to detect when a class exposed in APIKit metadata like HttpRequestAttributes
- * adds/removes a field.
- * If a test case of this test suite fails when should update the metadata information exposed.
+ * These tests try to detect when a class exposed in APIKit metadata like HttpRequestAttributes adds/removes a field. If a test
+ * case of this test suite fails when should update the metadata information exposed.
  */
 public class MetadataDetectionChangesTest {
 

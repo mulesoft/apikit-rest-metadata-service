@@ -57,13 +57,13 @@ public class TestDataProvider {
           final String inputPath = input.getPath().replace("target/test-classes", "src/test/resources");
           final Path basePath = Paths.get(inputPath).getParent();
 
-          //noinspection ResultOfMethodCallIgnored
+          // noinspection ResultOfMethodCallIgnored
           Files.walk(basePath, 1)
               .map(Path::toFile)
               .filter(f -> f.isFile() && f.getName().endsWith(".out"))
               .forEach(File::delete);
 
-          // Write golden files  with current values
+          // Write golden files with current values
           currentMap.forEach((name, content) -> {
             try {
               Files.write(basePath.resolve(name), content.getBytes("UTF-8"));

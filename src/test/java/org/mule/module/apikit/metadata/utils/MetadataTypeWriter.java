@@ -49,7 +49,7 @@ public class MetadataTypeWriter {
   private Stack<MetadataType> typeStack = new Stack<>();
 
   public String toString(MetadataType structure) {
-    //TODO - Review if is the correct thing to use the label instead of the ID
+    // TODO - Review if is the correct thing to use the label instead of the ID
     final Optional<String> label = structure.getMetadataFormat().getLabel();
     final String stringLabel = label.isPresent() ? label.get() : NULL_STRING;
 

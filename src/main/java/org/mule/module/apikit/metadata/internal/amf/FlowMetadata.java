@@ -250,8 +250,9 @@ class FlowMetadata implements MetadataSource {
 
   private Map<String, Parameter> getEndpointUriParametersFields(EndPoint endPoint) {
     List<Parameter> endPointParameters = endPoint.parameters();
-    return isEmpty(endPointParameters) ? emptyMap() : endPointParameters.stream()
-        .collect(LinkedHashMap::new, (map, param) -> map.put(param.name().value(), param), Map::putAll);
+    return isEmpty(endPointParameters) ? emptyMap()
+        : endPointParameters.stream()
+            .collect(LinkedHashMap::new, (map, param) -> map.put(param.name().value(), param), Map::putAll);
   }
 
   private Map<String, Parameter> getUriParametersFromOperation(Operation operation) {
