@@ -245,8 +245,8 @@ public class FlowMetadata implements MetadataSource {
       if (action.getBody().size() == 1) {
         mimeType = action.getBody().values().iterator().next();
       } else if (coordinate.getMediaType() != null) {
-        String mType = coordinate.getMediaType();
-        mimeType = action.getBody().entrySet().stream().filter(map -> map.getKey().matches(mType)).findFirst()
+        MediaType mType = parse(coordinate.getMediaType());
+        mimeType = action.getBody().entrySet().stream().filter(map -> parse(map.getKey()).matches(mType)).findFirst()
             .map(map -> map.getValue()).orElse(null);
       }
     }

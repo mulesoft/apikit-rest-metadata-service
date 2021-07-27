@@ -8,9 +8,7 @@ package org.mule.module.apikit.metadata;
 
 import static java.util.stream.Collectors.toList;
 
-import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.metadata.api.model.FunctionType;
-import org.mule.metadata.api.model.MetadataType;
 import org.mule.module.apikit.metadata.utils.MetadataFixer;
 import org.mule.module.apikit.metadata.utils.MetadataTypeWriter;
 import org.mule.module.apikit.metadata.utils.MockedApplicationModel;
@@ -57,7 +55,7 @@ public abstract class AbstractMetadataTestCase {
 
   protected static ArtifactAst createApplicationModel(final File app) throws Exception {
     final MockedApplicationModel.Builder builder = new MockedApplicationModel.Builder();
-    builder.addConfig("apiKitSample", app);
+    builder.addConfig(app);
     final MockedApplicationModel mockedApplicationModel = builder.build();
     return mockedApplicationModel.getMuleApplicationModel();
   }

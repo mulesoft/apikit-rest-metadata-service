@@ -16,7 +16,6 @@ import org.mule.module.apikit.metadata.internal.MetadataServiceImpl;
 import org.mule.runtime.apikit.metadata.api.MetadataBuilder;
 import org.mule.runtime.apikit.metadata.api.MetadataService;
 import org.mule.runtime.ast.api.ArtifactAst;
-import org.mule.test.runner.RunnerDelegateTo;
 
 import java.io.File;
 import java.io.IOException;

@@ -225,31 +225,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.mule.tests</groupId>
-            <artifactId>mule-tests-runner</artifactId>
-            <version>${mule.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.tests</groupId>
-            <artifactId>mule-tests-functional</artifactId>
-            <version>${mule.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.tests</groupId>
-            <artifactId>mule-tests-unit</artifactId>
-            <version>${mule.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.tests.plugin</groupId>
-            <artifactId>mule-tests-component-plugin</artifactId>
-            <version>${mule.version}</version>
-            <classifier>mule-plugin</classifier>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-apikit-module</artifactId>
             <version>${mule.apikit.module.version}</version>
@@ -331,8 +306,8 @@
         <dependency>
             <groupId>org.everit.json</groupId>
             <artifactId>org.everit.json.schema</artifactId>
-            <version>1.4.0</version>
-            <scope>provided</scope>
+            <version>1.5.1</version>
+            <scope>test</scope>
         </dependency>
 
         <!-- TODO remove once AST doesn't need parsers to resolve parameters -->

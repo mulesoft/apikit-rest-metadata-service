@@ -7,15 +7,12 @@
 package org.mule.module.apikit.metadata.utils;
 
 import static org.mule.apikit.common.ApiSyncUtils.isSyncProtocol;
-import static org.mule.apikit.common.ApiSyncUtils.toApiSyncResource;
 
-import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.mule.module.apikit.metadata.MetadataTestCase;
-import org.mule.apikit.common.ApiSyncUtils;
 import org.mule.runtime.apikit.metadata.api.ResourceLoader;
 
 public class TestResourceLoader implements ResourceLoader {
