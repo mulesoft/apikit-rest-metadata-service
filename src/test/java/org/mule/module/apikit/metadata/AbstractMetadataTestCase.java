@@ -10,7 +10,6 @@ import static java.util.stream.Collectors.toList;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.metadata.api.model.FunctionType;
-import org.mule.metadata.api.model.MetadataType;
 import org.mule.module.apikit.metadata.utils.MetadataFixer;
 import org.mule.module.apikit.metadata.utils.MetadataTypeWriter;
 import org.mule.module.apikit.metadata.utils.MockedApplicationModel;
@@ -31,6 +30,7 @@ import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import org.mule.runtime.core.api.extension.ExtensionManager;
 
 public abstract class AbstractMetadataTestCase extends MuleArtifactFunctionalTestCase {
 
@@ -53,22 +53,22 @@ public abstract class AbstractMetadataTestCase extends MuleArtifactFunctionalTes
   protected static List<File> scan(final URI resources) throws IOException {
 
     return Files.walk(Paths.get(resources))
-        //.peek(path -> System.out.println("Path:" + path + " isMuleApp:" + API_MATCHER.matches(path.getFileName())))
+        // .peek(path -> System.out.println("Path:" + path + " isMuleApp:" + API_MATCHER.matches(path.getFileName())))
         .filter(path -> Files.isRegularFile(path) && API_MATCHER.matches(path.getFileName()))
         .map(Path::toFile)
         .collect(toList());
   }
 
-  protected static ArtifactAst createApplicationModel(final File app) throws Exception {
-    final MockedApplicationModel.Builder builder = new MockedApplicationModel.Builder();
-    builder.addConfig("apiKitSample", app);
-    builder.muleContext(muleContext);
-    final MockedApplicationModel mockedApplicationModel = builder.build();
+  protected static ArtifactAst createApplicationModel(final File app, ExtensionManager extensionManager) throws Exception {
+    MockedApplicationModel mockedApplicationModel = new MockedApplicationModel.Builder()
+        .addConfig(app)
+        .extensionManager(extensionManager)
+        .build();
     return mockedApplicationModel.getMuleApplicationModel();
   }
 
-  protected static List<String> findFlows(final File app) throws Exception {
-    final ArtifactAst applicationModel = createApplicationModel(app);
+  protected static List<String> findFlows(final File app, ExtensionManager extensionManager) throws Exception {
+    final ArtifactAst applicationModel = createApplicationModel(app, extensionManager);
 
     // Only APIKit flows
     return applicationModel.topLevelComponentsStream()
@@ -124,7 +124,7 @@ public abstract class AbstractMetadataTestCase extends MuleArtifactFunctionalTes
     final Path goldenPath = Paths.get(srcPath);
     System.out.println("*** Create Golden " + goldenPath);
 
-    // Write golden files  with current values
+    // Write golden files with current values
     final Path parent = goldenPath.getParent();
     if (!Files.exists(parent))
       Files.createDirectory(parent);

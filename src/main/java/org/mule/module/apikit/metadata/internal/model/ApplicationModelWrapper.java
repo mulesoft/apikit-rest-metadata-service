@@ -52,6 +52,9 @@ public class ApplicationModelWrapper {
   private final Map<String, ApikitConfig> configMap;
   private final Map<String, ApiCoordinate> metadataFlows;
 
+  private static final String groupFlowMapping = "FlowMapping";
+  private static final String groupGeneral = "General";
+
   public ApplicationModelWrapper(final ArtifactAst applicationModel, final ResourceLoader loader, final Notifier notifier) {
     this.applicationModel = applicationModel;
     this.resourceLoader = loader;
@@ -100,13 +103,14 @@ public class ApplicationModelWrapper {
   }
 
   private ApikitConfig createApikitConfig(final ComponentAst config) {
-    final String configName = (String) config.getParameter(PARAMETER_NAME).getValue().getRight();
+    final String configName = (String) config.getParameter(groupGeneral, PARAMETER_NAME).getValue().getRight();
     final String apiDefinition = getApiDefinition(config);
-    final String outputHeadersVarName = (String) config.getParameter(PARAMETER_OUTPUT_HEADERS_VAR).getValue().getRight();
-    final String httpStatusVarName = (String) config.getParameter(PARAMETER_HTTP_STATUS_VAR).getValue().getRight();
-    final String parser = config.getParameter(PARAMETER_PARSER).getValue().getRight().toString();
+    final String outputHeadersVarName =
+        (String) config.getParameter(groupGeneral, PARAMETER_OUTPUT_HEADERS_VAR).getValue().getRight();
+    final String httpStatusVarName = (String) config.getParameter(groupGeneral, PARAMETER_HTTP_STATUS_VAR).getValue().getRight();;
+    final String parser = config.getParameter(groupGeneral, PARAMETER_PARSER).getValue().getRight().toString();
 
-    final List<FlowMapping> flowMappings = config.getParameter("flowMappings")
+    final List<FlowMapping> flowMappings = config.getParameter(groupGeneral, "flowMappings")
         .getValue()
         .reduce(l -> emptyList(),
                 r -> ((List<ComponentAst>) r)
@@ -120,10 +124,10 @@ public class ApplicationModelWrapper {
   }
 
   private static String getApiDefinition(ComponentAst config) {
-    if (config.getParameter(PARAMETER_API_DEFINITION).getValue().getRight() != null) {
-      return (String) config.getParameter(PARAMETER_API_DEFINITION).getValue().getRight();
-    } else if (config.getParameter(PARAMETER_RAML_DEFINITION).getValue().getRight() != null) {
-      return (String) config.getParameter(PARAMETER_RAML_DEFINITION).getValue().getRight();
+    if (config.getParameter(groupGeneral, PARAMETER_API_DEFINITION).getValue().getRight() != null) {
+      return (String) config.getParameter(groupGeneral, PARAMETER_API_DEFINITION).getValue().getRight();
+    } else if (config.getParameter(groupGeneral, PARAMETER_RAML_DEFINITION).getValue().getRight() != null) {
+      return (String) config.getParameter(groupGeneral, PARAMETER_RAML_DEFINITION).getValue().getRight();
     } else {
       return null;
     }
@@ -141,7 +145,7 @@ public class ApplicationModelWrapper {
   }
 
   private static Flow createFlow(ComponentAst componentModel) {
-    return new Flow((String) componentModel.getParameter(PARAMETER_NAME).getValue().getRight());
+    return new Flow(componentModel.getComponentId().orElse(null));
   }
 
   public Optional<ApiCoordinate> getApiCoordinate(final String flowName) {
@@ -178,10 +182,10 @@ public class ApplicationModelWrapper {
   }
 
   private static FlowMapping createFlowMapping(final String configName, final ComponentAst component) {
-    final String resource = (String) component.getParameter(PARAMETER_RESOURCE).getValue().getRight();
-    final String action = (String) component.getParameter(PARAMETER_ACTION).getValue().getRight();
-    final String contentType = (String) component.getParameter(PARAMETER_CONTENT_TYPE).getValue().getRight();
-    final String flowRef = (String) component.getParameter(PARAMETER_FLOW_REF).getValue().getRight();
+    final String resource = (String) component.getParameter(groupFlowMapping, PARAMETER_RESOURCE).getValue().getRight();
+    final String action = (String) component.getParameter(groupFlowMapping, PARAMETER_ACTION).getValue().getRight();
+    final String contentType = (String) component.getParameter(groupFlowMapping, PARAMETER_CONTENT_TYPE).getValue().getRight();
+    final String flowRef = (String) component.getParameter(groupFlowMapping, PARAMETER_FLOW_REF).getValue().getRight();
 
     return new FlowMapping(configName, resource, action, contentType, flowRef);
   }

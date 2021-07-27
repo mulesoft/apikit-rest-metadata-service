@@ -144,9 +144,10 @@ class MetadataFactory {
     final Optional<QName> rootElementName = XmlSchemaUtils.getXmlSchemaRootElementName(singletonList(xsdSchema), example);
     return rootElementName.map(qName -> {
       /*
-        See
-        https://github.com/mulesoft/metadata-model-api/blob/d1b8147a487fb1986821276cd9fd4bb320124604/metadata-model-raml/src/main/java/org/mule/metadata/raml/api/XmlRamlTypeLoader.java#L58
-      */
+       * See
+       * https://github.com/mulesoft/metadata-model-api/blob/d1b8147a487fb1986821276cd9fd4bb320124604/metadata-model-raml/src/main
+       * /java/org/mule/metadata/raml/api/XmlRamlTypeLoader.java#L58
+       */
       final XmlTypeLoader xmlTypeLoader = new XmlTypeLoader(SchemaCollector.getInstance().addSchema("", xsdSchema));
       return xmlTypeLoader.load(qName.toString()).orElse(defaultMetadata());
     }).orElse(defaultMetadata());
@@ -174,6 +175,7 @@ class MetadataFactory {
 
   /**
    * Creates default metadata, that can be of any type
+   * 
    * @return The newly created MetadataType
    */
   public static MetadataType defaultMetadata() {
@@ -182,6 +184,7 @@ class MetadataFactory {
 
   /**
    * Creates metadata to describe an string type
+   * 
    * @return The newly created MetadataType
    */
   public static MetadataType stringMetadata() {

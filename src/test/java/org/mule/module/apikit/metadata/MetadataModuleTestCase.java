@@ -168,7 +168,6 @@ public class MetadataModuleTestCase {
 
   private ArtifactAst createApplicationModel(String resourceName) throws Exception {
     final MockedApplicationModel.Builder builder = new MockedApplicationModel.Builder();
-    builder.addConfig("apiKitSample", getClass().getClassLoader().getResourceAsStream(resourceName));
     final MockedApplicationModel mockedApplicationModel = builder.build();
     return mockedApplicationModel.getMuleApplicationModel();
   }

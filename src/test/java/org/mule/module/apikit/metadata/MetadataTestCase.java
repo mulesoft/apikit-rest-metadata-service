@@ -6,6 +6,7 @@
  */
 package org.mule.module.apikit.metadata;
 
+import javax.inject.Inject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,6 +15,7 @@ import org.mule.metadata.api.model.FunctionType;
 import org.mule.runtime.apikit.metadata.api.MetadataBuilder;
 import org.mule.runtime.apikit.metadata.api.MetadataService;
 import org.mule.runtime.ast.api.ArtifactAst;
+import org.mule.runtime.core.api.extension.ExtensionManager;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.io.File;
@@ -35,6 +37,9 @@ public class MetadataTestCase extends AbstractMetadataTestCase {
 
   private final String parser;
   private final File app;
+
+  @Inject
+  private ExtensionManager extensionManager;
 
   // SET TO TRUE IF YOU WANT THE TESTS THAT MISS MACH TO GENERATE A NEW FILE
   private final boolean generateFixedFiles = false;
@@ -59,10 +64,10 @@ public class MetadataTestCase extends AbstractMetadataTestCase {
     if (app.getAbsolutePath().contains("oas") && parser.equals(RAML))
       return;
 
-    for (String flow : findFlows(app)) {
+    for (String flow : findFlows(app, extensionManager)) {
       final File goldenFile = goldenFile(flow, app, parser);
 
-      final ArtifactAst applicationModel = createApplicationModel(app);
+      final ArtifactAst applicationModel = createApplicationModel(app, extensionManager);
       assertThat(applicationModel, notNullValue());
 
       MetadataService service = getService(MetadataService.class);

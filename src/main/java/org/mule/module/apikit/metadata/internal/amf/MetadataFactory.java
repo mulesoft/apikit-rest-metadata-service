@@ -45,7 +45,8 @@ class MetadataFactory {
 
       final List<Example> examples = anyShape.examples();
       final TypeLoader typeLoader = anyShape.isDefaultEmpty() && !examples.isEmpty()
-          ? createJsonExampleTypeLoader(examples.get(0).toJson()) : new JsonTypeLoader(anyShape.buildJsonSchema());
+          ? createJsonExampleTypeLoader(examples.get(0).toJson())
+          : new JsonTypeLoader(anyShape.buildJsonSchema());
 
       metadataType = typeLoader.load(null);
     }
@@ -71,15 +72,17 @@ class MetadataFactory {
   }
 
   /**
-  * Creates default metadata, that can be of any type
-  * @return The newly created MetadataType
-  */
+   * Creates default metadata, that can be of any type
+   * 
+   * @return The newly created MetadataType
+   */
   static MetadataType defaultMetadata() {
     return DEFAULT_METADATA;
   }
 
   /**
    * Creates metadata to describe an string type
+   * 
    * @return The newly created MetadataType
    */
   static MetadataType stringMetadata() {
