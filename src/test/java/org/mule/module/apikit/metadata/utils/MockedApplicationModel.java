@@ -8,20 +8,30 @@ package org.mule.module.apikit.metadata.utils;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptySet;
-import static org.mule.datasense.test.metadataprovider.util.MetadataProviderUtil.createComponentBuildingDefinitionRegistry;
+import static org.mule.runtime.core.api.config.MuleManifest.getProductVersion;
+import static org.mule.runtime.module.extension.api.loader.AbstractJavaExtensionModelLoader.TYPE_PROPERTY_NAME;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import org.mule.datasense.test.metadataprovider.util.MuleAppUtil;
+import org.mule.extension.http.internal.temporary.HttpConnector;
+import org.mule.extension.socket.api.SocketsExtension;
+import org.mule.module.apikit.ApikitExtensionLoadingDelegate;
+import org.mule.runtime.api.dsl.DslResolvingContext;
 import org.mule.runtime.api.meta.model.ExtensionModel;
+import org.mule.runtime.api.meta.model.declaration.fluent.ExtensionDeclarer;
 import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.ast.api.ComponentAst;
-import org.mule.runtime.config.api.dsl.model.ComponentBuildingDefinitionRegistry;
+import org.mule.runtime.ast.api.xml.AstXmlParser;
 import org.mule.runtime.config.api.dsl.model.ResourceProvider;
 import org.mule.runtime.config.api.dsl.processor.ArtifactConfig;
 import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
 import org.mule.runtime.core.api.extension.RuntimeExtensionModelProvider;
 import org.mule.runtime.core.api.registry.SpiServiceRegistry;
-import org.mule.runtime.dsl.api.component.ComponentBuildingDefinitionProvider;
 import org.mule.runtime.dsl.api.xml.parser.ConfigFile;
+import static org.mule.runtime.module.extension.api.loader.AbstractJavaExtensionModelLoader.VERSION;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,14 +46,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static java.util.Collections.singleton;
+import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
 import org.apache.commons.io.IOUtils;
+import org.mule.runtime.extension.api.loader.ExtensionLoadingContext;
+import org.mule.runtime.extension.internal.loader.DefaultExtensionLoadingContext;
+import org.mule.runtime.extension.internal.loader.ExtensionModelFactory;
+import org.mule.runtime.module.extension.api.loader.java.DefaultJavaExtensionModelLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableSet;
 
-// THIS CLASS WAS COPIED FROM git@github.com:mulesoft/mule-datasense-api.git
 public class MockedApplicationModel implements ApplicationModel {
 
   private static final transient Logger logger = LoggerFactory.getLogger(MockedApplicationModel.class);
@@ -146,7 +160,7 @@ public class MockedApplicationModel implements ApplicationModel {
 
     public Builder muleContext(MuleContext muleContext) {
       Preconditions.checkNotNull(muleContext);
-      this.muleContext = muleContext;
+      //this.muleContext = muleContext;
       return this;
     }
 
@@ -182,9 +196,8 @@ public class MockedApplicationModel implements ApplicationModel {
     public Builder addConfig(String configName, File configData) throws IOException {
       Preconditions.checkNotNull(configName);
       Preconditions.checkNotNull(configData);
-      try (FileInputStream fileInputStream = new FileInputStream(configData)) {
-        return addConfig(configName, fileInputStream);
-      }
+      this.baseURI = configData.toURI();
+      return this;
     }
 
     public Builder addConfig(String configName, InputStream configData) {
@@ -205,47 +218,65 @@ public class MockedApplicationModel implements ApplicationModel {
     }
 
     public MockedApplicationModel build() throws Exception {
-      ImmutableSet<ExtensionModel> extensions = ImmutableSet.<ExtensionModel>builder()
-          .addAll(muleContext != null ? muleContext.getExtensionManager().getExtensions() : emptySet())
-          .addAll(discoverRuntimeExtensionModels())
-          .build();
-      ComponentBuildingDefinitionRegistry registry =
-          createComponentBuildingDefinitionRegistry();
-      ArtifactAst toolingApp = MuleAppUtil.loadApplicationModel(artifactConfigBuilder.build(),
-                                                                "",
-                                                                extensions,
-                                                                Optional.ofNullable(registry),
-                                                                getResourceProvider());
 
-      logger.debug("Resolved locations for Tooling ApplicationModel:");
-      toolingApp
-          .recursiveStream().forEach(componentModel -> {
-            if (componentModel.getLocation() != null) {
-              logger.debug(format("Location: %s (%s)", componentModel.getLocation().getLocation(),
-                                  componentModel.getIdentifier()));
-            }
-          });
+      List<ExtensionModel> extensionModels =
+          Arrays.asList(loadApikitExtensionModel(), loadHttpExtensionModel(), loadSocketsExtensionModel());
+      ArtifactAst applicationModel = AstXmlParser.builder()
+          .withExtensionModels(extensionModels)
+          .withExtensionModels(loadRuntimeExtensionModels())
+          .withSchemaValidationsDisabled()
+          .build()
+          .parse(baseURI);
 
-      if (muleContext != null) {
-        logger.debug("Resolved locations from deployed application:");
-        muleContext.getConfigurationComponentLocator().findAllLocations().stream()
-            .forEach(componentLocation -> logger.debug(
-                                                       format("Location: %s (%s)", componentLocation.getLocation(),
-                                                              componentLocation.getComponentIdentifier())));
-      }
-
-      return new MockedApplicationModel("", toolingApp, typesDataList, baseURI);
+      return new MockedApplicationModel("", applicationModel, typesDataList, baseURI);
     }
 
-    public Set<ExtensionModel> discoverRuntimeExtensionModels() {
-      final Set<ExtensionModel> extensionModels = new HashSet<>();
 
-      Collection<RuntimeExtensionModelProvider> runtimeExtensionModelProviders = new SpiServiceRegistry()
-          .lookupProviders(RuntimeExtensionModelProvider.class, Thread.currentThread().getContextClassLoader());
+    private static ExtensionModel loadApikitExtensionModel() {
+      ApikitExtensionLoadingDelegate apikitExtensionLoadingDelegate = new ApikitExtensionLoadingDelegate();
+      ExtensionDeclarer extensionDeclarer = new ExtensionDeclarer();
+      apikitExtensionLoadingDelegate.accept(extensionDeclarer, null);
+      ExtensionLoadingContext ctx =
+          new DefaultExtensionLoadingContext(extensionDeclarer, Thread.currentThread().getContextClassLoader(),
+                                             DslResolvingContext.getDefault(emptySet()));
+      return new ExtensionModelFactory().create(ctx);
+    }
+
+    private static List<ExtensionModel> loadRuntimeExtensionModels() {
+      Collection<RuntimeExtensionModelProvider> runtimeExtensionModelProviders = new SpiServiceRegistry().lookupProviders(
+                                                                                                                          RuntimeExtensionModelProvider.class,
+                                                                                                                          Thread
+                                                                                                                              .currentThread()
+                                                                                                                              .getContextClassLoader());
+
+      List<ExtensionModel> runtimeExtensionModels = new ArrayList<>();
+
       for (RuntimeExtensionModelProvider runtimeExtensionModelProvider : runtimeExtensionModelProviders) {
-        extensionModels.add(runtimeExtensionModelProvider.createExtensionModel());
+        runtimeExtensionModels.add(runtimeExtensionModelProvider.createExtensionModel());
       }
-      return extensionModels;
+      return runtimeExtensionModels;
+    }
+
+    private static ExtensionModel loadHttpExtensionModel() {
+      DefaultJavaExtensionModelLoader extensionModelLoader = new DefaultJavaExtensionModelLoader();
+      DslResolvingContext dslResolvingContext = getDefault(singleton(MuleExtensionModelProvider.getExtensionModel()));
+
+      Map<String, Object> params = new HashMap<>();
+      params.put(TYPE_PROPERTY_NAME, HttpConnector.class.getName());
+      params.put(VERSION, getProductVersion());
+
+      return extensionModelLoader.loadExtensionModel(HttpConnector.class.getClassLoader(), dslResolvingContext, params);
+    }
+
+    private static ExtensionModel loadSocketsExtensionModel() {
+      DefaultJavaExtensionModelLoader extensionModelLoader = new DefaultJavaExtensionModelLoader();
+
+      DslResolvingContext dslResolvingContext = getDefault(singleton(MuleExtensionModelProvider.getExtensionModel()));
+      Map<String, Object> params = new HashMap<>();
+      params.put(TYPE_PROPERTY_NAME, SocketsExtension.class.getName());
+      params.put(VERSION, getProductVersion());
+
+      return extensionModelLoader.loadExtensionModel(SocketsExtension.class.getClassLoader(), dslResolvingContext, params);
     }
 
   }

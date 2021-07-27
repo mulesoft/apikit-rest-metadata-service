@@ -32,7 +32,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class AbstractMetadataTestCase extends MuleArtifactFunctionalTestCase {
+public abstract class AbstractMetadataTestCase {
 
   protected static final String AMF = "AMF";
   protected static final String RAML = "RAML";
@@ -45,10 +45,6 @@ public abstract class AbstractMetadataTestCase extends MuleArtifactFunctionalTes
     return scan(baseFolder);
   }
 
-  @Override
-  protected String getConfigFile() {
-    return "mule-config.xml";
-  }
 
   protected static List<File> scan(final URI resources) throws IOException {
 
@@ -62,7 +58,6 @@ public abstract class AbstractMetadataTestCase extends MuleArtifactFunctionalTes
   protected static ArtifactAst createApplicationModel(final File app) throws Exception {
     final MockedApplicationModel.Builder builder = new MockedApplicationModel.Builder();
     builder.addConfig("apiKitSample", app);
-    builder.muleContext(muleContext);
     final MockedApplicationModel mockedApplicationModel = builder.build();
     return mockedApplicationModel.getMuleApplicationModel();
   }

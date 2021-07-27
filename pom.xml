@@ -34,6 +34,7 @@
         <allureReportVersion>2.3.4</allureReportVersion>
         <allure.maven.plugin.version>2.10.0</allure.maven.plugin.version>
 
+      <mule.version>4.4.0-SNAPSHOT</mule.version>
     </properties>
 
     <build>
@@ -180,11 +181,6 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-module-dsl-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
 
         <dependency>
             <groupId>org.mule.runtime</groupId>
@@ -268,11 +264,46 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.mule.connectors</groupId>
+            <artifactId>mule-sockets-connector</artifactId>
+            <classifier>mule-plugin</classifier>
+            <version>1.2.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-http</artifactId>
             <classifier>mule-service</classifier>
             <version>1.5.0</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-extensions-api</artifactId>
+            <version>1.4.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-api</artifactId>
+            <version>1.4.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-module-dsl-api</artifactId>
+            <version>1.4.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-artifact-ast</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- mule-test-runner dependencies to mimic container classpath -->
@@ -294,6 +325,13 @@
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-module-extensions-support</artifactId>
             <version>${mule.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.everit.json</groupId>
+            <artifactId>org.everit.json.schema</artifactId>
+            <version>1.4.0</version>
             <scope>provided</scope>
         </dependency>
 

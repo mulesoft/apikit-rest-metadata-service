@@ -9,8 +9,10 @@ package org.mule.module.apikit.metadata;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mule.metadata.api.model.FunctionType;
+import org.mule.module.apikit.metadata.internal.MetadataServiceImpl;
 import org.mule.runtime.apikit.metadata.api.MetadataBuilder;
 import org.mule.runtime.apikit.metadata.api.MetadataService;
 import org.mule.runtime.ast.api.ArtifactAst;
@@ -30,7 +32,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.module.apikit.metadata.internal.MetadataBuilderImpl.MULE_APIKIT_PARSER;
 
-@RunnerDelegateTo(Parameterized.class)
+@RunWith(Parameterized.class)
 public class MetadataTestCase extends AbstractMetadataTestCase {
 
   private final String parser;
@@ -65,7 +67,7 @@ public class MetadataTestCase extends AbstractMetadataTestCase {
       final ArtifactAst applicationModel = createApplicationModel(app);
       assertThat(applicationModel, notNullValue());
 
-      MetadataService service = getService(MetadataService.class);
+      MetadataService service = new MetadataServiceImpl();
       MetadataBuilder apikitMetadataBuilder = service.getApikitMetadataBuilder();
       final Optional<FunctionType> metadata = getMetadata(apikitMetadataBuilder, applicationModel, flow);
 
