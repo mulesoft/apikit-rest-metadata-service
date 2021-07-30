@@ -6,8 +6,6 @@
  */
 package org.mule.module.apikit.metadata;
 
-import static java.util.stream.Collectors.toList;
-
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.metadata.api.model.FunctionType;
 import org.mule.module.apikit.metadata.utils.MetadataFixer;
@@ -18,6 +16,7 @@ import org.mule.module.apikit.metadata.utils.TestResourceLoader;
 import org.mule.runtime.apikit.metadata.api.Metadata;
 import org.mule.runtime.apikit.metadata.api.MetadataBuilder;
 import org.mule.runtime.ast.api.ArtifactAst;
+import org.mule.runtime.core.api.extension.ExtensionManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,7 +29,8 @@ import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
-import org.mule.runtime.core.api.extension.ExtensionManager;
+
+import static java.util.stream.Collectors.toList;
 
 public abstract class AbstractMetadataTestCase extends MuleArtifactFunctionalTestCase {
 
@@ -74,7 +74,7 @@ public abstract class AbstractMetadataTestCase extends MuleArtifactFunctionalTes
     return applicationModel.topLevelComponentsStream()
         .filter(componentAst -> componentAst.getIdentifier().getNamespace().equals("mule") &&
             componentAst.getIdentifier().getName().equals("flow"))
-        .map(componentAst -> (String) componentAst.getParameter("name").getValue().getRight())
+        .map(componentAst -> (String) componentAst.getParameter("General", "name").getValue().getRight())
         .filter(flow -> isApikitFlow(flow))
         .collect(toList());
   }
@@ -126,8 +126,9 @@ public abstract class AbstractMetadataTestCase extends MuleArtifactFunctionalTes
 
     // Write golden files with current values
     final Path parent = goldenPath.getParent();
-    if (!Files.exists(parent))
+    if (!Files.exists(parent)) {
       Files.createDirectory(parent);
+    }
     return Files.write(goldenPath, content.getBytes("UTF-8"));
   }
 }
