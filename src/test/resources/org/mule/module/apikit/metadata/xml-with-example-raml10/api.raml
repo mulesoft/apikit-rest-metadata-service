@@ -1,0 +1,39 @@
+#%RAML 1.0
+title: Example API
+types:
+  event:
+    properties:
+      id: string
+  calendar:
+    properties:
+      items:
+        type: event[]
+        required: true
+        xml:
+          wrapped: true
+    example: |
+        <calendar>
+           <items>
+              <event>
+                 <id>1234</id>
+              </event>
+              <event>
+                 <id>abcd</id>
+              </event>
+              <event>
+                 <id>0987</id>
+              </event>
+           </items>
+        </calendar>
+
+/calendar:
+  post:
+    body:
+      application/xml:
+        type: calendar
+  get:
+    responses:
+      200:
+        body:
+          application/xml:
+            type: calendar

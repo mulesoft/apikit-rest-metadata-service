@@ -6,12 +6,15 @@
  */
 package org.mule.module.apikit.metadata.internal.amf;
 
+import amf.client.model.domain.AnyShape;
 import amf.client.model.domain.EndPoint;
+import amf.client.model.domain.Example;
 import amf.client.model.domain.Operation;
 import amf.client.model.domain.Parameter;
 import amf.client.model.domain.Payload;
 import amf.client.model.domain.Request;
 import amf.client.model.domain.Response;
+import amf.client.model.domain.Shape;
 import org.mule.metadata.api.builder.BaseTypeBuilder;
 import org.mule.metadata.api.builder.FunctionTypeBuilder;
 import org.mule.metadata.api.builder.ObjectTypeBuilder;
@@ -26,6 +29,7 @@ import org.mule.metadata.message.api.MuleEventMetadataTypeBuilder;
 import org.mule.module.apikit.metadata.internal.model.ApiCoordinate;
 import org.mule.module.apikit.metadata.internal.model.CertificateFields;
 import org.mule.module.apikit.metadata.internal.model.HttpRequestAttributesFields;
+import org.mule.module.apikit.metadata.internal.utils.CommonMetadataFactory;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.apikit.metadata.api.MetadataSource;
 import org.mule.runtime.apikit.metadata.api.Notifier;
@@ -46,6 +50,9 @@ import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
+import static org.mule.module.apikit.metadata.internal.amf.MetadataFactory.fromJSONSchema;
+import static org.mule.module.apikit.metadata.internal.amf.MetadataFactory.fromXSDSchema;
+import static org.mule.module.apikit.metadata.internal.utils.CommonMetadataFactory.defaultMetadata;
 import static org.mule.runtime.api.metadata.MediaType.parse;
 
 class FlowMetadata implements MetadataSource {
@@ -107,23 +114,25 @@ class FlowMetadata implements MetadataSource {
   private MetadataType getInputPayload(final Operation operation, final ApiCoordinate coordinate) {
 
     final Request request = operation.request();
-    if (request == null)
-      return MetadataFactory.defaultMetadata();
+    if (request == null) {
+      return defaultMetadata();
+    }
 
     final List<Payload> payloads = request.payloads();
     final Optional<Payload> payload = findPayload(payloads, coordinate.getMediaType());
-    return payload.map(p -> metadata(p, coordinate, "input")).orElseGet(MetadataFactory::defaultMetadata);
+    return payload.map(p -> loadIOPayloadMetadata(p, coordinate, "input")).orElseGet(CommonMetadataFactory::defaultMetadata);
   }
 
   private MetadataType getOutputPayload(final Operation operation, final ApiCoordinate coordinate) {
 
     final Optional<Response> response = findFirstResponse(operation);
-    if (!response.isPresent())
-      return MetadataFactory.defaultMetadata();
+    if (!response.isPresent()) {
+      return defaultMetadata();
+    }
     final List<Payload> payloads = response.get().payloads();
     final Optional<Payload> payload = findPayload(payloads, coordinate.getMediaType());
 
-    return payload.map(p -> metadata(p, coordinate, "output")).orElseGet(MetadataFactory::defaultMetadata);
+    return payload.map(p -> loadIOPayloadMetadata(p, coordinate, "output")).orElseGet(CommonMetadataFactory::defaultMetadata);
   }
 
   private ObjectTypeBuilder getOutputHeaders(final Operation operation) {
@@ -131,7 +140,7 @@ class FlowMetadata implements MetadataSource {
 
     final ObjectTypeBuilder builder = BaseTypeBuilder.create(MetadataFormat.JAVA).objectType();
 
-    headers.forEach(header -> builder.addField().key(header.name().value().toLowerCase()).value(metadata(header))
+    headers.forEach(header -> builder.addField().key(header.name().value().toLowerCase()).value(loadIOParameterMetadata(header))
         .required(header.required().value()));
 
     return builder;
@@ -206,9 +215,10 @@ class FlowMetadata implements MetadataSource {
     final ObjectTypeBuilder builder = BaseTypeBuilder.create(MetadataFormat.JAVA).objectType();
 
     final Request request = operation.request();
-    if (request != null)
-      request.headers().forEach(header -> builder.addField().key(header.name().value()).value(metadata(header))
+    if (request != null) {
+      request.headers().forEach(header -> builder.addField().key(header.name().value()).value(loadIOParameterMetadata(header))
           .required(header.required().value()));
+    }
 
     return builder;
   }
@@ -227,9 +237,11 @@ class FlowMetadata implements MetadataSource {
     final ObjectTypeBuilder builder = BaseTypeBuilder.create(MetadataFormat.JAVA).objectType();
 
     final Request request = operation.request();
-    if (request != null)
-      request.queryParameters().forEach(param -> builder.addField().key(param.name().value()).value(metadata(param))
-          .required(param.required().value()));
+    if (request != null) {
+      request.queryParameters()
+          .forEach(param -> builder.addField().key(param.name().value()).value(loadIOParameterMetadata(param))
+              .required(param.required().value()));
+    }
 
     return builder;
   }
@@ -241,7 +253,7 @@ class FlowMetadata implements MetadataSource {
     parameters.putAll(getEndpointUriParametersFields(endPoint));
     parameters.putAll(getUriParametersFromOperation(operation));
     Predicate<Entry<String, Parameter>> versionFilter = e -> !"version".equals(e.getKey());
-    Consumer<Parameter> addParameterToBuilder = p -> builder.addField().key(p.name().value()).value(metadata(p))
+    Consumer<Parameter> addParameterToBuilder = p -> builder.addField().key(p.name().value()).value(loadIOParameterMetadata(p))
         .required(p.required().value());
     parameters.entrySet().stream().filter(versionFilter).map(e -> e.getValue())
         .forEach(addParameterToBuilder);
@@ -283,9 +295,10 @@ class FlowMetadata implements MetadataSource {
     return payloads.stream().filter(p -> parse(p.mediaType().value()).matches(mType)).findFirst();
   }
 
-  private MetadataType metadata(final Parameter parameter) {
+  private MetadataType loadIOParameterMetadata(final Parameter parameter) {
     try {
-      return MetadataFactory.from(parameter.schema());
+      Example example = getFirstExample(parameter.schema()).orElse(null);
+      return fromJSONSchema(parameter.schema(), example != null ? example.toJson() : "");
     } catch (Exception e) {
       notifier.warn(format("Error while trying to resolve metadata for parameter '%s'\nDetails: %s", parameter.name(),
                            e.getMessage()));
@@ -293,15 +306,34 @@ class FlowMetadata implements MetadataSource {
     return MetadataFactory.defaultMetadata(parameter.schema());
   }
 
-  private MetadataType metadata(final Payload payload, ApiCoordinate coordinate,
-                                String payloadDescription) {
+  private MetadataType loadIOPayloadMetadata(final Payload payload, ApiCoordinate coordinate,
+                                             String payloadDescription) {
     try {
-      return MetadataFactory.from(payload.schema());
+      String mediaType = payload.mediaType().option().orElse("").toLowerCase();
+      Example example = getFirstExample(payload.schema()).orElse(null);
+      return mediaType.contains("xml") ? fromXSDSchema(payload.schema(), example != null ? example.value().value() : "")
+          : fromJSONSchema(payload.schema(), example != null ? example.toJson() : "");
     } catch (Exception e) {
       notifier.warn(format("Error while trying to resolve %s payload metadata for flow '%s'.\nDetails: %s", payloadDescription,
                            coordinate.getFlowName(), e.getMessage()));
-      return MetadataFactory.defaultMetadata(payload.schema());
     }
+    return MetadataFactory.defaultMetadata(payload.schema());
+  }
+
+  /**
+   * Picks the first example of the schema if exists.
+   *
+   * @param schema
+   * @return
+   */
+  private Optional<Example> getFirstExample(Shape schema) {
+    if (schema instanceof AnyShape) {
+      List<Example> examples = ((AnyShape) schema).examples();
+      if (examples != null && !examples.isEmpty()) {
+        return Optional.of(examples.get(0));
+      }
+    }
+    return Optional.empty();
   }
 
 }
