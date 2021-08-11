@@ -1,0 +1,30 @@
+#%RAML 1.0
+title: suggestedSolution
+types:
+  event:
+    type: object
+    properties:
+      id:
+        type: string
+  items:
+    type: object
+    properties:
+      event:
+        type: event[]
+        required: true
+  calendar:
+    type: object
+    properties:
+      items:
+        type: items
+/calendar:
+  post:
+    body:
+      application/xml:
+        type: calendar
+  get:
+    responses:
+      200:
+        body:
+          application/xml:
+            type: calendar

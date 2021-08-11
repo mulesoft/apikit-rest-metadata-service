@@ -13,37 +13,32 @@ import org.mule.metadata.api.model.MetadataFormat;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.metadata.json.api.JsonExampleTypeLoader;
 import org.mule.metadata.json.api.JsonTypeLoader;
-import org.mule.metadata.xml.api.ModelFactory;
-import org.mule.metadata.xml.api.SchemaCollector;
-import org.mule.metadata.xml.api.XmlTypeLoader;
-import org.mule.metadata.xml.api.utils.XmlSchemaUtils;
 import org.mule.runtime.api.metadata.MediaType;
 
 import javax.annotation.Nullable;
-import javax.xml.namespace.QName;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static java.util.Collections.singletonList;
 import static org.mule.metadata.api.builder.BaseTypeBuilder.create;
+import static org.mule.module.apikit.metadata.internal.utils.CommonMetadataFactory.MIME_APPLICATION_JSON;
+import static org.mule.module.apikit.metadata.internal.utils.CommonMetadataFactory.MIME_APPLICATION_URL_ENCODED;
+import static org.mule.module.apikit.metadata.internal.utils.CommonMetadataFactory.MIME_APPLICATION_XML;
+import static org.mule.module.apikit.metadata.internal.utils.CommonMetadataFactory.MIME_MULTIPART_FORM_DATA;
+import static org.mule.module.apikit.metadata.internal.utils.CommonMetadataFactory.defaultMetadata;
+import static org.mule.module.apikit.metadata.internal.utils.CommonMetadataFactory.fromXMLExample;
+import static org.mule.module.apikit.metadata.internal.utils.CommonMetadataFactory.fromXSDSchema;
 import static org.mule.runtime.api.metadata.MediaType.parse;
 
 class MetadataFactory {
 
-  private static final String MIME_APPLICATION_JSON = "application/json";
-  private static final String MIME_APPLICATION_XML = "application/xml";
-  private static final String MIME_MULTIPART_FORM_DATA = "multipart/form-data";
-  private static final String MIME_APPLICATION_URL_ENCODED = "application/x-www-form-urlencoded";
-
-  private static final MetadataType DEFAULT_METADATA = create(MetadataFormat.JAVA).anyType().build();
   private static final MetadataType STRING_METADATA = create(MetadataFormat.JAVA).stringType().build();
 
   private MetadataFactory() {}
 
   public static MetadataType payloadMetadata(final RamlApiWrapper api, final @Nullable MimeType body) {
     if (body == null) {
-      return MetadataFactory.defaultMetadata();
+      return defaultMetadata();
     }
 
     final MediaType mType = parse(body.getType());
@@ -57,11 +52,10 @@ class MetadataFactory {
       case MIME_APPLICATION_XML:
         return applicationXmlMetadata(schema, example);
       case MIME_APPLICATION_URL_ENCODED:
-        return formMetadata(body.getFormParameters());
       case MIME_MULTIPART_FORM_DATA:
         return formMetadata(body.getFormParameters());
       default:
-        return MetadataFactory.defaultMetadata();
+        return defaultMetadata();
     }
   }
 
@@ -84,13 +78,16 @@ class MetadataFactory {
   }
 
   private static MetadataType applicationXmlMetadata(String schema, String example) {
-    if (schema != null) {
-      return MetadataFactory.fromXSDSchema(schema, example);
-    } else if (example != null) {
-      return MetadataFactory.fromXMLExample(example);
+    if (schema != null && schema.contains("XMLSchema")) {
+      return fromXSDSchema(schema);
+    } else if (example != null && !example.isEmpty()) {
+      MetadataType fromExample = fromXMLExample(example);
+      if (fromExample != null) {
+        return fromExample;
+      }
     }
 
-    return MetadataFactory.defaultMetadata();
+    return defaultMetadata();
   }
 
   private static MetadataType applicationJsonMetadata(String schema, String example) {
@@ -100,7 +97,7 @@ class MetadataFactory {
       return MetadataFactory.fromJsonExample(example);
     }
 
-    return MetadataFactory.defaultMetadata();
+    return defaultMetadata();
   }
 
 
@@ -134,33 +131,6 @@ class MetadataFactory {
     return root.orElse(defaultMetadata());
   }
 
-  /**
-   *
-   * @param xsdSchema
-   * @param example
-   * @return
-   */
-  public static MetadataType fromXSDSchema(String xsdSchema, String example) {
-    final Optional<QName> rootElementName = XmlSchemaUtils.getXmlSchemaRootElementName(singletonList(xsdSchema), example);
-    return rootElementName.map(qName -> {
-      /*
-       * See
-       * https://github.com/mulesoft/metadata-model-api/blob/d1b8147a487fb1986821276cd9fd4bb320124604/metadata-model-raml/src/main
-       * /java/org/mule/metadata/raml/api/XmlRamlTypeLoader.java#L58
-       */
-      final XmlTypeLoader xmlTypeLoader = new XmlTypeLoader(SchemaCollector.getInstance().addSchema("", xsdSchema));
-      return xmlTypeLoader.load(qName.toString()).orElse(defaultMetadata());
-    }).orElse(defaultMetadata());
-  }
-
-  public static MetadataType fromXMLExample(String xmlExample) {
-
-    ModelFactory modelFactory = ModelFactory.fromExample(xmlExample);
-    Optional<MetadataType> metadata = new XmlTypeLoader(modelFactory).load(null);
-
-    return metadata.orElse(defaultMetadata());
-  }
-
   public static MetadataType fromFormMetadata(Map<String, List<Parameter>> formParameters) {
     final ObjectTypeBuilder parameters = create(MetadataFormat.JAVA).objectType();
 
@@ -174,17 +144,8 @@ class MetadataFactory {
   }
 
   /**
-   * Creates default metadata, that can be of any type
-   * 
-   * @return The newly created MetadataType
-   */
-  public static MetadataType defaultMetadata() {
-    return DEFAULT_METADATA;
-  }
-
-  /**
    * Creates metadata to describe an string type
-   * 
+   *
    * @return The newly created MetadataType
    */
   public static MetadataType stringMetadata() {
