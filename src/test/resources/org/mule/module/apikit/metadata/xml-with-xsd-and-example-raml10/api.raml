@@ -1,0 +1,52 @@
+#%RAML 1.0
+title: Example API
+types:
+  calendar:
+    schema: |
+        <xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+          <xs:element name="calendar">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="items">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element maxOccurs="unbounded" name="event">
+                        <xs:complexType>
+                          <xs:sequence>
+                            <xs:element name="id" type="xs:string" />
+                          </xs:sequence>
+                        </xs:complexType>
+                      </xs:element>
+                    </xs:sequence>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:schema>
+    example: |
+        <calendar>
+           <items>
+              <event>
+                 <id>1234</id>
+              </event>
+              <event>
+                 <id>abcd</id>
+              </event>
+              <event>
+                 <id>0987</id>
+              </event>
+           </items>
+        </calendar>
+
+/calendar:
+  post:
+    body:
+      application/xml:
+        type: calendar
+  get:
+    responses:
+      200:
+        body:
+          application/xml:
+            type: calendar

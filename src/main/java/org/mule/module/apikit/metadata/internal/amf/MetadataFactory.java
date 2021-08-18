@@ -8,61 +8,103 @@ package org.mule.module.apikit.metadata.internal.amf;
 
 import amf.client.model.domain.AnyShape;
 import amf.client.model.domain.ArrayShape;
-import amf.client.model.domain.Example;
 import amf.client.model.domain.FileShape;
-import amf.client.model.domain.ScalarShape;
 import amf.client.model.domain.Shape;
+import org.json.JSONObject;
 import org.mule.metadata.api.TypeLoader;
 import org.mule.metadata.api.model.MetadataFormat;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.metadata.json.api.JsonExampleTypeLoader;
 import org.mule.metadata.json.api.JsonTypeLoader;
+import org.mule.module.apikit.metadata.internal.utils.CommonMetadataFactory;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static java.util.Optional.empty;
 import static org.mule.metadata.api.builder.BaseTypeBuilder.create;
+import static org.mule.module.apikit.metadata.internal.utils.CommonMetadataFactory.fromXMLExample;
 
 class MetadataFactory {
 
-  private static final MetadataType DEFAULT_METADATA = create(MetadataFormat.JAVA).anyType().build();
   private static final MetadataType STRING_METADATA = create(MetadataFormat.JAVA).stringType().build();
   private static final MetadataType ARRAY_STRING_METADATA = create(MetadataFormat.JAVA).arrayType().of(STRING_METADATA).build();
   private static final MetadataType DATE_TIME_METADATA = create(MetadataFormat.JAVA).dateTimeType().build();
   private static final MetadataType BOOLEAN_METADATA = create(MetadataFormat.JAVA).booleanType().build();
   private static final MetadataType INTEGER_METADATA = create(MetadataFormat.JAVA).numberType().integer().build();
   private static final MetadataType NUMBER_METADATA = create(MetadataFormat.JAVA).numberType().build();
+  private static final String AMF_XSD_SCHEMA_KEY = "x-amf-schema";
 
   private MetadataFactory() {}
 
-  public static MetadataType from(final Shape shape) {
-
+  public static MetadataType fromJSONSchema(final Shape shape, String example) {
     Optional<MetadataType> metadataType = empty();
 
     if (shape instanceof AnyShape) {
       final AnyShape anyShape = (AnyShape) shape;
 
-      final List<Example> examples = anyShape.examples();
-      final TypeLoader typeLoader = anyShape.isDefaultEmpty() && !examples.isEmpty()
-          ? createJsonExampleTypeLoader(examples.get(0).toJson())
+      final TypeLoader typeLoader = anyShape.isDefaultEmpty() && !example.isEmpty()
+          ? createJsonExampleTypeLoader(example)
           : new JsonTypeLoader(anyShape.buildJsonSchema());
 
       metadataType = typeLoader.load(null);
     }
+    return metadataType.orElse(CommonMetadataFactory.defaultMetadata());
+  }
 
-    return metadataType.orElse(defaultMetadata());
+  /**
+   * Looks for the schema definition inside the JSON schema built by AMF by the key "x-amf-schema". If no schema found, and there
+   * is an example, tries to build the metadata from it. Otherwise, defaults to building metadata from JSON schema.
+   *
+   * @param shape
+   * @param example
+   * @return
+   */
+  public static MetadataType fromXSDSchema(Shape shape, String example) {
+    if (shape instanceof AnyShape) {
+      AnyShape anyShape = (AnyShape) shape;
+      Optional<String> xsdSchema = getXSDSchemaFromShape(anyShape);
+      if (xsdSchema.isPresent()) {
+        return CommonMetadataFactory.fromXSDSchema(xsdSchema.get());
+      }
+    }
+    if (example != null && !example.isEmpty()) {
+      MetadataType fromExample = fromXMLExample(example);
+      if (fromExample != null) {
+        return fromExample;
+      }
+    }
+    return MetadataFactory.fromJSONSchema(shape, example);
+  }
+
+  /**
+   * Returns XSD schema from shape if exists.
+   *
+   * @param anyShape
+   * @return
+   */
+  private static Optional<String> getXSDSchemaFromShape(AnyShape anyShape) {
+    JSONObject jsonSchema =
+        new JSONObject(anyShape.toJsonSchema());
+    String[] reference = jsonSchema.get("$ref").toString().split("/");
+    JSONObject jsonSchemaDefinition = jsonSchema.getJSONObject("definitions").getJSONObject(reference[reference.length - 1]);
+    Set<String> keys = jsonSchemaDefinition.keySet();
+    if (keys.contains(AMF_XSD_SCHEMA_KEY)) {
+      return Optional.of(jsonSchemaDefinition.getString(AMF_XSD_SCHEMA_KEY));
+    }
+    return Optional.empty();
   }
 
   static MetadataType defaultMetadata(final Shape shape) {
-    if (shape instanceof FileShape)
+    if (shape instanceof FileShape) {
       return stringMetadata();
+    }
 
     if (shape instanceof ArrayShape) {
       return arrayStringMetadata();
     }
 
-    return defaultMetadata();
+    return CommonMetadataFactory.defaultMetadata();
   }
 
   private static JsonExampleTypeLoader createJsonExampleTypeLoader(final String example) {
@@ -72,17 +114,8 @@ class MetadataFactory {
   }
 
   /**
-   * Creates default metadata, that can be of any type
-   * 
-   * @return The newly created MetadataType
-   */
-  static MetadataType defaultMetadata() {
-    return DEFAULT_METADATA;
-  }
-
-  /**
    * Creates metadata to describe an string type
-   * 
+   *
    * @return The newly created MetadataType
    */
   static MetadataType stringMetadata() {
