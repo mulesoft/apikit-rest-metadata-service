@@ -28,7 +28,7 @@
         <mule.apikit.module.version>2.0.0-SNAPSHOT</mule.apikit.module.version>
         <mule.sockets.connector.version>1.2.1</mule.sockets.connector.version>
 
-        <mule.dwb.api.version>2.3.0</mule.dwb.api.version>
+        <mule.dwb.api.version>2.5.0-20211020</mule.dwb.api.version>
 
         <jacoco.version>0.8.5</jacoco.version>
         <allureJunitVersion>2.13.5</allureJunitVersion>
