@@ -18,3 +18,4 @@ target/
 
 # Test Files
 *.fixed
+.mule/
