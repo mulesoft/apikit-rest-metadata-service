@@ -9,6 +9,7 @@
         "fstype" : String, 
         * : Any
       }, 
+      "/" : Any, 
       /^/([^/]+(/[^/]+)*)?$/? : @description("value" : "An fstab entry") @label("value" : "mntent") {
         "fsck"? : @range("from" : 0) @int Number, 
         "options"? : @length("min" : 1) [String], 
