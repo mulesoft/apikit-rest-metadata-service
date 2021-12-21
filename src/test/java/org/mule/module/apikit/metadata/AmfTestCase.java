@@ -162,7 +162,7 @@ public class AmfTestCase {
   @Test
   public void queryParamsOrderRaml08() {
 
-    final WebApi webApi = webApi(resource("sanity-test/api.raml"));
+    final WebApi webApi = webApi(resource("stability-test/api.raml"));
 
     final Optional<Operation> op = findOperation(webApi, "/clients", "get");
     assertThat(op.isPresent(), is(true));
@@ -177,7 +177,7 @@ public class AmfTestCase {
   @Test
   public void clientsMetadataRaml08() {
 
-    final WebApi webApi = webApi(resource("sanity-test/api.raml"));
+    final WebApi webApi = webApi(resource("stability-test/api.raml"));
 
     final Optional<Operation> op = findOperation(webApi, "/clients", "get");
 
