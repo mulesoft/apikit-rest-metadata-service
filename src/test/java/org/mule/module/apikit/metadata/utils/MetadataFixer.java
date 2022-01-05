@@ -6,9 +6,10 @@
  */
 package org.mule.module.apikit.metadata.utils;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.stream.Collectors;
-import javafx.util.Pair;
 
 public class MetadataFixer {
 
@@ -37,7 +38,7 @@ public class MetadataFixer {
 
   private static String normalizeEnumLine(final String line) {
 
-    final Pair<String, String> keyValue = keyValue(line);
+    final Map.Entry<String, String> keyValue = keyValue(line);
 
     String key = keyValue.getKey();
     String value = keyValue.getValue();
@@ -59,9 +60,9 @@ public class MetadataFixer {
     return newLine;
   }
 
-  private static Pair<String, String> keyValue(final String value) {
+  private static Map.Entry<String, String> keyValue(final String value) {
     final int i = value.indexOf(" : ");
-    return new Pair<>(value.substring(0, i), value.substring(i + 3));
+    return new AbstractMap.SimpleEntry<>(value.substring(0, i), value.substring(i + 3));
   }
 
   private static String fixEnumValue(final String value) {
