@@ -7,17 +7,20 @@
 package org.mule.module.apikit.metadata.internal.amf;
 
 import amf.client.model.domain.WebApi;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.Optional;
 import org.mule.amf.impl.AMFParser;
+import org.mule.apikit.model.api.ApiReference;
 import org.mule.apikit.validation.ApiValidationReport;
+import org.mule.apikit.validation.ApiValidationResult;
 import org.mule.module.apikit.metadata.internal.model.MetadataResolver;
 import org.mule.module.apikit.metadata.internal.model.MetadataResolverFactory;
-import org.mule.apikit.model.api.ApiReference;
 import org.mule.runtime.apikit.metadata.api.Notifier;
 import org.mule.runtime.apikit.metadata.api.ResourceLoader;
 import org.mule.runtime.core.api.util.StringUtils;
+
+import java.io.InputStream;
+import java.net.URI;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Optional.empty;
@@ -52,7 +55,7 @@ public class AmfHandler implements MetadataResolverFactory {
       if (!report.conforms()) {
         report.getResults().stream().forEach(result -> notifier
             .info(format("Error reading API definition using AMF parser. Detail: %s", result.getMessage())));
-        return empty();
+        throw new RuntimeException(report.getResults().stream().map(ApiValidationResult::getMessage).collect(Collectors.joining(",")));
       }
       notifier.info(format("Metadata for API definition '%s' was generated using AMF parser.", apiDefinition));
       return of(parserWrapper.getWebApi());

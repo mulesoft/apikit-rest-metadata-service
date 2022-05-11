@@ -118,7 +118,6 @@ public class MetadataTestCase extends AbstractMetadataTestCase {
 
     scanApps().forEach(app -> {
       try {
-        parameters.add(new Object[] {RAML, app});
         parameters.add(new Object[] {AMF, app});
       } catch (Exception e) {
         throw new RuntimeException(e);
