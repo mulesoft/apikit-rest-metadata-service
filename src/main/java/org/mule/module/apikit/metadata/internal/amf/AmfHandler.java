@@ -55,7 +55,8 @@ public class AmfHandler implements MetadataResolverFactory {
       if (!report.conforms()) {
         report.getResults().stream().forEach(result -> notifier
             .info(format("Error reading API definition using AMF parser. Detail: %s", result.getMessage())));
-        throw new RuntimeException(report.getResults().stream().map(ApiValidationResult::getMessage).collect(Collectors.joining(",")));
+        throw new RuntimeException(report.getResults().stream().map(ApiValidationResult::getMessage)
+            .collect(Collectors.joining(",")));
       }
       notifier.info(format("Metadata for API definition '%s' was generated using AMF parser.", apiDefinition));
       return of(parserWrapper.getWebApi());
