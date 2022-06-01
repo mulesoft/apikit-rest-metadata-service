@@ -6,10 +6,12 @@
  */
 package org.mule.module.apikit.metadata.internal.amf;
 
-import amf.client.model.domain.AnyShape;
-import amf.client.model.domain.ArrayShape;
-import amf.client.model.domain.FileShape;
-import amf.client.model.domain.Shape;
+
+import amf.apicontract.client.platform.APIConfiguration;
+import amf.core.client.platform.model.domain.Shape;
+import amf.shapes.client.platform.model.domain.AnyShape;
+import amf.shapes.client.platform.model.domain.ArrayShape;
+import amf.shapes.client.platform.model.domain.FileShape;
 import org.json.JSONObject;
 import org.mule.metadata.api.TypeLoader;
 import org.mule.metadata.api.model.MetadataFormat;
@@ -43,9 +45,10 @@ class MetadataFactory {
     if (shape instanceof AnyShape) {
       final AnyShape anyShape = (AnyShape) shape;
 
-      final TypeLoader typeLoader = anyShape.isDefaultEmpty() && !example.isEmpty()
+
+      final TypeLoader typeLoader = !example.isEmpty()
           ? createJsonExampleTypeLoader(example)
-          : new JsonTypeLoader(anyShape.buildJsonSchema());
+          : new JsonTypeLoader(APIConfiguration.API().elementClient().buildJsonSchema(anyShape));
 
       metadataType = typeLoader.load(null);
     }
@@ -85,7 +88,7 @@ class MetadataFactory {
    */
   private static Optional<String> getXSDSchemaFromShape(AnyShape anyShape) {
     JSONObject jsonSchema =
-        new JSONObject(anyShape.toJsonSchema());
+        new JSONObject(APIConfiguration.API().elementClient().buildJsonSchema(anyShape));
     String[] reference = jsonSchema.get("$ref").toString().split("/");
     JSONObject jsonSchemaDefinition = jsonSchema.getJSONObject("definitions").getJSONObject(reference[reference.length - 1]);
     Set<String> keys = jsonSchemaDefinition.keySet();

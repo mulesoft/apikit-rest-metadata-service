@@ -6,11 +6,11 @@
  */
 package org.mule.module.apikit.metadata.internal.amf;
 
-import amf.client.model.domain.EndPoint;
-import amf.client.model.domain.Operation;
-import amf.client.model.domain.Parameter;
-import amf.client.model.domain.Server;
-import amf.client.model.domain.WebApi;
+import amf.apicontract.client.platform.model.domain.EndPoint;
+import amf.apicontract.client.platform.model.domain.Server;
+import amf.apicontract.client.platform.model.domain.api.WebApi;
+import amf.apicontract.client.platform.model.domain.Parameter;
+import amf.apicontract.client.platform.model.domain.Operation;
 import org.apache.commons.lang.StringUtils;
 import org.mule.module.apikit.metadata.internal.model.ApiCoordinate;
 import org.mule.module.apikit.metadata.internal.model.MetadataResolver;
@@ -43,7 +43,7 @@ class AmfWrapper implements MetadataResolver {
     if (servers.isEmpty())
       return emptyMap();
 
-    final List<Parameter> variables = webApi.servers().get(0).variables();
+    List<Parameter> variables = webApi.servers().get(0).variables();
     return variables.stream().collect(toMap(parameter -> parameter.name().value(), parameter -> parameter));
   }
 

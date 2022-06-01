@@ -35,12 +35,11 @@
   }
 }) -> {
   "message" : @typeId("value" : "org.mule.runtime.api.message.Message") {
-    "payload" : {
-      "bar" : Boolean, 
-      "foo" : String, 
-      "name" : String, 
-      "length" : @int Number, 
-      * : Any
+    "payload" : @example("value" : "{\"name\":\"name1\",\"length\":1,\"foo\":\"bye\",\"bar\":false}") {
+      "name"? : String, 
+      "length"? : @typeId("value" : "int") Number, 
+      "foo"? : String, 
+      "bar"? : Boolean
     }
   }, 
   "variables" : {

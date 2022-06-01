@@ -6,15 +6,17 @@
  */
 package org.mule.module.apikit.metadata.internal.amf;
 
-import amf.client.model.domain.AnyShape;
-import amf.client.model.domain.EndPoint;
-import amf.client.model.domain.Example;
-import amf.client.model.domain.Operation;
-import amf.client.model.domain.Parameter;
-import amf.client.model.domain.Payload;
-import amf.client.model.domain.Request;
-import amf.client.model.domain.Response;
-import amf.client.model.domain.Shape;
+import amf.apicontract.client.platform.model.domain.EndPoint;
+import amf.apicontract.client.platform.model.domain.Parameter;
+import amf.apicontract.client.platform.model.domain.Operation;
+import amf.apicontract.client.platform.model.domain.Request;
+import amf.apicontract.client.platform.model.domain.Payload;
+import amf.apicontract.client.platform.model.domain.Response;
+import amf.core.client.platform.model.domain.Shape;
+import amf.shapes.client.platform.ShapesConfiguration;
+import amf.shapes.client.platform.ShapesElementClient;
+import amf.shapes.client.platform.model.domain.AnyShape;
+import amf.shapes.client.platform.model.domain.Example;
 import org.mule.metadata.api.builder.BaseTypeBuilder;
 import org.mule.metadata.api.builder.FunctionTypeBuilder;
 import org.mule.metadata.api.builder.ObjectTypeBuilder;
@@ -53,6 +55,7 @@ import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static org.mule.module.apikit.metadata.internal.amf.MetadataFactory.fromJSONSchema;
 import static org.mule.module.apikit.metadata.internal.amf.MetadataFactory.fromXSDSchema;
 import static org.mule.module.apikit.metadata.internal.utils.CommonMetadataFactory.defaultMetadata;
+import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON;
 import static org.mule.runtime.api.metadata.MediaType.parse;
 
 class FlowMetadata implements MetadataSource {
@@ -298,7 +301,9 @@ class FlowMetadata implements MetadataSource {
   private MetadataType loadIOParameterMetadata(final Parameter parameter) {
     try {
       Example example = getFirstExample(parameter.schema()).orElse(null);
-      return fromJSONSchema(parameter.schema(), example != null ? example.toJson() : "");
+      ShapesElementClient client = ShapesConfiguration.predefined().elementClient();
+      return fromJSONSchema(parameter.schema(),
+                            example != null ? client.renderExample(example, APPLICATION_JSON.toString()) : "");
     } catch (Exception e) {
       notifier.warn(format("Error while trying to resolve metadata for parameter '%s'\nDetails: %s", parameter.name(),
                            e.getMessage()));
@@ -311,8 +316,9 @@ class FlowMetadata implements MetadataSource {
     try {
       String mediaType = payload.mediaType().option().orElse("").toLowerCase();
       Example example = getFirstExample(payload.schema()).orElse(null);
+      ShapesElementClient client = ShapesConfiguration.predefined().elementClient();
       return mediaType.contains("xml") ? fromXSDSchema(payload.schema(), example != null ? example.value().value() : "")
-          : fromJSONSchema(payload.schema(), example != null ? example.toJson() : "");
+          : fromJSONSchema(payload.schema(), example != null ? client.renderExample(example, APPLICATION_JSON.toString()) : "");
     } catch (Exception e) {
       notifier.warn(format("Error while trying to resolve %s payload metadata for flow '%s'.\nDetails: %s", payloadDescription,
                            coordinate.getFlowName(), e.getMessage()));

@@ -6,7 +6,7 @@
  */
 package org.mule.module.apikit.metadata.internal.amf;
 
-import amf.client.model.domain.WebApi;
+import amf.apicontract.client.platform.model.domain.api.WebApi;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Optional;

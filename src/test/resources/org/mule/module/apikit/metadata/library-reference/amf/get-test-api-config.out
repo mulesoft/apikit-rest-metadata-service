@@ -35,10 +35,9 @@
   }
 }) -> {
   "message" : @typeId("value" : "org.mule.runtime.api.message.Message") {
-    "payload" : {
-      "bar" : Boolean, 
-      "foo" : String, 
-      * : Any
+    "payload" : @example("value" : "{\"foo\":\"bye\",\"bar\":false}") {
+      "foo"? : String, 
+      "bar"? : Boolean
     }
   }, 
   "variables" : {
