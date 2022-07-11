@@ -66,10 +66,6 @@ public class MetadataTestCase extends AbstractMetadataTestCase {
     }
 
     for (String flow : findFlows(app, extensionManager)) {
-      if (app.getPath().contains("stability-test") && parser.equals("AMF")) {
-        continue; // TODO : remove when AMF fix https://gus.lightning.force.com/lightning/r/ADM_Work__c/a07EE00000yG1e2YAC/view
-                  // available
-      }
       final File goldenFile = goldenFile(flow, app, parser);
 
       final ArtifactAst applicationModel = createApplicationModel(app, extensionManager);
