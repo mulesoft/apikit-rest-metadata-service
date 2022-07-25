@@ -14,6 +14,7 @@ import amf.shapes.client.platform.model.domain.ArrayShape;
 import amf.shapes.client.platform.model.domain.FileShape;
 import org.json.JSONObject;
 import org.mule.metadata.api.TypeLoader;
+import org.mule.metadata.api.model.AnyType;
 import org.mule.metadata.api.model.MetadataFormat;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.metadata.json.api.JsonExampleTypeLoader;
@@ -45,12 +46,11 @@ class MetadataFactory {
     if (shape instanceof AnyShape) {
       final AnyShape anyShape = (AnyShape) shape;
 
-
-      final TypeLoader typeLoader = !example.isEmpty()
-          ? createJsonExampleTypeLoader(example)
-          : new JsonTypeLoader(APIConfiguration.API().elementClient().buildJsonSchema(anyShape));
-
+      TypeLoader typeLoader = new JsonTypeLoader(APIConfiguration.API().elementClient().buildJsonSchema(anyShape));
       metadataType = typeLoader.load(null);
+      if ((!metadataType.isPresent() || metadataType.get() instanceof AnyType) && !example.isEmpty()) {
+        metadataType = createJsonExampleTypeLoader(example).load(null);
+      }
     }
     return metadataType.orElse(CommonMetadataFactory.defaultMetadata());
   }
