@@ -137,11 +137,10 @@
             </exclusions>
         </dependency>
 
-        <!-- Force to use 1.23 -->
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>1.26</version>
+            <version>1.33</version>
         </dependency>
 
         <!-- APIKit Metadata API -->
