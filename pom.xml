@@ -137,11 +137,10 @@
             </exclusions>
         </dependency>
 
-        <!-- Force to use 1.23 -->
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>1.26</version>
+            <version>1.33</version>
         </dependency>
 
         <!-- APIKit Metadata API -->
@@ -199,6 +198,12 @@
             <artifactId>mule-service-http-api</artifactId>
             <version>${mule.version}</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.11</version>
         </dependency>
 
         <!-- test-runner discover also services declared as test scope therefore weave comes from http service, so we need to include its API in Runtime classpath -->
