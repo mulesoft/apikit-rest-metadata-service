@@ -26,7 +26,7 @@
         <snakeYamlVersion>2.0</snakeYamlVersion>
 
         <!-- Test -->
-        <mule.http.connector.version>1.5.3</mule.http.connector.version>
+        <mule.http.connector.version>1.7.3</mule.http.connector.version>
         <mule.apikit.module.version>2.0.0-SNAPSHOT</mule.apikit.module.version>
         <mule.sockets.connector.version>1.2.1</mule.sockets.connector.version>
 
