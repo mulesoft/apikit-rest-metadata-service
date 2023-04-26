@@ -20,7 +20,7 @@
         <licensePath>LICENSE_HEADER.txt</licensePath>
 
         <apikit.metadata.api.version>3.0.0-SNAPSHOT</apikit.metadata.api.version>
-        <mule.app.plugins.maven.plugin.version>1.3.1</mule.app.plugins.maven.plugin.version>
+        <mule.app.plugins.maven.plugin.version>1.6.0-20230417</mule.app.plugins.maven.plugin.version>
         <parser.service.version>3.0.0-SNAPSHOT</parser.service.version>
         <!-- Overrides snakeyaml version from parent pom. The one from parser service is always ignored -->
         <snakeYamlVersion>2.0</snakeYamlVersion>
