@@ -32,11 +32,11 @@
 
         <mule.dwb.api.version>2.3.0</mule.dwb.api.version>
 
-        <jacoco.version>0.8.5</jacoco.version>
+        <jacoco.version>0.8.10</jacoco.version>
         <allureJunitVersion>2.13.5</allureJunitVersion>
         <allureReportVersion>2.3.4</allureReportVersion>
         <allure.maven.plugin.version>2.10.0</allure.maven.plugin.version>
-
+        <junit-jupiter.version>5.9.0</junit-jupiter.version>
     </properties>
 
     <build>
@@ -231,8 +231,9 @@
 
         <!-- Test Dependencies -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit-jupiter.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
