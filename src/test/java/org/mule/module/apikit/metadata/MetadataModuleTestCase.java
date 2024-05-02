@@ -26,10 +26,13 @@ import org.mule.runtime.ast.api.ArtifactAst;
 
 import java.util.Optional;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-@Ignore("APIKIT-2051")
+/**
+ * This test is ignored because extensionManager needs to be injected properly in Junit5 for this to work
+ */
+@Disabled("APIKIT-2051")
 public class MetadataModuleTestCase {
 
   @Test
