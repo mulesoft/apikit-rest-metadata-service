@@ -21,8 +21,8 @@ import amf.core.client.platform.model.domain.Shape;
 import amf.shapes.client.platform.model.domain.AnyShape;
 import amf.shapes.client.platform.model.domain.Example;
 import amf.shapes.client.platform.model.domain.NodeShape;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mule.amf.impl.AMFParser;
 import org.mule.apikit.model.api.ApiReference;
 import org.mule.metadata.api.model.MetadataType;
@@ -42,7 +42,6 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-@Ignore
 public class AmfTestCase {
 
   @Test
@@ -154,6 +153,7 @@ public class AmfTestCase {
 
   // TODO https://www.mulesoft.org/jira/browse/APIMF-904
   @Test
+  @Disabled("The URI is invalid")
   public void remoteRaml10() throws URISyntaxException {
 
     final URI uri =

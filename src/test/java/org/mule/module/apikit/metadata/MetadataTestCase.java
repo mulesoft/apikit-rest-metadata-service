@@ -6,37 +6,30 @@
  */
 package org.mule.module.apikit.metadata;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.Arguments;
 import org.mule.metadata.api.model.FunctionType;
 import org.mule.runtime.apikit.metadata.api.MetadataBuilder;
 import org.mule.runtime.apikit.metadata.api.MetadataService;
 import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.core.api.extension.ExtensionManager;
-import org.mule.test.runner.RunnerDelegateTo;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.module.apikit.metadata.internal.MetadataBuilderImpl.MULE_APIKIT_PARSER;
 
-@RunnerDelegateTo(Parameterized.class)
 public class MetadataTestCase extends AbstractMetadataTestCase {
-
-  private final String parser;
-  private final File app;
 
   @Inject
   private ExtensionManager extensionManager;
@@ -44,23 +37,13 @@ public class MetadataTestCase extends AbstractMetadataTestCase {
   // SET TO TRUE IF YOU WANT THE TESTS THAT MISS MACH TO GENERATE A NEW FILE
   private final boolean generateFixedFiles = false;
 
-  public MetadataTestCase(final String parser, final File app) {
-    this.parser = parser;
-    this.app = app;
-  }
-
-  @Before
-  public void beforeTest() {
+  // TODO: Add support for injecting extensionManager in JUnit5
+  @ParameterizedTest
+  @MethodSource("getData")
+  @Disabled()
+  public void checkMetadata(String parser, File app) throws Exception {
     System.setProperty(MULE_APIKIT_PARSER, parser);
-  }
 
-  @After
-  public void afterTest() {
-    System.clearProperty(MULE_APIKIT_PARSER);
-  }
-
-  @Test
-  public void checkMetadata() throws Exception {
     if (app.getAbsolutePath().contains("oas") && parser.equals(RAML)) {
       return;
     }
@@ -75,7 +58,7 @@ public class MetadataTestCase extends AbstractMetadataTestCase {
       MetadataBuilder apikitMetadataBuilder = service.getApikitMetadataBuilder();
       final Optional<FunctionType> metadata = getMetadata(apikitMetadataBuilder, applicationModel, flow);
 
-      if (isInvalidFileLocation()) {
+      if (isInvalidFileLocation(app)) {
         assertThat(metadata.isPresent(), is(false));
         return;
       }
@@ -100,6 +83,7 @@ public class MetadataTestCase extends AbstractMetadataTestCase {
         throw error;
       }
     }
+    System.clearProperty(MULE_APIKIT_PARSER);
   }
 
   private String relativePath(File goldenFile) {
@@ -111,24 +95,20 @@ public class MetadataTestCase extends AbstractMetadataTestCase {
     }
   }
 
-  @Parameterized.Parameters(name = "{0} -> {1}")
-  public static Collection<Object[]> getData() throws IOException, URISyntaxException {
-
-    final List<Object[]> parameters = new ArrayList<>();
-
-    scanApps().forEach(app -> {
-      try {
-        parameters.add(new Object[] {RAML, app});
-        parameters.add(new Object[] {AMF, app});
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
-    });
-
-    return parameters;
+  public static Stream<Arguments> getData() throws IOException, URISyntaxException {
+    return scanApps().stream()
+        .flatMap(app -> {
+          try {
+            return Stream.of(
+                             Arguments.of(RAML, app),
+                             Arguments.of(AMF, app));
+          } catch (Exception e) {
+            throw new RuntimeException(e);
+          }
+        });
   }
 
-  private boolean isInvalidFileLocation() {
+  private boolean isInvalidFileLocation(File app) {
     return app.getPath().contains("invalid-raml-file-location");
   }
 }
