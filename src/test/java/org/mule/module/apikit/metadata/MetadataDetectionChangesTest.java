@@ -6,7 +6,7 @@
  */
 package org.mule.module.apikit.metadata;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mule.extension.http.api.HttpRequestAttributes;
 
 import java.lang.reflect.Field;

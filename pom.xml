@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>mule-service-apikit-metadata</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>2.5.0-SNAPSHOT</version>
     <modelVersion>4.0.0</modelVersion>
     <packaging>mule-service</packaging>
 
@@ -19,15 +19,15 @@
     <properties>
         <licensePath>LICENSE_HEADER.txt</licensePath>
 
-        <apikit.metadata.api.version>3.0.0-SNAPSHOT</apikit.metadata.api.version>
+        <apikit.metadata.api.version>2.4.0</apikit.metadata.api.version>
         <mule.app.plugins.maven.plugin.version>1.3.1</mule.app.plugins.maven.plugin.version>
-        <parser.service.version>3.0.0-SNAPSHOT</parser.service.version>
+        <parser.service.version>2.7.5</parser.service.version>
         <!-- Overrides snakeyaml version from parent pom. The one from parser service is always ignored -->
         <snakeYamlVersion>2.0</snakeYamlVersion>
 
         <!-- Test -->
         <mule.http.connector.version>1.5.3</mule.http.connector.version>
-        <mule.apikit.module.version>2.0.0-SNAPSHOT</mule.apikit.module.version>
+        <mule.apikit.module.version>1.10.4</mule.apikit.module.version>
         <mule.sockets.connector.version>1.2.1</mule.sockets.connector.version>
 
         <mule.dwb.api.version>2.3.0</mule.dwb.api.version>
@@ -36,7 +36,7 @@
         <allureJunitVersion>2.13.5</allureJunitVersion>
         <allureReportVersion>2.3.4</allureReportVersion>
         <allure.maven.plugin.version>2.10.0</allure.maven.plugin.version>
-        <junit-jupiter.version>5.9.0</junit-jupiter.version>
+        <junit-jupiter.version>5.9.3</junit-jupiter.version>
         <log4j.version>2.17.1</log4j.version>
     </properties>
 
@@ -207,6 +207,12 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.11</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
         </dependency>
 
         <!-- test-runner discover also services declared as test scope therefore weave comes from http service, so we need to include its API in Runtime classpath -->

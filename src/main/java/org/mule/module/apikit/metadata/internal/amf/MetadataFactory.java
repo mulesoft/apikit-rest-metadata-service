@@ -12,7 +12,9 @@ import amf.core.client.platform.model.domain.Shape;
 import amf.shapes.client.platform.model.domain.AnyShape;
 import amf.shapes.client.platform.model.domain.ArrayShape;
 import amf.shapes.client.platform.model.domain.FileShape;
-import org.json.JSONObject;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.mule.metadata.api.TypeLoader;
 import org.mule.metadata.api.model.AnyType;
 import org.mule.metadata.api.model.MetadataFormat;
@@ -87,13 +89,15 @@ class MetadataFactory {
    * @return
    */
   private static Optional<String> getXSDSchemaFromShape(AnyShape anyShape) {
-    JSONObject jsonSchema =
-        new JSONObject(APIConfiguration.API().elementClient().buildJsonSchema(anyShape));
-    String[] reference = jsonSchema.get("$ref").toString().split("/");
-    JSONObject jsonSchemaDefinition = jsonSchema.getJSONObject("definitions").getJSONObject(reference[reference.length - 1]);
+    JsonElement jsonElement = JsonParser.parseString(APIConfiguration.API().elementClient().buildJsonSchema(anyShape));
+    JsonObject jsonSchema = jsonElement.getAsJsonObject();
+    String[] reference = jsonSchema.get("$ref").getAsString().split("/");
+    JsonObject jsonSchemaDefinition = jsonSchema.getAsJsonObject("definitions")
+        .getAsJsonObject(reference[reference.length - 1]);
     Set<String> keys = jsonSchemaDefinition.keySet();
     if (keys.contains(AMF_XSD_SCHEMA_KEY)) {
-      return Optional.of(jsonSchemaDefinition.getString(AMF_XSD_SCHEMA_KEY));
+
+      return Optional.of(jsonSchemaDefinition.get(AMF_XSD_SCHEMA_KEY).getAsString());
     }
     return Optional.empty();
   }
