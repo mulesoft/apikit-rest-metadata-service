@@ -33,7 +33,7 @@
         <mule.dwb.api.version>2.3.0</mule.dwb.api.version>
 
         <jacoco.version>0.8.10</jacoco.version>
-        <allureJunitVersion>2.13.5</allureJunitVersion>
+        <allureJunitVersion>2.29.1</allureJunitVersion>
         <allureReportVersion>2.3.4</allureReportVersion>
         <allure.maven.plugin.version>2.10.0</allure.maven.plugin.version>
         <junit-jupiter.version>5.9.3</junit-jupiter.version>
