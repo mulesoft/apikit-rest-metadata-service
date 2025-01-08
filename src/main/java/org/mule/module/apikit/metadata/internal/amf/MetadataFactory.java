@@ -50,7 +50,7 @@ class MetadataFactory {
 
       TypeLoader typeLoader = new JsonTypeLoader(APIConfiguration.API().elementClient().buildJsonSchema(anyShape));
       metadataType = typeLoader.load(null);
-      if ((!metadataType.isPresent() || metadataType.get() instanceof AnyType) && example != null && !example.isEmpty()) {
+      if ((!metadataType.isPresent() || metadataType.get() instanceof AnyType) && !example.isEmpty()) {
         metadataType = createJsonExampleTypeLoader(example).load(null);
       }
     }
