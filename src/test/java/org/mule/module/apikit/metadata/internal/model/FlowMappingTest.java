@@ -11,59 +11,59 @@ import static org.junit.Assert.*;
 
 public class FlowMappingTest {
 
-    @Test
-    public void testFlowMappingConstructorAndGetters() {
-        String configName = "testConfig";
-        String resource = "/api/users";
-        String action = "GET";
-        String contentType = "application/json";
-        String flowRef = "getUsers";
+  @Test
+  public void testFlowMappingConstructorAndGetters() {
+    String configName = "testConfig";
+    String resource = "/api/users";
+    String action = "GET";
+    String contentType = "application/json";
+    String flowRef = "getUsers";
 
-        FlowMapping flowMapping = new FlowMapping(configName, resource, action, contentType, flowRef);
+    FlowMapping flowMapping = new FlowMapping(configName, resource, action, contentType, flowRef);
 
-        assertEquals(configName, flowMapping.getConfigName());
-        assertEquals(resource, flowMapping.getResource());
-        assertEquals(action, flowMapping.getAction());
-        assertEquals(contentType, flowMapping.getContentType());
-        assertEquals(flowRef, flowMapping.getFlowRef());
-    }
+    assertEquals(configName, flowMapping.getConfigName());
+    assertEquals(resource, flowMapping.getResource());
+    assertEquals(action, flowMapping.getAction());
+    assertEquals(contentType, flowMapping.getContentType());
+    assertEquals(flowRef, flowMapping.getFlowRef());
+  }
 
-    @Test
-    public void testFlowMappingWithNullValues() {
-        FlowMapping flowMapping = new FlowMapping(null, null, null, null, null);
+  @Test
+  public void testFlowMappingWithNullValues() {
+    FlowMapping flowMapping = new FlowMapping(null, null, null, null, null);
 
-        assertNull(flowMapping.getConfigName());
-        assertNull(flowMapping.getResource());
-        assertNull(flowMapping.getAction());
-        assertNull(flowMapping.getContentType());
-        assertNull(flowMapping.getFlowRef());
-    }
+    assertNull(flowMapping.getConfigName());
+    assertNull(flowMapping.getResource());
+    assertNull(flowMapping.getAction());
+    assertNull(flowMapping.getContentType());
+    assertNull(flowMapping.getFlowRef());
+  }
 
-    @Test
-    public void testFlowMappingWithEmptyStrings() {
-        FlowMapping flowMapping = new FlowMapping("", "", "", "", "");
+  @Test
+  public void testFlowMappingWithEmptyStrings() {
+    FlowMapping flowMapping = new FlowMapping("", "", "", "", "");
 
-        assertEquals("", flowMapping.getConfigName());
-        assertEquals("", flowMapping.getResource());
-        assertEquals("", flowMapping.getAction());
-        assertEquals("", flowMapping.getContentType());
-        assertEquals("", flowMapping.getFlowRef());
-    }
+    assertEquals("", flowMapping.getConfigName());
+    assertEquals("", flowMapping.getResource());
+    assertEquals("", flowMapping.getAction());
+    assertEquals("", flowMapping.getContentType());
+    assertEquals("", flowMapping.getFlowRef());
+  }
 
-    @Test
-    public void testFlowMappingWithSpecialCharacters() {
-        String configName = "config#1";
-        String resource = "/api/users/{id}";
-        String action = "POST";
-        String contentType = "application/xml; charset=UTF-8";
-        String flowRef = "create_user_flow";
+  @Test
+  public void testFlowMappingWithSpecialCharacters() {
+    String configName = "config#1";
+    String resource = "/api/users/{id}";
+    String action = "POST";
+    String contentType = "application/xml; charset=UTF-8";
+    String flowRef = "create_user_flow";
 
-        FlowMapping flowMapping = new FlowMapping(configName, resource, action, contentType, flowRef);
+    FlowMapping flowMapping = new FlowMapping(configName, resource, action, contentType, flowRef);
 
-        assertEquals(configName, flowMapping.getConfigName());
-        assertEquals(resource, flowMapping.getResource());
-        assertEquals(action, flowMapping.getAction());
-        assertEquals(contentType, flowMapping.getContentType());
-        assertEquals(flowRef, flowMapping.getFlowRef());
-    }
+    assertEquals(configName, flowMapping.getConfigName());
+    assertEquals(resource, flowMapping.getResource());
+    assertEquals(action, flowMapping.getAction());
+    assertEquals(contentType, flowMapping.getContentType());
+    assertEquals(flowRef, flowMapping.getFlowRef());
+  }
 }
