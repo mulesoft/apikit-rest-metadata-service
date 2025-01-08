@@ -18,12 +18,9 @@ import static java.util.Arrays.asList;
 import org.junit.jupiter.api.Test;
 import org.mule.module.apikit.metadata.internal.model.FlowMapping;
 
-import javax.annotation.Nullable;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class ApiCoordinateFactoryTest {
 
@@ -116,7 +113,6 @@ public class ApiCoordinateFactoryTest {
     assertEquals("/users", coordinate.getResource());
     assertEquals("application/json", coordinate.getMediaType());
     assertEquals(flowName, coordinate.getFlowName());
-
 }
 
   private HashSet<String> set(String... configs) {
