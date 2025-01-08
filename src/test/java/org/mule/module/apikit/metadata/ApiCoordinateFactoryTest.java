@@ -106,14 +106,14 @@ public class ApiCoordinateFactoryTest {
     String flowName = "config1:GET:/users";
 
     // Test creation from FlowMapping
-    FlowMapping flowMapping = new FlowMapping("config1","/users","GET", "application/json", flowName);
+    FlowMapping flowMapping = new FlowMapping("config1", "/users", "GET", "application/json", flowName);
     ApiCoordinate coordinate = apiCoordinateFactory.createFromFlowMapping(flowMapping);
     assertEquals("config1", coordinate.getConfigName());
     assertEquals("GET", coordinate.getMethod());
     assertEquals("/users", coordinate.getResource());
     assertEquals("application/json", coordinate.getMediaType());
     assertEquals(flowName, coordinate.getFlowName());
-}
+  }
 
   private HashSet<String> set(String... configs) {
     return new HashSet<>(asList(configs));
