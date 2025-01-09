@@ -62,7 +62,7 @@ class CommonMetadataFactoryTest {
 
   @Test
   void testFromXMLExampleWithValidXML() {
-   // assertNotNull(CommonMetadataFactory.fromXMLExample("<child>value</child>"));
+    // assertNotNull(CommonMetadataFactory.fromXMLExample("<child>value</child>"));
   }
 
   @Test
