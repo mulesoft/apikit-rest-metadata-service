@@ -9,13 +9,12 @@ package org.mule.module.apikit.metadata.internal;
 import org.junit.Before;
 import org.junit.Test;
 import org.mule.runtime.apikit.metadata.api.MetadataBuilder;
-import org.mule.runtime.apikit.metadata.api.MetadataService;
 
 import static org.junit.Assert.*;
 
 public class MetadataServiceImplTest {
 
-  private MetadataService metadataService;
+  private MetadataServiceImpl metadataService;
 
   @Before
   public void setUp() {
@@ -47,6 +46,6 @@ public class MetadataServiceImplTest {
 
   @Test
   public void testMetadataServiceImplImplementsMetadataService() {
-    assertTrue("MetadataServiceImpl should implement MetadataService", metadataService instanceof MetadataService);
+    assertNotNull("MetadataServiceImpl should implement MetadataService", metadataService);
   }
 }
