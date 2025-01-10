@@ -15,20 +15,13 @@ import amf.apicontract.client.platform.AMFConfiguration;
 import amf.apicontract.client.platform.AMFElementClient;
 import amf.core.client.platform.model.domain.Shape;
 import org.junit.Test;
-import org.mule.metadata.api.TypeLoader;
 import org.mule.metadata.api.model.*;
 import amf.shapes.client.platform.model.domain.*;
 import amf.apicontract.client.platform.APIConfiguration;
-import com.google.gson.JsonObject;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.lang.reflect.Field;
-import java.util.Optional;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({APIConfiguration.class})
@@ -36,20 +29,19 @@ public class MetadataFactoryTest {
 
   @Test
   public void testFromJSONSchema_withAnyShapeAndExample() {
-    // Arrange
+
     AnyShape anyShape = mock(AnyShape.class);
     String example = "{\"key\": \"value\"}";
-    // Mock the APIConfiguration and TypeLoader behavior
+
     AMFConfiguration apiConfigurationMock = mock(AMFConfiguration.class);
     AMFElementClient elementClientMock = mock(AMFElementClient.class);
     PowerMockito.mockStatic(APIConfiguration.class);
     when(APIConfiguration.API()).thenReturn(apiConfigurationMock);
     when(apiConfigurationMock.elementClient()).thenReturn(elementClientMock);
     when(elementClientMock.buildJsonSchema(anyShape)).thenReturn("{\"type\": \"object\"}");
-    // Act
+
     MetadataType result = MetadataFactory.fromJSONSchema(anyShape, example);
-    // Assert
-    // assertEquals(expectedMetadataType, result);
+
     assertNotNull(result);
     assertTrue(result instanceof ObjectType);
   }
@@ -60,49 +52,6 @@ public class MetadataFactoryTest {
     MetadataType result = MetadataFactory.fromJSONSchema(emptyShape, "");
     assertTrue(result instanceof AnyType);
   }
-
-  //
-  //
-  // @Test
-  // public void testFromXSDSchemaWithValidSchema() {
-  // AnyShape mockShape = mock(AnyShape.class);
-  // String xsdSchema = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-  // + "<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n"
-  // + " <xs:element name=\"test\" type=\"xs:string\"/>\n"
-  // + "</xs:schema>";
-  // JsonObject mockJsonObject = new JsonObject();
-  // mockJsonObject.addProperty("$ref", "#/definitions/Test");
-  // JsonObject definitions = new JsonObject();
-  // JsonObject testDefinition = new JsonObject();
-  // testDefinition.addProperty("x-amf-schema", xsdSchema);
-  // definitions.add("Test", testDefinition);
-  // mockJsonObject.add("definitions", definitions);
-  //
-  //
-  //
-  // AMFConfiguration apiConfigurationMock = mock(AMFConfiguration.class);
-  // AMFElementClient elementClientMock = mock(AMFElementClient.class);
-  // PowerMockito.mockStatic(APIConfiguration.class);
-  // when(APIConfiguration.API()).thenReturn(apiConfigurationMock);
-  // when(apiConfigurationMock.elementClient()).thenReturn(elementClientMock);
-  // when(elementClientMock.buildJsonSchema(mockShape)).thenReturn(mockJsonObject.toString());
-  //
-  // MetadataType result = MetadataFactory.fromXSDSchema(mockShape, "");
-  //
-  // assertTrue(result instanceof StringType);
-  // }
-  //
-  // @Test
-  // public void testFromXSDSchemaWithExample() {
-  // Shape mockShape = mock(Shape.class);
-  // String example = "<element>value</element>";
-  //
-  // MetadataType result = MetadataFactory.fromXSDSchema(mockShape, example);
-  //
-  // assertTrue(result instanceof ObjectType);
-  // ObjectType objectType = (ObjectType) result;
-  // assertEquals(1, objectType.getFields().size());
-  // }
 
   @Test
   public void testDefaultMetadataWithFileShape() {
