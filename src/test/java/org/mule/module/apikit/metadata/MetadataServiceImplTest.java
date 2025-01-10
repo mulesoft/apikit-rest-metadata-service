@@ -4,10 +4,12 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.module.apikit.metadata.internal;
+package org.mule.module.apikit.metadata;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mule.module.apikit.metadata.internal.MetadataBuilderImpl;
+import org.mule.module.apikit.metadata.internal.MetadataServiceImpl;
 import org.mule.runtime.apikit.metadata.api.MetadataBuilder;
 import org.mule.runtime.apikit.metadata.api.MetadataService;
 
