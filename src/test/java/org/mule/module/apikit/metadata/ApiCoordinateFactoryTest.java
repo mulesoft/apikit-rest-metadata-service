@@ -9,11 +9,15 @@ package org.mule.module.apikit.metadata;
 import java.util.Optional;
 
 import java.util.HashSet;
+import java.util.Set;
+
 import org.mule.module.apikit.metadata.internal.model.ApiCoordinate;
 import org.mule.module.apikit.metadata.internal.model.ApiCoordinateFactory;
 
 import static java.util.Arrays.asList;
 import org.junit.jupiter.api.Test;
+import org.mule.module.apikit.metadata.internal.model.FlowMapping;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -88,6 +92,27 @@ public class ApiCoordinateFactoryTest {
 
     coord = factory.fromFlowName("get:\\persons:application\\json:unknownConfig");
     assertTrue(!coord.isPresent());
+  }
+
+
+  @Test
+  public void testApiCoordinateFactory() {
+    Set<String> configNames = new HashSet<>();
+    configNames.add("config1");
+    configNames.add("config2");
+    ApiCoordinateFactory apiCoordinateFactory = new ApiCoordinateFactory(configNames);
+
+    // Test valid API coordinate creation
+    String flowName = "config1:GET:/users";
+
+    // Test creation from FlowMapping
+    FlowMapping flowMapping = new FlowMapping("config1", "/users", "GET", "application/json", flowName);
+    ApiCoordinate coordinate = apiCoordinateFactory.createFromFlowMapping(flowMapping);
+    assertEquals("config1", coordinate.getConfigName());
+    assertEquals("GET", coordinate.getMethod());
+    assertEquals("/users", coordinate.getResource());
+    assertEquals("application/json", coordinate.getMediaType());
+    assertEquals(flowName, coordinate.getFlowName());
   }
 
   private HashSet<String> set(String... configs) {
