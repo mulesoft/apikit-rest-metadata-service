@@ -6,7 +6,6 @@
  */
 package org.mule.module.apikit.metadata.internal.amf;
 
-
 import amf.apicontract.client.platform.APIConfiguration;
 import amf.core.client.platform.model.domain.Shape;
 import amf.shapes.client.platform.model.domain.AnyShape;
