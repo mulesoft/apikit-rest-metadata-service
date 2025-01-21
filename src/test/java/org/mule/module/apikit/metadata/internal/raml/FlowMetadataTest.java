@@ -7,8 +7,8 @@
 
 package org.mule.module.apikit.metadata.internal.raml;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mule.apikit.model.Action;
@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class FlowMetadataTest {
@@ -39,7 +39,7 @@ public class FlowMetadataTest {
 
   private FlowMetadata flowMetadata;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     MockitoAnnotations.initMocks(this);
     Map<String, Parameter> baseUriParameters = new HashMap<>();

@@ -6,8 +6,8 @@
  */
 package org.mule.module.apikit.metadata;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mule.module.apikit.metadata.internal.MetadataBuilderImpl;
@@ -17,8 +17,7 @@ import org.mule.runtime.apikit.metadata.api.ResourceLoader;
 import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.module.apikit.metadata.internal.model.MetadataModel;
 
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MetadataBuilderImplTest {
 
@@ -33,7 +32,7 @@ public class MetadataBuilderImplTest {
   @Mock
   private Notifier mockNotifier;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     MockitoAnnotations.initMocks(this);
     metadataBuilder = new MetadataBuilderImpl();
