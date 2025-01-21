@@ -21,7 +21,8 @@ public class MetadataServiceProviderTest {
     ServiceDefinition serviceDefinition = provider.getServiceDefinition();
 
     assertNotNull("Service definition should not be null", serviceDefinition.toString());
-    assertInstanceOf(MetadataServiceImpl.class, serviceDefinition.getService(), "Service instance should be of type MetadataServiceImpl");
+    assertInstanceOf(MetadataServiceImpl.class, serviceDefinition.getService(),
+                     "Service instance should be of type MetadataServiceImpl");
   }
 
   @Test
@@ -33,7 +34,7 @@ public class MetadataServiceProviderTest {
     assertNotNull("First service definition should not be null", definition1.toString());
     assertNotNull("Second service definition should not be null", definition2.toString());
     assertEquals(definition1.getService().getClass(),
-            definition2.getService().getClass(), "Service instances should be of the same type across calls");
+                 definition2.getService().getClass(), "Service instances should be of the same type across calls");
   }
 
   @Test
@@ -43,6 +44,6 @@ public class MetadataServiceProviderTest {
     ServiceDefinition definition2 = provider.getServiceDefinition();
 
     assertNotSame(definition1.getService(),
-            definition2.getService(), "Service instances should be unique for each call");
+                  definition2.getService(), "Service instances should be unique for each call");
   }
 }

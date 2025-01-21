@@ -35,7 +35,7 @@ public class MetadataServiceImplTest {
   public void testGetName() {
     String name = metadataService.getName();
     assertNotNull("Name should not be null", name);
-    assertEquals("Name should match expected value", "Apikit metadata service", name);
+    assertEquals("Apikit metadata service", name, "Name should match expected value");
   }
 
   @Test
@@ -49,6 +49,6 @@ public class MetadataServiceImplTest {
 
   @Test
   public void testMetadataServiceImplImplementsMetadataService() {
-      assertInstanceOf(MetadataService.class, metadataService, "MetadataServiceImpl should implement MetadataService");
+    assertInstanceOf(MetadataService.class, metadataService, "MetadataServiceImpl should implement MetadataService");
   }
 }
