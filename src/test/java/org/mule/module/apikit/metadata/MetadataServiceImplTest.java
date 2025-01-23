@@ -25,21 +25,21 @@ public class MetadataServiceImplTest {
   }
 
   @Test
-  public void testGetApikitMetadataBuilder() {
+  void testGetApikitMetadataBuilder() {
     MetadataBuilder builder = metadataService.getApikitMetadataBuilder();
     assertNotNull("MetadataBuilder should not be null", builder.toString());
     assertInstanceOf(MetadataBuilderImpl.class, builder, "MetadataBuilder should be an instance of MetadataBuilderImpl");
   }
 
   @Test
-  public void testGetName() {
+  void testGetName() {
     String name = metadataService.getName();
     assertNotNull("Name should not be null", name);
     assertEquals("Apikit metadata service", name, "Name should match expected value");
   }
 
   @Test
-  public void testMultipleCallsToGetApikitMetadataBuilder() {
+  void testMultipleCallsToGetApikitMetadataBuilder() {
     MetadataBuilder builder1 = metadataService.getApikitMetadataBuilder();
     MetadataBuilder builder2 = metadataService.getApikitMetadataBuilder();
     assertNotNull("First MetadataBuilder should not be null", builder1.toString());
@@ -48,7 +48,7 @@ public class MetadataServiceImplTest {
   }
 
   @Test
-  public void testMetadataServiceImplImplementsMetadataService() {
+  void testMetadataServiceImplImplementsMetadataService() {
     assertInstanceOf(MetadataService.class, metadataService, "MetadataServiceImpl should implement MetadataService");
   }
 }

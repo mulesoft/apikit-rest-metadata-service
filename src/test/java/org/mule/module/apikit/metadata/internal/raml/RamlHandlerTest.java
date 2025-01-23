@@ -44,7 +44,7 @@ public class RamlHandlerTest {
   private RamlHandler ramlHandler;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     MockitoAnnotations.initMocks(this);
     ramlHandler = new RamlHandler(resourceLoader, notifier);
     // Use reflection to set the mocked ParserService
@@ -58,7 +58,7 @@ public class RamlHandlerTest {
   }
 
   @Test
-  public void testGetMetadataResolverWithValidApiDefinition() {
+  void testGetMetadataResolverWithValidApiDefinition() {
     String validApiDefinition = "valid-api.raml";
     when(parserService.parse(any())).thenReturn(parseResult);
     when(parseResult.success()).thenReturn(true);
@@ -71,7 +71,7 @@ public class RamlHandlerTest {
   }
 
   @Test
-  public void testGetMetadataResolverWithEmptyApiDefinition() {
+  void testGetMetadataResolverWithEmptyApiDefinition() {
     String emptyApiDefinition = "";
 
     Optional<MetadataResolver> result = ramlHandler.getMetadataResolver(emptyApiDefinition);
@@ -81,7 +81,7 @@ public class RamlHandlerTest {
   }
 
   @Test
-  public void testGetApiWithValidUri() {
+  void testGetApiWithValidUri() {
     String validUri = "valid-api.raml";
     when(parserService.parse(any())).thenReturn(parseResult);
     when(parseResult.success()).thenReturn(true);
@@ -94,7 +94,7 @@ public class RamlHandlerTest {
   }
 
   @Test
-  public void testGetApiWithEmptyUri() {
+  void testGetApiWithEmptyUri() {
     String emptyUri = "";
 
     Optional<ApiSpecification> result = ramlHandler.getApi(emptyUri);
@@ -104,7 +104,7 @@ public class RamlHandlerTest {
   }
 
   @Test
-  public void testGetApiWithExceptionThrown() {
+  void testGetApiWithExceptionThrown() {
     String exceptionUri = "exception-api.raml";
     when(parserService.parse(any())).thenThrow(new RuntimeException("Test exception"));
 

@@ -27,42 +27,22 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @PrepareForTest({APIConfiguration.class})
 public class MetadataFactoryTest {
 
-  // TODO fix this test
-  // @Test
-  // public void testFromJSONSchema_withAnyShapeAndExample() {
-  //
-  // AnyShape anyShape = mock(AnyShape.class);
-  // String example = "{\"key\": \"value\"}";
-  //
-  // AMFConfiguration apiConfigurationMock = mock(AMFConfiguration.class);
-  // AMFElementClient elementClientMock = mock(AMFElementClient.class);
-  // PowerMockito.mockStatic(APIConfiguration.class);
-  // when(APIConfiguration.API()).thenReturn(apiConfigurationMock);
-  // when(apiConfigurationMock.elementClient()).thenReturn(elementClientMock);
-  // when(elementClientMock.buildJsonSchema(anyShape)).thenReturn("{\"type\": \"object\"}");
-  //
-  // MetadataType result = MetadataFactory.fromJSONSchema(anyShape, example);
-  //
-  // assertNotNull(result);
-  // assertTrue(result instanceof ObjectType);
-  // }
-
   @Test
-  public void testFromJSONSchemaWithEmptyShape() {
+  void testFromJSONSchemaWithEmptyShape() {
     Shape emptyShape = mock(Shape.class);
     MetadataType result = MetadataFactory.fromJSONSchema(emptyShape, "");
     assertTrue(result instanceof AnyType);
   }
 
   @Test
-  public void testDefaultMetadataWithFileShape() {
+  void testDefaultMetadataWithFileShape() {
     FileShape fileShape = mock(FileShape.class);
     MetadataType result = MetadataFactory.defaultMetadata(fileShape);
     assertTrue(result instanceof StringType);
   }
 
   @Test
-  public void testDefaultMetadataWithArrayShape() {
+  void testDefaultMetadataWithArrayShape() {
     ArrayShape arrayShape = mock(ArrayShape.class);
     MetadataType result = MetadataFactory.defaultMetadata(arrayShape);
     assertTrue(result instanceof ArrayType);
@@ -71,13 +51,13 @@ public class MetadataFactoryTest {
   }
 
   @Test
-  public void testStringMetadata() {
+  void testStringMetadata() {
     MetadataType result = MetadataFactory.stringMetadata();
     assertTrue(result instanceof StringType);
   }
 
   @Test
-  public void testArrayStringMetadata() {
+  void testArrayStringMetadata() {
     MetadataType result = MetadataFactory.arrayStringMetadata();
     assertTrue(result instanceof ArrayType);
     ArrayType arrayType = (ArrayType) result;
@@ -85,37 +65,37 @@ public class MetadataFactoryTest {
   }
 
   @Test
-  public void testBooleanMetadata() {
+  void testBooleanMetadata() {
     MetadataType result = MetadataFactory.booleanMetadada();
     assertTrue(result instanceof BooleanType);
   }
 
   @Test
-  public void testNumberMetadata() {
+  void testNumberMetadata() {
     MetadataType result = MetadataFactory.numberMetadata();
     assertTrue(result instanceof NumberType);
   }
 
   @Test
-  public void testIntegerMetadata() {
+  void testIntegerMetadata() {
     MetadataType result = MetadataFactory.integerMetadata();
     assertTrue(result instanceof NumberType);
   }
 
   @Test
-  public void testDateTimeMetadata() {
+  void testDateTimeMetadata() {
     MetadataType result = MetadataFactory.dateTimeMetadata();
     assertTrue(result instanceof DateTimeType);
   }
 
   @Test
-  public void testObjectMetadata() {
+  void testObjectMetadata() {
     MetadataType result = MetadataFactory.objectMetadata();
     assertTrue(result instanceof ObjectType);
   }
 
   @Test
-  public void testBinaryMetadata() {
+  void testBinaryMetadata() {
     MetadataType result = MetadataFactory.binaryMetadata();
     assertTrue(result instanceof BinaryType);
   }
