@@ -12,20 +12,20 @@ import amf.apicontract.client.platform.model.domain.Parameter;
 import amf.apicontract.client.platform.model.domain.Server;
 import amf.apicontract.client.platform.model.domain.api.WebApi;
 import amf.core.client.platform.model.StrField;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mule.module.apikit.metadata.internal.model.ApiCoordinate;
 import org.mule.runtime.apikit.metadata.api.MetadataSource;
 import org.mule.runtime.apikit.metadata.api.Notifier;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.mockito.Mockito.when;
 
 public class AmfWrapperTest {
 
@@ -61,7 +61,7 @@ public class AmfWrapperTest {
 
   private AmfWrapper amfWrapper;
 
-  @Before
+  @BeforeEach
   public void setup() {
     MockitoAnnotations.initMocks(this);
     when(webApi.endPoints()).thenReturn(Collections.singletonList(endPoint));

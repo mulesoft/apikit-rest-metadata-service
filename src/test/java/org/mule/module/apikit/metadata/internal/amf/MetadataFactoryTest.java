@@ -6,22 +6,26 @@
  */
 package org.mule.module.apikit.metadata.internal.amf;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-
-import amf.apicontract.client.platform.AMFConfiguration;
-import amf.apicontract.client.platform.AMFElementClient;
+import amf.apicontract.client.platform.APIConfiguration;
 import amf.core.client.platform.model.domain.Shape;
+import amf.shapes.client.platform.model.domain.ArrayShape;
+import amf.shapes.client.platform.model.domain.FileShape;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.mule.metadata.api.model.*;
-import amf.shapes.client.platform.model.domain.*;
-import amf.apicontract.client.platform.APIConfiguration;
-import org.powermock.api.mockito.PowerMockito;
+import org.mule.metadata.api.model.AnyType;
+import org.mule.metadata.api.model.ArrayType;
+import org.mule.metadata.api.model.BinaryType;
+import org.mule.metadata.api.model.BooleanType;
+import org.mule.metadata.api.model.DateTimeType;
+import org.mule.metadata.api.model.MetadataType;
+import org.mule.metadata.api.model.NumberType;
+import org.mule.metadata.api.model.ObjectType;
+import org.mule.metadata.api.model.StringType;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({APIConfiguration.class})
