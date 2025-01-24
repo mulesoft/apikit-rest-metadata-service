@@ -15,7 +15,7 @@ import org.mule.runtime.apikit.metadata.api.MetadataService;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class MetadataServiceImplTest {
+class MetadataServiceImplTest {
 
   private MetadataService metadataService;
 

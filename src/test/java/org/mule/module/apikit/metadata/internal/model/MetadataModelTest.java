@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.when;
 
-public class MetadataModelTest {
+class MetadataModelTest {
 
   @Mock
   private ArtifactAst artifactAst;
@@ -56,28 +56,28 @@ public class MetadataModelTest {
   }
 
   @Test
-  public void testGetMetadataForFlow_NoCoordinate() {
+  void testGetMetadataForFlow_NoCoordinate() {
     when(applicationModelWrapper.getApiCoordinate(anyString())).thenReturn(Optional.empty());
     Optional<FunctionType> result = metadataModel.getMetadataForFlow("flowName");
     assertFalse(result.isPresent());
   }
 
   @Test
-  public void testGetMetadataForFlow_NoConfig() {
+  void testGetMetadataForFlow_NoConfig() {
     when(applicationModelWrapper.getConfig(anyString())).thenReturn(Optional.empty());
     Optional<FunctionType> result = metadataModel.getMetadataForFlow("flowName");
     assertFalse(result.isPresent());
   }
 
   @Test
-  public void testGetMetadataForFlow_NoMetadataResolver() {
+  void testGetMetadataForFlow_NoMetadataResolver() {
     when(apikitConfig.getMetadataResolver()).thenReturn(Optional.empty());
     Optional<FunctionType> result = metadataModel.getMetadataForFlow("flowName");
     assertFalse(result.isPresent());
   }
 
   @Test
-  public void testGetMetadataForFlow_NoMetadataSource() {
+  void testGetMetadataForFlow_NoMetadataSource() {
     when(metadataSource.getMetadata()).thenReturn(Optional.empty());
     Optional<FunctionType> result = metadataModel.getMetadataForFlow("flowName");
     assertFalse(result.isPresent());

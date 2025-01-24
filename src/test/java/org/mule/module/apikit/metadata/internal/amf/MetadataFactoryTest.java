@@ -29,7 +29,7 @@ import static org.mockito.Mockito.mock;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({APIConfiguration.class})
-public class MetadataFactoryTest {
+class MetadataFactoryTest {
 
   @Test
   void testFromJSONSchemaWithEmptyShape() {

@@ -27,7 +27,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.when;
 
-public class AmfWrapperTest {
+class AmfWrapperTest {
 
   @Mock
   private WebApi webApi;
@@ -77,25 +77,25 @@ public class AmfWrapperTest {
   }
 
   @Test
-  public void testResolveVersion() {
+  void testResolveVersion() {
     String result = amfWrapper.resolveVersion("/api/{version}/resource", "v1");
     assertEquals("/api/v1/resource", result);
   }
 
   @Test
-  public void testResolveVersionWithoutVersionPlaceholder() {
+  void testResolveVersionWithoutVersionPlaceholder() {
     String result = amfWrapper.resolveVersion("/api/resource", "v1");
     assertEquals("/api/resource", result);
   }
 
   @Test
-  public void testResolveVersionWithEmptyVersion() {
+  void testResolveVersionWithEmptyVersion() {
     String result = amfWrapper.resolveVersion("/api/{version}/resource", "");
     assertEquals("/api/{version}/resource", result);
   }
 
   @Test
-  public void testGetMetadataSourceNotFound() {
+  void testGetMetadataSourceNotFound() {
     ApiCoordinate coordinate =
         new ApiCoordinate("config1", "/non-existent", "POST", "application/json", "config1:POST:/non-existent");
     Optional<MetadataSource> result = amfWrapper.getMetadataSource(coordinate, "httpStatus", "outboundHeaders");
@@ -104,7 +104,7 @@ public class AmfWrapperTest {
   }
 
   @Test
-  public void testGetMetadataSourceOperationNotFound() {
+  void testGetMetadataSourceOperationNotFound() {
     when(endPoint.operations()).thenReturn(Collections.singletonList(operation));
     when(operation.method()).thenReturn(operationMethod);
     when(operationMethod.value()).thenReturn("POST");
@@ -117,7 +117,7 @@ public class AmfWrapperTest {
   }
 
   @Test
-  public void testBaseUriParametersWithEmptyServers() {
+  void testBaseUriParametersWithEmptyServers() {
     when(webApi.servers()).thenReturn(Collections.emptyList());
     AmfWrapper emptyServerAmfWrapper = new AmfWrapper(webApi, notifier);
 
