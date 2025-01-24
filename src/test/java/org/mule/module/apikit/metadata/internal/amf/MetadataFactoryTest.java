@@ -24,6 +24,8 @@ import org.mule.metadata.api.model.StringType;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.util.Optional;
+
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -42,6 +44,20 @@ class MetadataFactoryTest {
   void testDefaultMetadataWithFileShape() {
     FileShape fileShape = mock(FileShape.class);
     MetadataType result = MetadataFactory.defaultMetadata(fileShape);
+    assertTrue(result instanceof StringType);
+  }
+
+  @Test
+  void testFromJSONSchemawithFileShape() {
+    FileShape fileShape = new FileShape();
+    MetadataType result = MetadataFactory.fromXSDSchema(fileShape, "example");
+    assertTrue(result instanceof StringType);
+  }
+
+  @Test
+  void testFromXSDSchemawithFileShape() {
+    FileShape fileShape = new FileShape();
+    MetadataType result = MetadataFactory.fromJSONSchema(fileShape, "example");
     assertTrue(result instanceof StringType);
   }
 
