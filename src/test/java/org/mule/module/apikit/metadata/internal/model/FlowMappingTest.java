@@ -66,4 +66,10 @@ public class FlowMappingTest {
     assertEquals(contentType, flowMapping.getContentType());
     assertEquals(flowRef, flowMapping.getFlowRef());
   }
+
+  @Test
+  public void testFlowtoString() {
+    Flow flow = new Flow("flowName");
+    assertEquals("flowName", flow.toString());
+  }
 }

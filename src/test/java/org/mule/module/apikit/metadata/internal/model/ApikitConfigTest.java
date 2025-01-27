@@ -14,6 +14,8 @@ import org.mockito.Mock;
 import org.mule.module.apikit.metadata.internal.amf.AmfHandler;
 import org.mule.module.apikit.metadata.internal.amf.AutoHandler;
 import org.mule.module.apikit.metadata.internal.raml.RamlHandler;
+import org.mule.module.apikit.metadata.utils.TestNotifier;
+import org.mule.module.apikit.metadata.utils.TestResourceLoader;
 import org.mule.parser.service.ParserMode;
 import org.mule.runtime.apikit.metadata.api.Notifier;
 import org.mule.runtime.apikit.metadata.api.ResourceLoader;
@@ -22,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class ApikitConfigTest {
@@ -39,15 +42,28 @@ class ApikitConfigTest {
 
   @BeforeEach
   void setUp() {
+    notifier = new TestNotifier();
+    resourceLoader = new TestResourceLoader();
     List<FlowMapping> flowMappings =
         Arrays.asList(new FlowMapping("testConfig", "/api/users", "GET", "application/json", "getUsers"));
     apikitConfig = new ApikitConfig("testConfig", "api.raml", flowMappings,
-                                    "httpStatus", "outHeaders", "AUTO", resourceLoader, notifier);
+                                    "httpStatus", "outHeaders", "RAML", resourceLoader, notifier);
   }
 
   @Test
   void testGetName() {
     assertEquals("testConfig", apikitConfig.getName());
+  }
+
+  @Test
+  void testGetMetadataResolver() {
+    assertFalse(apikitConfig.getMetadataResolver().isPresent());
+  }
+
+  @Test
+  void testGetFlowMappings() {
+    assertEquals(1, apikitConfig.getFlowMappings().size());
+    assertEquals("/api/users", apikitConfig.getFlowMappings().get(0).getResource());
   }
 
   @Test

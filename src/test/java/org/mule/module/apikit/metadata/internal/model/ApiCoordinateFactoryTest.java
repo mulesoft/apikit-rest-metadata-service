@@ -11,14 +11,11 @@ import java.util.Optional;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.mule.module.apikit.metadata.internal.model.ApiCoordinate;
-import org.mule.module.apikit.metadata.internal.model.ApiCoordinateFactory;
-
 import static java.util.Arrays.asList;
 import org.junit.jupiter.api.Test;
-import org.mule.module.apikit.metadata.internal.model.FlowMapping;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -52,6 +49,9 @@ public class ApiCoordinateFactoryTest {
     assertEquals("application/json", coord.get().getMediaType());
     assertEquals("config2", coord.get().getConfigName());
 
+    coord = factory.fromFlowName("get:\\persons:config3");
+    assertFalse(coord.isPresent());
+
     coord = factory.fromFlowName("post:\\offices");
     assertTrue(!coord.isPresent());
 
@@ -59,6 +59,9 @@ public class ApiCoordinateFactoryTest {
     assertTrue(!coord.isPresent());
 
     coord = factory.fromFlowName("post:\\offices:application\\json:unknown-config");
+    assertTrue(!coord.isPresent());
+
+    coord = factory.fromFlowName("get:");
     assertTrue(!coord.isPresent());
   }
 
