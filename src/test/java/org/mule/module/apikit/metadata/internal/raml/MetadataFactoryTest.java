@@ -10,11 +10,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mule.apikit.implv2.v10.model.ParameterImpl;
 import org.mule.apikit.model.MimeType;
 import org.mule.metadata.api.model.MetadataType;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import org.mule.apikit.model.parameter.Parameter;
+import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MetadataFactoryTest {
 
@@ -98,6 +107,13 @@ public class MetadataFactoryTest {
     when(mimeType.getType()).thenReturn("multipart/form-data");
     when(mimeType.getSchema()).thenReturn(multipartSchema);
     when(mimeType.getExample()).thenReturn(multipartExample);
+    TypeDeclaration usernameTypeDeclaration = mock(TypeDeclaration.class);
+    when(usernameTypeDeclaration.name()).thenReturn("username");
+    when(usernameTypeDeclaration.type()).thenReturn("string");
+    ParameterImpl usernameParameter = new ParameterImpl(usernameTypeDeclaration);
+    Map<String, List<Parameter>> formParameters = new HashMap<>();
+    formParameters.put("username", Collections.singletonList(usernameParameter));
+    when(mimeType.getFormParameters()).thenReturn(formParameters);
 
     MetadataType result = MetadataFactory.payloadMetadata(api, mimeType);
     assertNotNull(result);
@@ -116,7 +132,8 @@ public class MetadataFactoryTest {
 
   @Test
   public void testPayloadMetadata_NullBody() {
-    MetadataType result = MetadataFactory.payloadMetadata(api, null);
+    when(mimeType.getType()).thenReturn("application/unknown");
+    MetadataType result = MetadataFactory.payloadMetadata(api, mimeType);
     assertNotNull(result);
   }
 }
