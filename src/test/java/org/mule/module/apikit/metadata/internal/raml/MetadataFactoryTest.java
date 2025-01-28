@@ -12,13 +12,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mule.apikit.model.MimeType;
 import org.mule.metadata.api.model.MetadataType;
-import org.mule.module.apikit.metadata.internal.utils.CommonMetadataFactory;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 public class MetadataFactoryTest {
 
@@ -39,7 +35,21 @@ public class MetadataFactoryTest {
     when(mimeType.getExample()).thenReturn("{\"key\": \"value\"}");
     MetadataType result = MetadataFactory.payloadMetadata(api, mimeType);
     assertNotNull(result);
-    // Add more assertions based on the expected MetadataType
+  }
+
+  @Test
+  public void testPayloadMetadata_ApplicationJson_SchemaNull() {
+    when(mimeType.getType()).thenReturn("application/json");
+    when(mimeType.getExample()).thenReturn("{\"key\": \"value\"}");
+    MetadataType result = MetadataFactory.payloadMetadata(api, mimeType);
+    assertNotNull(result);
+  }
+
+  @Test
+  public void testPayloadMetadata_ApplicationJson_EmptyBody() {
+    when(mimeType.getType()).thenReturn("application/json");
+    MetadataType result = MetadataFactory.payloadMetadata(api, mimeType);
+    assertNotNull(result);
   }
 
   @Test
@@ -61,6 +71,40 @@ public class MetadataFactoryTest {
   }
 
   @Test
+  public void testPayloadMetadata_MultipartFormData() {
+    String boundary = "----WebKitFormBoundary7MA4YWxkTrZu0gW";
+    String multipartSchema = "{\n" +
+        "  \"type\": \"object\",\n" +
+        "  \"properties\": {\n" +
+        "    \"username\": {\"type\": \"string\"},\n" +
+        "    \"email\": {\"type\": \"string\", \"format\": \"email\"},\n" +
+        "    \"profile_picture\": {\"type\": \"string\", \"format\": \"binary\"}\n" +
+        "  },\n" +
+        "  \"required\": [\"username\", \"email\", \"profile_picture\"]\n" +
+        "}";
+
+    String multipartExample = "------" + boundary + "\n" +
+        "Content-Disposition: form-data; name=\"username\"\n\n" +
+        "john_doe\n" +
+        "------" + boundary + "\n" +
+        "Content-Disposition: form-data; name=\"email\"\n\n" +
+        "john_doe@example.com\n" +
+        "------" + boundary + "\n" +
+        "Content-Disposition: form-data; name=\"profile_picture\"; filename=\"profile.jpg\"\n" +
+        "Content-Type: image/jpeg\n\n" +
+        "<binary image data>\n" +
+        "------" + boundary + "--";
+
+    when(mimeType.getType()).thenReturn("multipart/form-data");
+    when(mimeType.getSchema()).thenReturn(multipartSchema);
+    when(mimeType.getExample()).thenReturn(multipartExample);
+
+    MetadataType result = MetadataFactory.payloadMetadata(api, mimeType);
+    assertNotNull(result);
+  }
+
+
+  @Test
   public void testPayloadMetadata_ApplicationXml_WithExample() {
     String example = "<root><child>value</child></root>";
     when(mimeType.getType()).thenReturn("application/xml");
@@ -75,13 +119,4 @@ public class MetadataFactoryTest {
     MetadataType result = MetadataFactory.payloadMetadata(api, null);
     assertNotNull(result);
   }
-  // @Test
-  // public void testResolveSchema() {
-  // Map<String, String> consolidatedSchemas = new HashMap<>();
-  // consolidatedSchemas.put("schemaName", "<schema>XMLSchema</schema>");
-  // when(api.getConsolidatedSchemas()).thenReturn(consolidatedSchemas);
-  // when(mimeType.getSchema()).thenReturn("schemaName");
-  // String result = MetadataFactory.resolveSchema(api, mimeType);
-  // assertEquals("<schema>XMLSchema</schema>", result);
-  // }
 }
