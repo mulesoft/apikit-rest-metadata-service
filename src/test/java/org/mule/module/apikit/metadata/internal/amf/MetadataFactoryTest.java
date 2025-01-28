@@ -26,6 +26,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.Optional;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -50,15 +51,31 @@ class MetadataFactoryTest {
   @Test
   void testFromJSONSchemawithFileShape() {
     FileShape fileShape = new FileShape();
-    MetadataType result = MetadataFactory.fromXSDSchema(fileShape, "example");
+    MetadataType result = MetadataFactory.fromJSONSchema(fileShape, "example");
     assertTrue(result instanceof StringType);
   }
 
   @Test
   void testFromXSDSchemawithFileShape() {
     FileShape fileShape = new FileShape();
-    MetadataType result = MetadataFactory.fromJSONSchema(fileShape, "example");
+    MetadataType result = MetadataFactory.fromXSDSchema(fileShape, "example");
     assertTrue(result instanceof StringType);
+  }
+
+  @Test
+  void testFromXSDSchemawithFileShapeandExample() {
+    String xmlSchema = "<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">" +
+        "  <xs:element name=\"root\">" +
+        "    <xs:complexType>" +
+        "      <xs:sequence>" +
+        "        <xs:element name=\"child\" type=\"xs:string\"/>" +
+        "      </xs:sequence>" +
+        "    </xs:complexType>" +
+        "  </xs:element>" +
+        "</xs:schema>";
+    FileShape fileShape = new FileShape();
+    MetadataType result = MetadataFactory.fromXSDSchema(fileShape, xmlSchema);
+    assertNotNull(result);
   }
 
   @Test
