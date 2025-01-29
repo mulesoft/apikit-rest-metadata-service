@@ -6,8 +6,8 @@
  */
 package org.mule.module.apikit.metadata.internal.model;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mule.runtime.apikit.metadata.api.Notifier;
@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
 
@@ -33,7 +33,7 @@ public class ApplicationModelWrapperTest {
   private Notifier mockNotifier;
   private ApplicationModelWrapper applicationModelWrapper;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     MockitoAnnotations.initMocks(this);
     applicationModelWrapper = new ApplicationModelWrapper(mockArtifactAst, mockResourceLoader, mockNotifier);

@@ -6,8 +6,8 @@
  */
 package org.mule.module.apikit.metadata.internal.model;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CertificateFieldsTest {
 
@@ -47,7 +47,7 @@ public class CertificateFieldsTest {
     String[] names = new String[CertificateFields.values().length];
     int i = 0;
     for (CertificateFields field : CertificateFields.values()) {
-      assertFalse("Duplicate name found: " + field.getName(), contains(names, field.getName()));
+      assertFalse(contains(names, field.getName()), "Duplicate name found: " + field.getName());
       names[i++] = field.getName();
     }
   }

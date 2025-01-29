@@ -6,8 +6,8 @@
  */
 package org.mule.module.apikit.metadata.internal.model;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class FlowMappingTest {
 
@@ -65,5 +65,11 @@ public class FlowMappingTest {
     assertEquals(action, flowMapping.getAction());
     assertEquals(contentType, flowMapping.getContentType());
     assertEquals(flowRef, flowMapping.getFlowRef());
+  }
+
+  @Test
+  public void testFlowtoString() {
+    Flow flow = new Flow("flowName");
+    assertEquals("flowName", flow.toString());
   }
 }

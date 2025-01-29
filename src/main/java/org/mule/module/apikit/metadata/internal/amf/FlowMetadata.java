@@ -51,7 +51,7 @@ import static java.util.Collections.emptyMap;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.collections.CollectionUtils.isEmpty;
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.mule.module.apikit.metadata.internal.amf.MetadataFactory.fromJSONSchema;
 import static org.mule.module.apikit.metadata.internal.amf.MetadataFactory.fromXSDSchema;
 import static org.mule.module.apikit.metadata.internal.utils.CommonMetadataFactory.defaultMetadata;
