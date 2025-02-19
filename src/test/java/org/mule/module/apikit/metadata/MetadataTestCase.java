@@ -16,7 +16,7 @@ import org.mule.runtime.apikit.metadata.api.MetadataService;
 import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.core.api.extension.ExtensionManager;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
