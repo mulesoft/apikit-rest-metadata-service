@@ -60,10 +60,10 @@ class CommonMetadataFactoryTest {
     assertEquals(CommonMetadataFactory.defaultMetadata(), result);
   }
 
-  // @Test
-  // void testFromXMLExampleWithValidXML() {
-  // assertNotNull(CommonMetadataFactory.fromXMLExample("<child>value</child>"));
-  // }
+  @Test
+  void testFromXMLExampleWithValidXML() {
+    assertNotNull(CommonMetadataFactory.fromXMLExample("<child>value</child>"));
+  }
 
   @Test
   void testFromXMLExampleWithInvalidXML() {
