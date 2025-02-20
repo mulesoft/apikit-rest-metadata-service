@@ -38,6 +38,7 @@
         <allure.maven.plugin.version>2.10.0</allure.maven.plugin.version>
         <junit-jupiter.version>5.9.3</junit-jupiter.version>
         <log4j.version>2.17.1</log4j.version>
+        <jakarta-inject.version>2.0.1</jakarta-inject.version>
     </properties>
 
     <build>
@@ -342,6 +343,13 @@
             <version>2.0.9</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>jakarta.inject</groupId>
+            <artifactId>jakarta.inject-api</artifactId>
+            <version>${jakarta-inject.version}</version>
+            <scope>test</scope>
+        </dependency>
+
 
         <!-- mule-test-runner dependencies to mimic container classpath -->
         <dependency>
